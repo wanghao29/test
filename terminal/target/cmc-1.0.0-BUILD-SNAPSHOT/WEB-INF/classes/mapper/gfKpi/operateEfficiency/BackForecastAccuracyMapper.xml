@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.gfKpi.operateEfficiency.BackForecastAccuracyMapper" >
+ 
+	 <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.gfKpi.operateEfficiency.BackForecastAccuracy" >
+	    <constructor >
+	      <arg column="MONTH" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="sjhk" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="jhhk" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="hkyczqd" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="hkyczqddf" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	    </constructor>
+	 </resultMap>
+	 
+ 
+	 <sql id="Base_Column_List" >
+	   MONTH  billcyc , sjhk sjhk, jhhk jhhk,hkyczqd hkyczqd, hkyczqddf hkyczqddf 
+	 </sql>
+	 <select id="queryData" resultType="com.asiainfo.cmc.enties.gfKpi.operateEfficiency.BackForecastAccuracy"  parameterType="Map" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from KPI_REPAYMENT_ACCURACY_FORECAST   where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]>
+	   
+	</select>
+	<update id="calculatedScore">
+      call back_forecast_accuracy(${startMonth},#{endMonth})
+   </update>
+   
+      <insert id="insert"    parameterType="Map" >
+    insert KPI_REPAYMENT_ACCURACY_FORECAST ( MONTH, sjhk , jhhk , hkyczqd ,hkyczqddf  )
+    								   VALUES(#{billcyc},#{sjhk}, #{jhhk},#{hkyczqd} ,#{hkyczqddf})
+   
+   </insert>
+   <select id="queryDataByMonth" resultType="com.asiainfo.cmc.enties.gfKpi.operateEfficiency.BackForecastAccuracy"  parameterType="Map" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from KPI_REPAYMENT_ACCURACY_FORECAST   where <![CDATA[MONTH = #{billcyc}    ]]>
+	   
+	</select>
+   	<update id="updateByMonth">
+        update KPI_REPAYMENT_ACCURACY_FORECAST set sjhk=${sjhk},jhhk=${jhhk},hkyczqd=${hkyczqd},hkyczqddf=${hkyczqddf} where MONTH = #{billcyc}
+   </update>
+   <select id="overview" resultType="BackForecastAccuracy">
+   	select 
+	<include refid="Base_Column_List" />
+	 from KPI_REPAYMENT_ACCURACY_FORECAST where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{stopMonth}  ]]>	ORDER BY MONTH DESC limit 0,1
+   </select>
+   <select id="getList" resultType="BackForecastAccuracy">
+   select 
+	<include refid="Base_Column_List" />
+	 from KPI_REPAYMENT_ACCURACY_FORECAST where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]>
+   </select>
+   <select id="getTotal" resultType="java.lang.Integer">
+   	select count(1) from KPI_REPAYMENT_ACCURACY_FORECAST where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]> 
+   </select>
+</mapper>

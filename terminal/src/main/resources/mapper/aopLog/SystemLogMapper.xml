@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.aopLog.mapper.SystemLogMapper" >
+	 <resultMap id="BaseResultMap" type="com.asiainfo.cmc.aopLog.Log" >
+	    <constructor >
+	      <arg column="SEQ" jdbcType="INTEGER" javaType="java.lang.Integer" />
+	      <arg column="roleName" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="userName" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="userId" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="method" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="module" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="moduleMenu" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="moduleMenuKpi" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="ip" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="description" jdbcType="VARCHAR" javaType="java.lang.String" />
+	       <arg column="params" jdbcType="VARCHAR" javaType="java.lang.String" />
+	       <arg column="beginTime" jdbcType="DATE" javaType="java.sql.Timestamp" />
+	       <arg column="endTime" jdbcType="DATE" javaType="java.sql.Timestamp" />
+	       <arg column="exceptionCode" jdbcType="VARCHAR" javaType="java.lang.String" />
+	       <arg column="exceptionDetail" jdbcType="VARCHAR" javaType="java.lang.String" />
+	       <arg column="type" jdbcType="VARCHAR" javaType="java.lang.String" />
+	       <arg column="business" jdbcType="VARCHAR" javaType="java.lang.String" />
+	       <arg column="sessionId" jdbcType="VARCHAR" javaType="java.lang.String" />
+	    </constructor>
+	 </resultMap>
+	 <sql id="Base_Column_List" >
+	   SEQ  seq , roleName roleName,userName userName,userId userId, method method, module module,moduleMenu moduleMenu,moduleMenuKpi moduleMenuKpi, ip ip,
+	    description description, params params,beginTime beginTime,endTime endTime,exceptionCode exceptionCode,type type,business business,date_format(beginTime,'%Y-%m-%d %H:%m:%s') loginTime ,date_format(endTime,'%Y-%m-%d %H:%m:%s') loginOutTime ,sessionId sessionId
+	 </sql>
+	 <select id="queryData" resultType="com.asiainfo.cmc.aopLog.Log"  parameterType="Map" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from zd_SYSTEMLOG    where type = 'LOGIN'      and beginTime &gt;=  #{startTime} and endTime &lt;= #{endTime} order by beginTime desc
+	</select>
+	<insert id="insertSystemLog" useGeneratedKeys="true" keyProperty="SEQ" keyColumn="SEQ"   parameterType="com.asiainfo.cmc.aopLog.Log">
+ 
+       INSERT INTO zd_SYSTEMLOG 
+             (userName,roleName, userId, method, module, moduleMenu, moduleMenuKpi, ip, description, params, beginTime, endTime, exceptionCode, exceptionDetail, type, business,sessionId) 
+       VALUES (#{userName},#{roleName}, #{userId}, #{method}, #{module}, #{moduleMenu}, #{moduleMenuKpi}, #{ip}, #{description}, #{params}, #{beginTime}, #{endTime}, #{exceptionCode}, #{exceptionDetail}, #{type}, #{business}, #{sessionId});
+
+    </insert>
+	<update id="updateLoginOutTime"  parameterType="com.asiainfo.cmc.aopLog.Log">
+			update zd_SYSTEMLOG set endTime =  #{endTime} where sessionId =  #{sessionId} and type ='LOGIN' 
+	</update>
+	
+ 
+</mapper>

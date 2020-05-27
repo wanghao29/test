@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.CityKpi2019Mapper" >
+
+<insert id="insert" parameterType="com.asiainfo.cmc.enties.CityKpi2019" >
+
+ INSERT INTO zd_city_kpi_result_new (
+center,city,rate1,rateDown,rateRatio,rateScore,netprofit,profitDown,profitRate,profitScore,
+businessFull,business1,businessTimeDown,businessProgress,businessQuarter,businessDown,businessScore,brandselfYear,brandselfDown1,brandselfTimeRate,
+brandselfQuarter,brandselfMobileD,brandselfScore,hardwardYear,hardwardMonth,hardwardIncomeD,hardwardIncome,hardwardQuarter,hardwardD,hardwardScore,
+notGroupIncome,notGroupHard1,notGroupTime,notGroupIncomeD,notGroupQuarter,notGroupTimeD,notGroupScore,keyNot,keyNotScore,qualityYear,
+qualityQuarter,qualityQuarterD,qualityQuarterR,qualityScore,kAcustomerQuarter,kAcustomerQuarterD,kAcustomerRate,kAcustomerScore,kAcustomerY,tieTongYear,
+tieTongQuarter,tieTongQuarterD,tieTongScore,sellRetail,sellRetailScore,afterSaleYear,afterSaleQuarter,afterSaleD,afterSaleScore,directRate,
+directRateScore,threeMonth,threeMonthQuarter,majorScore,kpiSumScore1,kpiQuarter1,kpiRateD,kpiGoal,kpiCompelete,kpiCompeleteRate,
+kpiSumScore,spare)
+values
+(#{center,jdbcType=VARCHAR},#{city,jdbcType=VARCHAR},#{rate1,jdbcType=VARCHAR},#{rateDown,jdbcType=VARCHAR},#{rateRatio,jdbcType=VARCHAR},
+#{rateScore,jdbcType=VARCHAR},#{netprofit,jdbcType=VARCHAR},#{profitDown,jdbcType=VARCHAR},#{profitRate,jdbcType=VARCHAR},#{profitScore,jdbcType=VARCHAR},
+#{businessFull,jdbcType=VARCHAR},#{business1,jdbcType=VARCHAR},#{businessTimeDown,jdbcType=VARCHAR},#{businessProgress,jdbcType=VARCHAR},#{businessQuarter,jdbcType=VARCHAR},
+#{businessDown,jdbcType=VARCHAR},#{businessScore,jdbcType=VARCHAR},#{brandselfYear,jdbcType=VARCHAR},#{brandselfDown1,jdbcType=VARCHAR},#{brandselfTimeRate,jdbcType=VARCHAR},
+#{brandselfQuarter,jdbcType=VARCHAR},#{brandselfMobileD,jdbcType=VARCHAR},#{brandselfScore,jdbcType=VARCHAR},#{hardwardYear,jdbcType=VARCHAR},#{hardwardMonth,jdbcType=VARCHAR},
+#{hardwardIncomeD,jdbcType=VARCHAR},#{hardwardIncome,jdbcType=VARCHAR},#{hardwardQuarter,jdbcType=VARCHAR},#{hardwardD,jdbcType=VARCHAR},#{hardwardScore,jdbcType=VARCHAR},
+#{notGroupIncome,jdbcType=VARCHAR},#{notGroupHard1,jdbcType=VARCHAR},#{notGroupTime,jdbcType=VARCHAR},#{notGroupIncomeD,jdbcType=VARCHAR},#{notGroupQuarter,jdbcType=VARCHAR},
+#{notGroupTimeD,jdbcType=VARCHAR},#{notGroupScore,jdbcType=VARCHAR},#{keyNot,jdbcType=VARCHAR},#{keyNotScore,jdbcType=VARCHAR},#{qualityYear,jdbcType=VARCHAR},
+#{qualityQuarter,jdbcType=VARCHAR},#{qualityQuarterD,jdbcType=VARCHAR},#{qualityQuarterR,jdbcType=VARCHAR},#{qualityScore,jdbcType=VARCHAR},#{kAcustomerY,jdbcType=VARCHAR},
+#{kAcustomerQuarter,jdbcType=VARCHAR},#{kAcustomerQuarterD,jdbcType=VARCHAR},#{kAcustomerRate,jdbcType=VARCHAR},#{kAcustomerScore,jdbcType=VARCHAR},#{tieTongYear,jdbcType=VARCHAR},
+#{tieTongQuarter,jdbcType=VARCHAR},#{tieTongQuarterD,jdbcType=VARCHAR},#{tieTongScore,jdbcType=VARCHAR},#{sellRetail,jdbcType=VARCHAR},#{sellRetailScore,jdbcType=VARCHAR},
+#{afterSaleYear,jdbcType=VARCHAR},#{afterSaleQuarter,jdbcType=VARCHAR},#{afterSaleD,jdbcType=VARCHAR},#{afterSaleScore,jdbcType=VARCHAR},#{directRate,jdbcType=VARCHAR},
+#{directRateScore,jdbcType=VARCHAR},#{threeMonth,jdbcType=VARCHAR},#{threeMonthQuarter,jdbcType=VARCHAR},#{majorScore,jdbcType=VARCHAR},#{kpiSumScore1,jdbcType=VARCHAR},
+#{kpiQuarter1,jdbcType=VARCHAR},#{kpiRateD,jdbcType=VARCHAR},#{kpiGoal,jdbcType=VARCHAR},#{kpiCompelete,jdbcType=VARCHAR},#{kpiCompeleteRate,jdbcType=VARCHAR},
+#{kpiSumScore,jdbcType=VARCHAR},#{spare,jdbcType=VARCHAR}
+)  
+
+</insert>
+
+<select id="selectAll" resultType="com.asiainfo.cmc.enties.CityKpi2019">
+<!-- SELECT center,city,rate1,rateDown,rateScore,
+      netprofit,profitDown,profitScore,
+      business1,businessDown,businessScore,
+      brandselfQuarter,brandselfMobileD,brandselfScore,
+      hardwardQuarter,hardwardD,hardwardScore,
+      notGroupQuarter,notGroupHard1,notGroupScore,
+      keyNot,keyNotScore,
+      qualityQuarter,qualityQuarterD,qualityScore,
+      kAcustomerQuarter,kAcustomerQuarterD,kAcustomerScore,
+      tieTongQuarter,tieTongQuarterD,tieTongScore,
+      sellRetail,sellRetailScore,
+      afterSaleQuarter,afterSaleD,afterSaleScore,
+      directRate,directRateScore,
+      threeMonth,threeMonthQuarter,
+      kpiGoal,kpiRateD,majorScore 
+      FROM zd_city_kpi_result_new -->
+      SELECT center,city,rate1,FORMAT(rateDown,2) rateDown,FORMAT(rateScore,2) rateScore,
+     FORMAT(netprofit,2) netprofit,FORMAT(profitDown,2) profitDown,FORMAT(profitScore,2) profitScore,
+     FORMAT(business1,2) business1,FORMAT(businessDown,2) businessDown,FORMAT(businessScore,2) businessScore,FORMAT(businessQuarter,2) businessQuarter,
+      FORMAT(brandselfQuarter,2) brandselfQuarter,FORMAT(brandselfMobileD,2) brandselfMobileD,FORMAT(brandselfScore,2) brandselfScore,
+     FORMAT(hardwardQuarter,2) hardwardQuarter,FORMAT(hardwardD,2) hardwardD,FORMAT(hardwardScore,2) hardwardScore,
+     FORMAT(notGroupQuarter,2) notGroupQuarter,FORMAT(notGroupHard1,2) notGroupHard1,FORMAT(notGroupScore,2) notGroupScore,
+      keyNot,FORMAT(keyNotScore,2) keyNotScore,
+     FORMAT(qualityQuarter,2) qualityQuarter,FORMAT(qualityQuarterD,2) qualityQuarterD,FORMAT(qualityScore,2) qualityScore,
+     FORMAT(kAcustomerQuarterD,2) kAcustomerQuarterD,FORMAT(kAcustomerRate,2) kAcustomerRate,FORMAT(kAcustomerScore,2) kAcustomerScore,
+     FORMAT(tieTongQuarter,2) tieTongQuarter,FORMAT(tieTongQuarterD,2) tieTongQuarterD,FORMAT(tieTongScore,2) tieTongScore,
+     FORMAT(sellRetail,2) sellRetail,FORMAT(sellRetailScore,2) sellRetailScore,
+     FORMAT(afterSaleQuarter,2) afterSaleQuarter,FORMAT(afterSaleD,2) afterSaleD,FORMAT(afterSaleScore,2) afterSaleScore,
+     FORMAT(directRate,2) directRate,FORMAT(directRateScore,2) directRateScore,
+     FORMAT(threeMonth,2) threeMonth,FORMAT(threeMonthQuarter,2) threeMonthQuarter,
+      FORMAT(kpiGoal,2) kpiGoal,FORMAT(kpiRateD,2) kpiRateD,FORMAT(majorScore,2) majorScore 
+      FROM zd_city_kpi_result_new where spare=#{spare}
+
+</select>
+
+
+<update id="updateSelective" parameterType="com.asiainfo.cmc.enties.CityKpi2019">
+update zd_city_kpi_result_new set
+center=#{center,jdbcType=VARCHAR},city=#{city,jdbcType=VARCHAR},rate1=#{rate1,jdbcType=VARCHAR},rateDown=#{rateDown,jdbcType=VARCHAR},rateRatio=#{rateRatio,jdbcType=VARCHAR},
+rateScore=#{rateScore,jdbcType=VARCHAR},netprofit=#{netprofit,jdbcType=VARCHAR},profitDown=#{profitDown,jdbcType=VARCHAR},profitRate=#{profitRate,jdbcType=VARCHAR},profitScore=#{profitScore,jdbcType=VARCHAR},
+businessFull=#{businessFull,jdbcType=VARCHAR},business1=#{business1,jdbcType=VARCHAR},businessTimeDown=#{businessTimeDown,jdbcType=VARCHAR},businessProgress=#{businessProgress,jdbcType=VARCHAR},businessQuarter=#{businessQuarter,jdbcType=VARCHAR},
+businessDown=#{businessDown,jdbcType=VARCHAR},businessScore=#{businessScore,jdbcType=VARCHAR},brandselfYear=#{brandselfYear,jdbcType=VARCHAR},brandselfDown1=#{brandselfDown1,jdbcType=VARCHAR},brandselfTimeRate=#{brandselfTimeRate,jdbcType=VARCHAR},
+brandselfQuarter=#{brandselfQuarter,jdbcType=VARCHAR},brandselfMobileD=#{brandselfMobileD,jdbcType=VARCHAR},brandselfScore=#{brandselfScore,jdbcType=VARCHAR},hardwardYear=#{hardwardYear,jdbcType=VARCHAR},hardwardMonth=#{hardwardMonth,jdbcType=VARCHAR},
+hardwardIncomeD=#{hardwardIncomeD,jdbcType=VARCHAR},hardwardIncome=#{hardwardIncome,jdbcType=VARCHAR},hardwardQuarter=#{hardwardQuarter,jdbcType=VARCHAR},hardwardD=#{hardwardD,jdbcType=VARCHAR},hardwardScore=#{hardwardScore,jdbcType=VARCHAR},
+notGroupIncome=#{notGroupIncome,jdbcType=VARCHAR},notGroupHard1=#{notGroupHard1,jdbcType=VARCHAR},notGroupTime=#{notGroupTime,jdbcType=VARCHAR},notGroupIncomeD=#{notGroupIncomeD,jdbcType=VARCHAR},notGroupQuarter=#{notGroupQuarter,jdbcType=VARCHAR},
+notGroupTimeD=#{notGroupTimeD,jdbcType=VARCHAR},notGroupScore=#{notGroupScore,jdbcType=VARCHAR},keyNot=#{keyNot,jdbcType=VARCHAR},keyNotScore=#{keyNotScore,jdbcType=VARCHAR},qualityYear=#{qualityYear,jdbcType=VARCHAR},
+qualityQuarter=#{qualityQuarter,jdbcType=VARCHAR},qualityQuarterD=#{qualityQuarterD,jdbcType=VARCHAR},qualityQuarterR=#{qualityQuarterR,jdbcType=VARCHAR},qualityScore=#{qualityScore,jdbcType=VARCHAR},kAcustomerY=#{kAcustomerY,jdbcType=VARCHAR},
+kAcustomerQuarter=#{kAcustomerQuarter,jdbcType=VARCHAR},kAcustomerQuarterD=#{kAcustomerQuarterD,jdbcType=VARCHAR},kAcustomerRate=#{kAcustomerRate,jdbcType=VARCHAR},kAcustomerScore=#{kAcustomerScore,jdbcType=VARCHAR},tieTongYear=#{tieTongYear,jdbcType=VARCHAR},
+tieTongQuarter=#{tieTongQuarter,jdbcType=VARCHAR},tieTongQuarterD=#{tieTongQuarterD,jdbcType=VARCHAR},tieTongScore=#{tieTongScore,jdbcType=VARCHAR},sellRetail=#{sellRetail,jdbcType=VARCHAR},sellRetailScore=#{sellRetailScore,jdbcType=VARCHAR},
+afterSaleYear=#{afterSaleYear,jdbcType=VARCHAR},afterSaleQuarter=#{afterSaleQuarter,jdbcType=VARCHAR},afterSaleD=#{afterSaleD,jdbcType=VARCHAR},afterSaleScore=#{afterSaleScore,jdbcType=VARCHAR},directRate=#{directRate,jdbcType=VARCHAR},
+directRateScore=#{directRateScore,jdbcType=VARCHAR},threeMonth=#{threeMonth,jdbcType=VARCHAR},threeMonthQuarter=#{threeMonthQuarter,jdbcType=VARCHAR},majorScore=#{majorScore,jdbcType=VARCHAR},kpiSumScore1=#{kpiSumScore1,jdbcType=VARCHAR},
+kpiQuarter1=#{kpiQuarter1,jdbcType=VARCHAR},kpiRateD=#{kpiRateD,jdbcType=VARCHAR},kpiGoal=#{kpiGoal,jdbcType=VARCHAR},kpiCompelete=#{kpiCompelete,jdbcType=VARCHAR},kpiCompeleteRate=#{kpiCompeleteRate,jdbcType=VARCHAR},
+kpiSumScore=#{kpiSumScore,jdbcType=VARCHAR},spare=#{spare,jdbcType=VARCHAR} 
+where spare=#{spare,jdbcType=VARCHAR}
+
+</update>
+
+<!--model5g导入功能的实现  -->
+
+<insert id="insertModel5g" parameterType="com.asiainfo.cmc.enties.Model5G" >
+
+ INSERT INTO kpi_phone_kind_5g (scmPort,phoneKind,brand,spec,catched,model,rebateCatched,rebateTime,rebatePolicy,
+ rebateRemark,rebateKind,space1)
+values
+(#{scmPort,jdbcType=VARCHAR},#{phoneKind,jdbcType=VARCHAR},#{brand,jdbcType=VARCHAR},#{spec,jdbcType=VARCHAR},
+#{catched,jdbcType=VARCHAR},#{model,jdbcType=VARCHAR},#{rebateCatched,jdbcType=VARCHAR},#{rebateTime,jdbcType=VARCHAR},
+#{rebatePolicy,jdbcType=VARCHAR},#{rebateRemark,jdbcType=VARCHAR},#{rebateKind,jdbcType=VARCHAR},#{space1,jdbcType=VARCHAR}
+)  
+
+</insert>
+<!--查询数据数据库是否已存在  -->
+<select id="selectModel5g" resultType="com.asiainfo.cmc.enties.Model5G">
+      SELECT id,scmPort,phoneKind,brand,spec,catched,model,FORMAT(rebateCatched,2) rebateCatched ,rebateTime,rebatePolicy,
+ rebateRemark,rebateKind,space1  
+      FROM kpi_phone_kind_5g where space1=#{spare}
+
+</select>
+
+<!--获取数据的总数  -->
+    <select id="getSize" parameterType="java.util.Map" resultType="int">
+        select count(*) from kpi_phone_kind_5g where 1=1 <if test="phoneKind != null and phoneKind!=''" >and phoneKind=#{phoneKind} </if> 
+      <if test="brand != null and brand!=''" > and brand=#{brand} </if> <if test="spec != null and spec!=''" >and spec=#{spec} </if>
+    </select>
+
+<!--分页显示到页面  -->
+    <select id="pageList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT * FROM kpi_phone_kind_5g where 1=1 <if test="phoneKind != null and phoneKind!=''" >and phoneKind=#{phoneKind} </if> 
+      <if test="brand != null and brand!=''" > and brand=#{brand} </if> <if test="spec != null and spec!=''" >and spec=#{spec} </if> order by id DESC limit #{pageNo},#{pageSize}
+    </select>
+<!--查询一条数据  -->
+<select id="selectOne"  resultType="com.asiainfo.cmc.enties.Model5G">
+        SELECT * FROM kpi_phone_kind_5g where id=#{id} 
+</select>
+
+<!--修改一条数据  -->
+<update id="updateOne" parameterType="com.asiainfo.cmc.enties.Model5G">
+      update kpi_phone_kind_5g set scmPort=#{scmPort},
+      phoneKind=#{phoneKind},brand=#{brand},spec=#{spec},
+      catched=#{catched},model=#{model},rebateCatched=#{rebateCatched},rebateTime=#{rebateTime},rebatePolicy=#{rebatePolicy}, 
+      rebateRemark=#{rebateRemark},rebateKind=#{rebateKind}
+      where id = #{id}
+</update>
+<!--增加一条数据  -->
+<insert id="insertOne" parameterType="com.asiainfo.cmc.enties.Model5G">
+        INSERT INTO kpi_phone_kind_5g(scmPort,phoneKind,brand,spec,catched,model,
+        rebateCatched ,rebateTime,rebatePolicy,rebateRemark,rebateKind) VALUES (#{scmPort},#{phoneKind},#{brand},#{spec},#{catched},#{model},#{rebateCatched},#{rebateTime},#{rebatePolicy},
+        #{rebateRemark},#{rebateKind})
+</insert>
+<!--删除一条数据  -->
+<delete id="deleteOne">
+
+      delete from kpi_phone_kind_5g where id=#{id}
+
+</delete>
+
+
+
+</mapper>

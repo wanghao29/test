@@ -1,0 +1,21 @@
+#mysql
+jdbc.driverClass = com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://10.253.59.100:3306/zd?characterEncoding=UTF-8 
+jdbc.user=zd
+jdbc.password=Audi#268
+
+jdbc2.driverClass= ru.yandex.clickhouse.ClickHouseDriver
+jdbc2.url=jdbc:clickhouse://10.253.59.51:8123/zd
+jdbc2.user=default
+jdbc2.password=ZD#369
+
+#jdbc.url=jdbc:mysql://127.0.0.1:3306/terminal
+#jdbc.user=root
+#jdbc.password=root
+jdbc.acquireIncrement=5
+jdbc.initialPoolSize=10
+jdbc.minPoolSize=5
+jdbc.maxPoolSize=20
+validationQuery=SELECT 1
+
+bdMapUrl = http://10.253.59.45:8080/offlinemap

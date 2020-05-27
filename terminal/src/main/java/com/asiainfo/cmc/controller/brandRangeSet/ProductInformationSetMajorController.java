@@ -1,0 +1,334 @@
+package com.asiainfo.cmc.controller.brandRangeSet;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.asiainfo.cmc.config.DS;
+
+import com.asiainfo.cmc.enties.brandmodel.LifeDate;
+import com.asiainfo.cmc.enties.brandmodel.ProductInformationSetMajor;
+import com.asiainfo.cmc.service.brandmodel.AbsoluteRangeService;
+import com.asiainfo.cmc.service.brandmodel.ProductInformationSetMajorService;
+
+/**
+ * 产品经理视图页面展示
+ * @author Administrator
+ *
+ */
+
+@Controller
+@RequestMapping(value = "/getInformation")
+public class ProductInformationSetMajorController {
+     //导入产品信息设置
+	@Resource
+	private ProductInformationSetMajorService productInformationSetMajorService;
+	//导入生命周期设置
+	@Resource
+	private AbsoluteRangeService absoluteRangeService;
+	
+	
+
+	@DS("dataSource")@RequestMapping(value="/majorList", method = RequestMethod.POST)
+	public String seletMajor(Locale locale, Model models, HttpServletRequest request,
+			HttpServletResponse response){
+		
+		@SuppressWarnings("unused")
+		List <Object> list=new ArrayList<Object>();
+		
+		//查询出当前操盘产品集合
+		//开始时间
+		String start = productInformationSetMajorService.selectStart();
+		
+		//结束时间
+		String end = productInformationSetMajorService.selectEnd();
+		
+		
+		List<ProductInformationSetMajor> entryList = productInformationSetMajorService.selectListEntry(start,end);
+		String ranger="";
+		for (ProductInformationSetMajor productInformationSetMajor : entryList) {			
+			String brand = productInformationSetMajor.getBRANDNAME();
+			brand = brand==null?"":brand.split(",|，")[0];
+			String spec = productInformationSetMajor.getSPEC();
+			ArrayList<Object> CycleList = new ArrayList<Object>();
+			ArrayList<Integer> zhouList = new ArrayList<Integer>();
+			@SuppressWarnings("unused")
+			ArrayList<Object> SaleMountTList = new ArrayList<Object>();
+			//当前时间与开始产生销量的时间差
+			int range=0;
+			try {
+			 range = productInformationSetMajorService.selectTimeRange(brand, spec);
+				} catch (Exception e) // Exception 为最大的异常
+				{
+				
+				}
+				
+			
+			
+			//根据产品的品牌和型号查询出生命周期
+			
+			List<LifeDate> brandLife = absoluteRangeService.selectBrandLife(brand, spec);
+			
+			if(brandLife!=null&&!brandLife.isEmpty()) {			
+				for(LifeDate example : brandLife){		  
+					 //取出产品所属周期
+					CycleList.add(example.getCYCLE());
+					  //取出产品持续的周数
+					zhouList.add(example.getDURATION());
+					  
+					 }
+				 if(CycleList.size()>=1) {
+						
+					 Integer zhou = zhouList.get(0); 
+					  int sum= zhou*7;
+					  if(range<sum) {
+					  ranger="导入期";	 
+					  @SuppressWarnings("unused")
+					int i = productInformationSetMajorService.updateDate(brand, spec, ranger);
+						 
+					 }
+					  if(CycleList.size()>=2) {
+						  Integer zhou1 = zhouList.get(0); 
+						  Integer zhou2 = zhouList.get(1); 
+						   int grow=zhou1*7+zhou2*7;
+						   if(range<grow) {
+						   ranger="成长期";
+						   @SuppressWarnings("unused")
+						int i = productInformationSetMajorService.updateDate(brand, spec, ranger);
+						   }  
+					  }
+					  
+					  if(CycleList.size()>=3) {
+						  Integer zhou1 = zhouList.get(0); 
+						  Integer zhou2 = zhouList.get(1); 
+						  Integer zhou3 = zhouList.get(2); 
+						   int grow3=zhou3*7+zhou1*7+zhou2*7;
+						   if(range<grow3) {
+						   ranger="成熟期";
+						   @SuppressWarnings("unused")
+						int i = productInformationSetMajorService.updateDate(brand, spec, ranger);
+						   }  
+					  }
+					  if(CycleList.size()>=4) {
+						  Integer zhou1 = zhouList.get(0); 
+						  Integer zhou2 = zhouList.get(1); 
+						  Integer zhou3 = zhouList.get(2); 
+						  Integer zhou4 = zhouList.get(3); 
+						  int grow4=zhou3*7+zhou1*7+zhou2*7+zhou4*7;
+						   if(range<grow4) {
+						   ranger="衰退期";
+						   @SuppressWarnings("unused")
+						int i = productInformationSetMajorService.updateDate(brand, spec, ranger);
+						   }  
+					  }
+				      
+					     }
+
+			
+			}
+			
+	
+		}
+	
+		return "brandRangeSet/traderViewSet";	
+	}
+	
+
+
+	//一次性查询所有的数据显示到页面 
+		@ResponseBody
+		@DS("dataSource")@RequestMapping(value="/selectProductList", method = {RequestMethod.GET,RequestMethod.POST})
+		public Object doSomeThings(HttpServletRequest request,HttpServletResponse response) throws IOException  {
+			
+			 List<ProductInformationSetMajor> questionNaireQuestionslist = new ArrayList<ProductInformationSetMajor>();
+			 ProductInformationSetMajor questionNaireQuestion = new ProductInformationSetMajor();
+			//查询出当前top10的品牌和机型
+			    //开始时间
+				String start = productInformationSetMajorService.selectStart();
+				
+				//结束时间
+				String end = productInformationSetMajorService.selectEnd();
+			 
+			List<ProductInformationSetMajor> list = productInformationSetMajorService.selectListEntry(start,end);
+			if(list!=null && !list.isEmpty()) {
+				
+				
+			for (ProductInformationSetMajor productInformationSetMajor : list) {
+				String brand = productInformationSetMajor.getBRANDNAME();
+				String spec = productInformationSetMajor.getSPEC();
+				ProductInformationSetMajor selectNewPM = productInformationSetMajorService.selectNewPM(brand, spec);	
+				ProductInformationSetMajor selectOneTop10 = productInformationSetMajorService.selectOneTop10(productInformationSetMajor);
+				if(selectOneTop10==null) {
+				if(selectNewPM==null) {
+					productInformationSetMajorService.insertMajor(productInformationSetMajor);	
+				}
+				if(selectNewPM!=null) {
+				if(selectNewPM.getPM().equals("刘旭[ZDLIUXU]")) {
+					selectNewPM.setPM("陈贺斌[CHENHB]");			
+				}
+				if(selectNewPM.getPM().equals("李婷婷[LITT]")) {
+					selectNewPM.setPM("陈嘉亮[ZDCHENJIALIANG]");			
+				}
+				productInformationSetMajorService.insertMajor(selectNewPM);
+				}
+				}
+//				ProductInformationSetMajor selectOneTop10 = productInformationSetMajorService.selectOneTop10(productInformationSetMajor);
+//				if(selectOneTop10!=null) {
+//					//productInformationSetMajorService.updateTop10(productInformationSetMajor);
+//					
+//				}if(selectOneTop10==null) {
+//				productInformationSetMajorService.insertMajor(selectNewPM);
+//				}
+			
+			}
+			
+			
+			}
+			questionNaireQuestionslist.addAll(productInformationSetMajorService.selectListTop10());
+			HttpSession session = request.getSession();			 			
+			 Object attribute2 = session.getAttribute("questionNaireQuestionslist2");
+			if(attribute2!=null) {
+				 questionNaireQuestionslist.add(0,(ProductInformationSetMajor) attribute2);
+			}
+			
+			request.getSession().setAttribute("questionNaireQuestionslist", questionNaireQuestionslist);
+			Object attribute = request.getSession().getAttribute("questionNaireQuestionslist");
+		     return attribute; 
+		
+
+		}
+	
+	
+	//一次性查询所有的数据显示到页面 
+		
+		@ResponseBody
+		@DS("dataSource")@RequestMapping(value="/insertOne", method = RequestMethod.POST)
+		public int SomeThings(HttpServletRequest request,HttpServletResponse response) throws IOException  {
+			ProductInformationSetMajor pm=new ProductInformationSetMajor();
+			//List<ProductInformationSetMajor> questionNaireQuestionslist = new ArrayList<ProductInformationSetMajor>();
+			String brand = request.getParameter("brandname");
+			String spec = request.getParameter("spec");		
+			pm.setBRANDNAME(brand);
+			pm.setSPEC(spec);
+			ProductInformationSetMajor selectNewPM = productInformationSetMajorService.selectNewPM(brand, spec);
+			if(selectNewPM!=null) {
+				if(selectNewPM.getPM()!=null && selectNewPM.getPM().equals("刘旭[ZDLIUXU]")) {
+					selectNewPM.setPM("陈贺斌[CHENHB]");			
+				}else if(selectNewPM.getPM()!=null && selectNewPM.getPM().equals("李婷婷[LITT]")) {
+					selectNewPM.setPM("陈嘉亮[ZDCHENJIALIANG]");			
+				}
+				request.getSession().setAttribute("questionNaireQuestionslist2", selectNewPM);	
+				
+			}else {
+			
+			//questionNaireQuestionslist.add(pm);
+			request.getSession().setAttribute("questionNaireQuestionslist2", pm);
+			}
+			int tt=1;
+			
+//			ProductInformationSetMajor selectOneTop10 = productInformationSetMajorService.selectOneTop10(pm);
+//			//根据品牌和型号查询带有项目经理的销售表中的数据
+//			ProductInformationSetMajor selectNewPM = productInformationSetMajorService.selectNewPM(brand, spec);		
+//			int tt=0;
+//			/*if(selectOneTop10!=null) {
+//				tt=2;
+//				return tt;
+//			}*/
+//			if(selectOneTop10==null && selectNewPM==null) {
+//				int i = productInformationSetMajorService.insertMajor(pm);
+//				if(i==1) {
+//				tt=1;
+//				}else {
+//					
+//				tt=0;	
+//				}
+//			
+//			}
+//			if(selectOneTop10==null && selectNewPM!=null) {
+//				if(selectNewPM.getPM()!=null && selectNewPM.getPM().equals("刘旭[ZDLIUXU]")) {
+//					selectNewPM.setPM("陈贺斌[CHENHB]");			
+//				}
+//				if(selectNewPM.getPM()!=null && selectNewPM.getPM().equals("李婷婷[LITT]")) {
+//					selectNewPM.setPM("陈嘉亮[ZDCHENJIALIANG]");			
+//				}
+//				int i = productInformationSetMajorService.insertMajor(selectNewPM);
+//				if(i==1) {
+//				tt=1;
+//				}else {
+//					
+//				tt=0;	
+//				}
+//			
+//			}
+//			if(selectOneTop10!=null && selectNewPM!=null) {
+//				if(selectNewPM.getPM()!=null && selectNewPM.getPM().equals("刘旭[ZDLIUXU]")) {
+//					selectNewPM.setPM("陈贺斌[CHENHB]");			
+//				}
+//				if(selectNewPM.getPM()!=null && selectNewPM.getPM().equals("李婷婷[LITT]")) {
+//					selectNewPM.setPM("陈嘉亮[ZDCHENJIALIANG]");			
+//				}
+//				int i = productInformationSetMajorService.insertMajor(selectNewPM);
+//				if(i==1) {
+//				tt=1;
+//				}else {
+//					
+//				tt=0;	
+//				}
+//			
+//			}
+			
+			
+			return tt;
+		 
+		
+
+		}
+	
+	
+	
+	
+		@ResponseBody
+		@DS("dataSource")@RequestMapping(value = "/brandsTop10", method = RequestMethod.POST)
+		public List<String> index(Locale locale, Model model,HttpServletRequest request,HttpServletResponse response) {
+			
+			
+			List<String> list = productInformationSetMajorService.selectBrandTop10();
+			
+			if(list==null || list.size()==0) {
+				
+				return null;
+				
+			}
+		
+			return list;	
+		
+	}	
+	
+	
+		@ResponseBody
+		@DS("dataSource")@RequestMapping(value = "/doublesTop10", method = RequestMethod.POST)
+		public List<String> indexs(Locale locale, Model model,HttpServletRequest request,HttpServletResponse response) {
+			ProductInformationSetMajor pm=new ProductInformationSetMajor();
+			String value1 = request.getParameter("roleid");
+			pm.setBRANDNAME(value1);
+			List<String> list = productInformationSetMajorService.selectModelTop10(pm);	
+			return list;		
+	}
+	
+	
+	
+	
+	
+	
+}

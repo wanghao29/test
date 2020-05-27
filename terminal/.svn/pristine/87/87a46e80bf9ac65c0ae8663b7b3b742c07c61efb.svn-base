@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.asiainfo.cmc.qudao.mapper.HallIdentifyInfoMapper">
+    <select id="listHallIdentifyInfoByMonths" parameterType="com.asiainfo.cmc.qudao.vo.IdentifyInfoVo"  resultType="map">
+         SELECT AREANAME,REPLACE(SMONTH,'-','') SMONTH,SUM(GDYDHALLAMOUNT) GDYDHALLAMOUNT,SUM(GDYDHALLSALL) GDYDHALLSALL,SUM(ZDHALLAMOUNT) ZDHALLAMOUNT,
+             SUM(ZDHALLSALL) ZDHALLSALL,SUM(CNTSTOCK) CNTSTOCK, SUM(KLL) KLL
+         FROM ZD_HALL_INFO_STATIC 
+         WHERE <if test="areaname!=null and areaname!=''">AREANAME = #{areaname} AND</if> REPLACE(SMONTH,'-','') in
+         	 <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+	               #{item}       
+	         </foreach>   
+	     GROUP BY AREANAME,SMONTH       
+    </select>  
+    
+    <select id="listHallNormal" parameterType="com.asiainfo.cmc.qudao.vo.IdentifyInfoVo"  resultType="ZdResultHallNormalM">
+         SELECT 
+			CONCAT(#{startMonth},'-',#{endMonth}) stat_month,hall_boss_cd hall_boss_cd,MAX(hall_name) hall_name,MAX(CITY_CD) CITY_CD,MAX(CNTY_CD) CNTY_CD,
+				MAX(TOWN_CD) TOWN_CD,MAX(longitude) longitude,MAX(latitude) latitude,MAX(LINKMAN) LINKMAN,MAX(TEL) TEL, 
+			SUM(cntstock) cntstock,SUM(cntdm) cntdm,SUM(KLL) KLL,SUM(KLL_1DOT5) KLL_1DOT5,SUM(KLL_3KM) KLL_3KM,SUM(KLL_5KM) KLL_5KM,
+				SUM(cntmaybechg) cntmaybechg,SUM(ARPU) ARPU,SUM(MOU) MOU,SUM(DOU) DOU,SUM(malecnt) malecnt,SUM(femalecnt) femalecnt,
+			SUM(agecnt0) agecnt0,SUM(agecnt1) agecnt1,SUM(agecnt2) agecnt2,SUM(agecnt3) agecnt3,SUM(agecnt4) agecnt4,
+				SUM(agecnt5) agecnt5,SUM(agecnt6) agecnt6,SUM(agecnt7) agecnt7,
+			SUM(jobswcnt) jobswcnt,SUM(jobblcnt) jobblcnt,SUM(jobxycnt) jobxycnt,SUM(jobnmcnt) jobnmcnt,SUM(jobwlcnt) jobwlcnt,SUM(jobunknowcnt) jobunknowcnt,
+			SUM(TBapplecnt) TBapplecnt,SUM(TBhwcnt) TBhwcnt,SUM(TBoppocnt) TBoppocnt,SUM(TBvivocnt) TBvivocnt,SUM(TBjlcnt) TBjlcnt,SUM(TBsxcnt) TBsxcnt,
+				SUM(TBkpcnt) TBkpcnt,SUM(TBmicnt) TBmicnt,SUM(TBztecnt) TBztecnt,SUM(TBmz) TBmz,SUM(TByd) TByd,SUM(TBother) TBother,
+			SUM(pricecnt0) pricecnt0,SUM(pricecnt1) pricecnt1,SUM(pricecnt2) pricecnt2,SUM(pricecnt3) pricecnt3,SUM(pricecnt4) pricecnt4,SUM(pricecnt5) pricecnt5,
+				SUM(pricecnt6) pricecnt6,SUM(pricecnt7) pricecnt7,SUM(pricecnt8) pricecnt8,SUM(pricecnt9) pricecnt9,SUM(pricecnt10) pricecnt10,SUM(pricecnt11) pricecnt11,
+				SUM(pricecnt12) pricecnt12,SUM(pricecnt13) pricecnt13,SUM(pricecnt14) pricecnt14,SUM(pricecnt15) pricecnt15,SUM(pricecnt16) pricecnt16,SUM(pricecnt17) pricecnt17,
+			SUM(gprscnt0) gprscnt0,SUM(gprscnt1) gprscnt1,SUM(gprscnt2) gprscnt2,SUM(gprscnt3) gprscnt3,SUM(gprscnt4) gprscnt4,SUM(gprscnt5) gprscnt5,
+				SUM(gprscnt6) gprscnt6,SUM(gprscnt7) gprscnt7,SUM(gprscnt8) gprscnt8,SUM(gprscnt9) gprscnt9,SUM(gprscnt10) gprscnt10,
+			SUM(usefeecnt0) usefeecnt0,SUM(usefeecnt1) usefeecnt1,SUM(usefeecnt2) usefeecnt2,SUM(usefeecnt3) usefeecnt3,SUM(usefeecnt4) usefeecnt4,SUM(usefeecnt5) usefeecnt5,
+			SUM(yycnt0) yycnt0,SUM(yycnt1) yycnt1,SUM(yycnt2) yycnt2,SUM(yycnt3) yycnt3,SUM(yycnt4) yycnt4,SUM(yycnt5) yycnt5,SUM(yycnt6) yycnt6,SUM(yycnt7) yycnt7,
+			SUM(tcfeecnt0) tcfeecnt0,SUM(tcfeecnt1) tcfeecnt1,SUM(tcfeecnt2) tcfeecnt2,SUM(tcfeecnt3) tcfeecnt3,SUM(tcfeecnt4) tcfeecnt4,
+				SUM(tcfeecnt5) tcfeecnt5,SUM(tcfeecnt6) tcfeecnt6,SUM(tcfeecnt7) tcfeecnt7,SUM(tcfeecnt8) tcfeecnt8,SUM(tcfeecnt9) tcfeecnt9,SUM(tcfeecnt10) tcfeecnt10,
+				SUM(tcfeecnt11) tcfeecnt11,SUM(tcfeecnt12) tcfeecnt12,SUM(tcfeecnt13) tcfeecnt13,SUM(tcfeecnt14) tcfeecnt14,SUM(tcfeecnt15) tcfeecnt15,
+			SUM(branch) branch,SUM(month) month         
+         FROM ZD_RESULT_HALL_NORMAL_M 
+         WHERE stat_month <![CDATA[>=]]> #{startMonth} and stat_month <![CDATA[<=]]> #{endMonth} 
+         	 <if test="areaname!=null and areaname!=''">and CITY_CD=#{areaname}</if> 
+	         <if test='code!=null and code!=""'>AND hall_boss_cd like CONCAT('%',#{code},'%')</if>   
+	         <if test='name!=null and name!=""'>AND hall_name like  CONCAT('%',#{name},'%')</if>   
+	         <if test='link!=null and link!=""'>AND LINKMAN like CONCAT('%',#{link},'%')</if>   
+	         <if test='tel!=null and tel!=""'>AND tel like CONCAT('%',#{tel},'%')</if> 
+         GROUP BY hall_boss_cd    
+    </select>      
+  
+    <select id="listHallDynamic" parameterType="com.asiainfo.cmc.qudao.vo.IdentifyInfoVo"  resultType="ZdResultHallDynamicD">
+         SELECT * FROM ZD_RESULT_HALL_DYNAMIC_D WHERE <if test="areaname!=null and areaname!=''">areaname = #{areaname} AND</if>
+         stat_day <![CDATA[>=]]> #{startDay} AND stat_day <![CDATA[<=]]> #{endDay}  
+         <if test='code!=null and code!=""'>AND hall_boss_cd like CONCAT('%',#{code},'%')</if>   
+         <if test='name!=null and name!=""'>AND hall_name like CONCAT('%',#{name},'%')</if>     
+    </select>  
+    
+    <select id="getHallNormalFieldByMon" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select ${field} from ZD_RESULT_HALL_NORMAL_M where   <if test="cusOrgacode!=null and cusOrgacode!=''"> hall_boss_cd=#{cusOrgacode} and</if>  <if test="tag1!=null and tag1!=''">and CITY_CD=#{tag1} </if>
+	    <choose>
+		    <when test="month != null">
+		    	AND stat_month=#{month} 	    
+		    </when>
+		    <otherwise>
+		        AND stat_month in
+		        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach> 	                
+		    </otherwise>
+		</choose>        
+        group by hall_boss_cd
+    </select>  
+    <select id="getHallNormalFieldByMons" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select * from ZD_RESULT_CUSTOMER_NORMAL_M where  hall_boss_cd=#{orgacode}  and CITY_CD=#{tag1}
+        and stat_month in
+        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>  
+	    order by month      
+    </select>  
+    
+ <!--厅店特征统计如果选择全省数据进行展示  -->   
+    <select id="listHallIdentifyInfoByChange" parameterType="com.asiainfo.cmc.qudao.vo.IdentifyInfoVo"  resultType="map">
+         SELECT AREANAME,REPLACE(SMONTH,'-','') SMONTH,SUM(GDYDHALLAMOUNT) GDYDHALLAMOUNT,SUM(GDYDHALLSALL) GDYDHALLSALL,SUM(ZDHALLAMOUNT) ZDHALLAMOUNT,
+             SUM(ZDHALLSALL) ZDHALLSALL,SUM(CNTSTOCK) CNTSTOCK, SUM(KLL) KLL
+         FROM ZD_HALL_INFO_STATIC 
+         WHERE <if test="areaname!=null and areaname!=''">AREANAME = #{areaname} AND</if> REPLACE(SMONTH,'-','') in
+         	 <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+	               #{item}       
+	         </foreach>   
+	     GROUP BY SMONTH       
+    </select>
+ 
+ 
+ 
+    
+       
+           
+</mapper>

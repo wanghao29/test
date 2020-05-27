@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.gfKpi.operateIncome.OperateIncomeMapper" >
+	 <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.gfKpi.operateIncome.OperateIncome" >
+	    <constructor >
+	      <arg column="MONTH" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="cwbbyysr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="hlwsr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="sjdbsr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="hlwsjdbsr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="bywcqk" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="bywcqktz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="qnwcsr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="qnwcd" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="mbz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="bysrwcl" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	 	  <arg column="sjwcd" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	 	  <arg column="fz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	 	  <arg column="jlmbz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	 	  <arg column="jlfz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	    </constructor>
+	 </resultMap>
+	 <sql id="Base_Column_List" >
+	   MONTH  billcyc , cwbbyysr cwbbyysr,hlwsr hlwsr, sjdbsr sjdbsr, hlwsjdbsr hlwsjdbsr,bywcqk bywcqk,bywcqktz bywcqktz, qnwcsr qnwcsr,
+	    qnwcd qnwcd, mbz mbz, bysrwcl bysrwcl,sjwcd sjwcd,fz fz,jlmbz jlmbz,jlfz jlfz
+	 </sql>
+	 <select id="queryData" resultType="com.asiainfo.cmc.enties.gfKpi.operateIncome.OperateIncome"  parameterType="Map" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from KPI_BUSINESS_INCOME   where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]>
+	   
+	</select>
+	<update id="calculatedScore">
+      call operate_income(${startMonth},#{endMonth})
+   </update>
+	
+</mapper>

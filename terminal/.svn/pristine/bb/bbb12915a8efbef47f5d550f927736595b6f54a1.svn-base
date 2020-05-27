@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.gfKpi.channelDevelopment.QualityCustomerTargetValueMapper" >
+ 
+	 <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.gfKpi.channelDevelopment.QualityCustomerTargetValue" >
+	    <constructor >
+	      <arg column="MONTH" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="yzkhsl" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="mbz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="wqqkzb" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="df" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="sjjd" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	    </constructor>
+	 </resultMap>
+	 <sql id="Base_Column_List" >
+	   MONTH  billcyc , yzkhsl yzkhsl,mbz mbz, wqqkzb wqqkzb, df df,sjjd sjjd 
+	 </sql>
+	 <select id="queryData" resultType="com.asiainfo.cmc.enties.gfKpi.channelDevelopment.QualityCustomerTargetValue"  parameterType="Map" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from KPI_CUSTOMER_TARGET_VALUE   where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]>
+	   
+	</select>
+	<update id="calculatedScore">
+      call quality_customer_target_value(${startMonth},#{endMonth})
+   </update>
+</mapper>

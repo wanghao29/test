@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.ZdResultCitykpiExtraQMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.ZdResultCitykpiExtraQ" >
+    	<id property="year" column="year" jdbcType="VARCHAR"/>
+		<id property="quarter" column="quarter" jdbcType="VARCHAR"/>
+		<id property="city" column="city" jdbcType="VARCHAR"/>
+		<id property="kpiname" column="kpiname" jdbcType="VARCHAR"/>
+		<id property="type" column="type" jdbcType="VARCHAR"/>
+		<id property="subtype" column="subtype" jdbcType="VARCHAR"/>
+		<result property="QGoal" column="q_goal" jdbcType="NUMERIC"/>
+		<result property="QValue" column="q_value" jdbcType="NUMERIC"/>
+		<result property="QRate" column="q_rate" jdbcType="NUMERIC"/>
+		<result property="score" column="score" jdbcType="NUMERIC"/>
+		<result property="cntbm" column="cntbm" jdbcType="NUMERIC"/>
+		<result property="unitscore" column="unitscore" jdbcType="NUMERIC"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    year, quarter, city, kpiname, type, subtype, q_goal, q_value, q_rate, score, cntbm, unitscore
+  </sql>
+  <select id="findAllByParam" resultMap="BaseResultMap" parameterType="com.asiainfo.cmc.enties.ZdResultCitykpiExtraQ" >
+    select 
+    <include refid="Base_Column_List" />
+    from ZD_RESULT_CITYKPI_EXTRA_Q
+    where year = #{year,jdbcType=VARCHAR}
+      and quarter = #{quarter,jdbcType=VARCHAR}
+      and city = #{city,jdbcType=VARCHAR}
+      and kpiname = #{kpiname,jdbcType=VARCHAR}
+  </select>
+  
+</mapper>

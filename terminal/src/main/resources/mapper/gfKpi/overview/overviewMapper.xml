@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.gfKpi.overview.OverviewMapper" >
+	 <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.gfKpi.overview.Overview" >
+	    <constructor >
+	      <arg column="billcyc" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="kpiKey" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      
+	      <arg column="parentKpiName" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="kpiName" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="kpiTotalScore" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="kpiScore" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="kpiMbz" jdbcType="VARCHAR" javaType="java.lang.String" />
+	     
+	      <arg column="kpiMonthComplete" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="kpiYearComplete" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="kpiTimeProgress" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="type" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="orderIndex" jdbcType="INTEGER" javaType="java.lang.Integer" />
+	 	  <arg column="url" jdbcType="VARCHAR" javaType="java.lang.String" />
+ 		  <arg column="examinationCycle" jdbcType="VARCHAR" javaType="java.lang.String" />
+ 		    <arg column="unit" jdbcType="VARCHAR" javaType="java.lang.String" />
+ 		    <arg column="remarks" jdbcType="VARCHAR" javaType="java.lang.String" />
+	    </constructor>
+	 </resultMap>
+	 <sql id="Base_Column_List" >
+	    billcyc , kpiKey kpiKey,parentKpiName parentKpiName, kpiName kpiName, kpiTotalScore kpiTotalScore,kpiScore kpiScore,kpiMbz kpiMbz, kpiMonthComplete kpiMonthComplete, kpiYearComplete kpiYearComplete, kpiTimeProgress kpiTimeProgress, type type,orderIndex orderIndex,url,examinationCycle examinationCycle,unit unit,remarks remarks 
+	 </sql>
+	 <select id="queryData" resultType="com.asiainfo.cmc.enties.gfKpi.overview.Overview"  >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from ZD_KPI_GF_OVERVIEW  where billcyc = #{billcyc}  order by orderIndex
+	   
+	</select>
+	
+    <update id="calculatedScore">
+      call gain_overview_data(${billcyc} )
+   </update>
+   
+   <update id="updateRemarks">
+           update ZD_KPI_GF_OVERVIEW set remarks =#{remarks} where  billcyc = #{billcyc} and kpiKey=#{kpiKey}
+   </update>
+   
+   
+</mapper>

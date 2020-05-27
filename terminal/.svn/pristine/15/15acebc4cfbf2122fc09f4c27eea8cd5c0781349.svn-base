@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.TerminalSalesMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.TerminalSales" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="scmxtxl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="hlwxl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="hlwsj" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="tzxl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="bykhxl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="qnljxl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="mbz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sjwcd" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="qnwcd" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="bysrwcl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="fz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, scmxtxl, hlwxl, hlwsj, tzxl, bykhxl, qnljxl, mbz, sjwcd, qnwcd, bysrwcl, fz, 
+    month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from TERMINAL_SALES
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from TERMINAL_SALES
+    <include refid="dynamicWhere" />
+    order by month desc
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="selectTerminalSales" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from TERMINAL_SALES
+    where month = #{month}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from TERMINAL_SALES
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from TERMINAL_SALES
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month = #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+ 
+  	 	from TERMINAL_SALES 
+ 	 	 where month =  (select MAX(month) from TERMINAL_SALES <where>  <if test="@Ognl@isNotEmpty(endMonth)"> month &lt;= #{endMonth} </if></where>)
+      
+    order by id desc LIMIT 0,1
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from TERMINAL_SALES
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.TerminalSales" >
+    insert into TERMINAL_SALES (id, scmxtxl, hlwxl, 
+      hlwsj, tzxl, bykhxl, qnljxl, 
+      mbz, sjwcd, qnwcd, bysrwcl, 
+      fz, month)
+    values (#{id,jdbcType=INTEGER}, #{scmxtxl,jdbcType=REAL}, #{hlwxl,jdbcType=REAL}, 
+      #{hlwsj,jdbcType=REAL}, #{tzxl,jdbcType=REAL}, #{bykhxl,jdbcType=REAL}, #{qnljxl,jdbcType=REAL}, 
+      #{mbz,jdbcType=REAL}, #{sjwcd,jdbcType=REAL}, #{qnwcd,jdbcType=REAL}, #{bysrwcl,jdbcType=REAL}, 
+      #{fz,jdbcType=REAL}, #{month,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.TerminalSales" >
+    insert into TERMINAL_SALES
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="scmxtxl != null" >
+        scmxtxl,
+      </if>
+      <if test="hlwxl != null" >
+        hlwxl,
+      </if>
+      <if test="hlwsj != null" >
+        hlwsj,
+      </if>
+      <if test="tzxl != null" >
+        tzxl,
+      </if>
+      <if test="bykhxl != null" >
+        bykhxl,
+      </if>
+      <if test="qnljxl != null" >
+        qnljxl,
+      </if>
+      <if test="mbz != null" >
+        mbz,
+      </if>
+      <if test="sjwcd != null" >
+        sjwcd,
+      </if>
+      <if test="qnwcd != null" >
+        qnwcd,
+      </if>
+      <if test="bysrwcl != null" >
+        bysrwcl,
+      </if>
+      <if test="fz != null" >
+        fz,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="scmxtxl != null" >
+        #{scmxtxl,jdbcType=REAL},
+      </if>
+      <if test="hlwxl != null" >
+        #{hlwxl,jdbcType=REAL},
+      </if>
+      <if test="hlwsj != null" >
+        #{hlwsj,jdbcType=REAL},
+      </if>
+      <if test="tzxl != null" >
+        #{tzxl,jdbcType=REAL},
+      </if>
+      <if test="bykhxl != null" >
+        #{bykhxl,jdbcType=REAL},
+      </if>
+      <if test="qnljxl != null" >
+        #{qnljxl,jdbcType=REAL},
+      </if>
+      <if test="mbz != null" >
+        #{mbz,jdbcType=REAL},
+      </if>
+      <if test="sjwcd != null" >
+        #{sjwcd,jdbcType=REAL},
+      </if>
+      <if test="qnwcd != null" >
+        #{qnwcd,jdbcType=REAL},
+      </if>
+      <if test="bysrwcl != null" >
+        #{bysrwcl,jdbcType=REAL},
+      </if>
+      <if test="fz != null" >
+        #{fz,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.TerminalSales" >
+    update TERMINAL_SALES
+    <set >
+      <if test="scmxtxl != null" >
+        scmxtxl = #{scmxtxl,jdbcType=REAL},
+      </if>
+      <if test="hlwxl != null" >
+        hlwxl = #{hlwxl,jdbcType=REAL},
+      </if>
+      <if test="hlwsj != null" >
+        hlwsj = #{hlwsj,jdbcType=REAL},
+      </if>
+      <if test="tzxl != null" >
+        tzxl = #{tzxl,jdbcType=REAL},
+      </if>
+      <if test="bykhxl != null" >
+        bykhxl = #{bykhxl,jdbcType=REAL},
+      </if>
+      <if test="qnljxl != null" >
+        qnljxl = #{qnljxl,jdbcType=REAL},
+      </if>
+      <if test="mbz != null" >
+        mbz = #{mbz,jdbcType=REAL},
+      </if>
+      <if test="sjwcd != null" >
+        sjwcd = #{sjwcd,jdbcType=REAL},
+      </if>
+      <if test="qnwcd != null" >
+        qnwcd = #{qnwcd,jdbcType=REAL},
+      </if>
+      <if test="bysrwcl != null" >
+        bysrwcl = #{bysrwcl,jdbcType=REAL},
+      </if>
+      <if test="fz != null" >
+        fz = #{fz,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="update" parameterType="Map" >
+    update TERMINAL_SALES
+    set  
+      hlwsj = #{hlwsj,jdbcType=REAL},
+      tzxl= #{tzxl,jdbcType=REAL},
+      bykhxl = scmxtxl - hlwxl + #{hlwsj,jdbcType=REAL} - #{tzxl,jdbcType=REAL}
+      
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByTargetVal">
+    <!-- update TERMINAL_SALES
+    set
+    qnwcd = qnljxl/${mbz},
+    sjwcd = qnljxl/${mbz} - (select DAYOFMONTH(LAST_DAY(now())) + 0)/365,
+    bysrwcl = bykhxl/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365*${mbz}),
+    fz = (
+    case
+    WHEN (bykhxl/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365*${mbz})) &gt; 1 then 5
+    WHEN (bykhxl/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365*${mbz})) &lt; 0.8 then 0
+    ELSE 5*(bykhxl/(bykhxl/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365*${mbz}))-0.8)*5
+    END
+    ),
+    mbz = #{mbz,jdbcType=REAL}
+    <include refid="dynamicWhere" /> -->
+    call TERMINAL_SALES(${mbz}, #{endMonth})
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

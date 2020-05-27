@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.asiainfo.cmc.qudao.mapper.CellBrndTtttMapper">
+    <select id="getCellBrndTttt" parameterType="com.asiainfo.cmc.qudao.vo.BrndCoverVo" resultType="CellBrndTttt">
+        SELECT * FROM ZD_RESULT_CELL_BRND_TTTT WHERE <if test="termBrndNam!=null and termBrndNam!=''">TERM_BRND_NAM=#{termBrndNam} AND</if>  TYPE=#{type} 
+        <if test="cityNam!=null and cityNam!=''"> AND CITY_NAM=#{cityNam} </if> 
+        <if test="startMonth!=null and startMonth!=''">AND MONTH <![CDATA[>=]]> #{startMonth} and MONTH <![CDATA[<=]]> #{endMonth}</if>
+       
+        <if test="brndFfffTyp!=null and brndFfffTyp!='' and brndFfffTyp!='choose'">AND BRND_FFFF_TYP=#{brndFfffTyp}</if>  
+    </select>
+    <select id="getCellBrndTttt1" parameterType="com.asiainfo.cmc.qudao.vo.BrndCoverVo" resultType="CellBrndTttt">
+        SELECT * FROM ZD_RESULT_CELL_BRND_TTTT WHERE TYPE=#{type} 
+        <if test="cityNam!=null and cityNam!=''"> AND CITY_NAM=#{cityNam} </if> 
+        <if test="startMonth!=null and startMonth!=''">AND MONTH <![CDATA[>=]]> #{startMonth} and MONTH <![CDATA[<=]]> #{endMonth}</if>
+       
+        <if test="brndFfffTyp!=null and brndFfffTyp!='' and brndFfffTyp!='choose'">AND BRND_FFFF_TYP=#{brndFfffTyp}</if>  
+    </select>
+    <select id="getMapCellBrndTttt" parameterType="com.asiainfo.cmc.qudao.vo.BrndCoverVo" resultType="map">
+        SELECT * FROM ZD_RESULT_CELL_BRND_TTTT WHERE TERM_BRND_NAM=#{termBrndNam} 
+        <if test="cityNam!=null and cityNam!=''">AND  CITY_NAM=#{cityNam}</if>  AND MONTH=#{month} 
+        AND TYPE=#{type}
+    </select> 
+    
+    <select id="listCntANdNumByMons" parameterType="com.asiainfo.cmc.qudao.vo.BrndCoverVo" resultType="map">
+        SELECT CELL_CNT cnt,NUM num,MONTH month FROM ZD_RESULT_CELL_BRND_TTTT WHERE TERM_BRND_NAM=#{termBrndNam} <if test="cityNam!=null and cityNam!=''">AND  CITY_NAM=#{cityNam}</if> AND TYPE=#{type} AND BRND_FFFF_TYP=#{brndFfffTyp}
+        AND MONTH IN
+	        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+	               #{item}     
+	        </foreach>
+	    ORDER BY MONTH
+    </select> 
+    
+     <select id="listCntANdNumByMons1" parameterType="com.asiainfo.cmc.qudao.vo.BrndCoverVo" resultType="map">
+        SELECT sum(CELL_CNT) cnt,sum(NUM) num,MONTH month FROM ZD_RESULT_CELL_BRND_TTTT WHERE <if test="termBrndNam!=null and termBrndNam!=''"> TERM_BRND_NAM=#{termBrndNam} and</if>  <if test="cityNam!=null and cityNam!=''"> CITY_NAM=#{cityNam} AND</if>TYPE=#{type} AND BRND_FFFF_TYP=#{brndFfffTyp}
+        AND MONTH IN
+	        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+	               #{item}     
+	        </foreach>
+	    GROUP BY MONTH
+    </select> 
+    
+    <select id="listBrand"  resultType="string">
+        SELECT TERM_BRND_NAM FROM ZD_RESULT_CELL_BRND_TTTT  WHERE <if test="cityNam!=null and cityNam!=''">CITY_NAM=#{cityNam} AND </if>  MONTH=#{month}
+        GROUP BY TERM_BRND_NAM ORDER BY SUM(NUM) desc
+    </select>     
+       
+</mapper>

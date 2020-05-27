@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.AverageProfitMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.AverageProfit" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="ml" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zzc" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="lr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="htzygsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="lwpqygsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="rs" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="rjlr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="df" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, ml, zzc, lr, htzygsl, lwpqygsl, rs, rjlr, df, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from AVERAGE_PROFIT
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+ 
+    
+select  ave.id, COALESCE(gross.khml, 0) ml, COALESCE(gross.khzc, 0) zzc,(COALESCE(gross.khml, 0)-  COALESCE(gross.khzc, 0) )lr, ave.htzygsl, ave.lwpqygsl, ave.rs, ave.rjlr, ave.df, ave.month 
+from  GROSS_PROFIT_RATIO gross LEFT  outer JOIN AVERAGE_PROFIT ave on(gross.month =ave.month )
+ where  <![CDATA[ave.month >= #{starMonth} AND ave.month <= #{endMonth}  ]]>
+ 
+  order by month desc
+    
+    
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="selectAverageProfit" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from AVERAGE_PROFIT
+    where month = #{month}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from AVERAGE_PROFIT
+    <include refid="dynamicWhere"/>
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from AVERAGE_PROFIT
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+  select  ave.id, COALESCE(gross.khml, 0) ml, COALESCE(gross.khzc, 0) zzc,(COALESCE(gross.khml, 0)-  COALESCE(gross.khzc, 0) )lr, ave.htzygsl, ave.lwpqygsl, ave.rs, ave.rjlr, ave.df, ave.month 
+from  GROSS_PROFIT_RATIO gross LEFT  outer JOIN AVERAGE_PROFIT ave on(gross.month =ave.month )
+ where  <![CDATA[ ave.month = #{endMonth}  ]]>
+  
+  
+  <!--   select
+    <include refid="Base_Column_List" />
+    from AVERAGE_PROFIT
+     where <![CDATA[ month <= #{endMonth}]]> -->
+    order by month desc LIMIT 0,1
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from AVERAGE_PROFIT
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.AverageProfit" >
+    insert into AVERAGE_PROFIT (id, ml, zzc, lr, 
+      htzygsl, lwpqygsl, rs, 
+      rjlr, df, month)
+    values (#{id,jdbcType=INTEGER}, #{ml,jdbcType=VARCHAR}, #{zzc,jdbcType=VARCHAR}, #{lr,jdbcType=VARCHAR}, 
+      #{htzygsl,jdbcType=INTEGER}, #{lwpqygsl,jdbcType=INTEGER}, #{rs,jdbcType=INTEGER}, 
+      #{rjlr,jdbcType=VARCHAR}, #{df,jdbcType=VARCHAR}, #{month,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.AverageProfit" >
+    insert into AVERAGE_PROFIT
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="ml != null" >
+        ml,
+      </if>
+      <if test="zzc != null" >
+        zzc,
+      </if>
+      <if test="lr != null" >
+        lr,
+      </if>
+      <if test="htzygsl != null" >
+        htzygsl,
+      </if>
+      <if test="lwpqygsl != null" >
+        lwpqygsl,
+      </if>
+      <if test="rs != null" >
+        rs,
+      </if>
+      <if test="rjlr != null" >
+        rjlr,
+      </if>
+      <if test="df != null" >
+        df,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="ml != null" >
+        #{ml,jdbcType=VARCHAR},
+      </if>
+      <if test="zzc != null" >
+        #{zzc,jdbcType=VARCHAR},
+      </if>
+      <if test="lr != null" >
+        #{lr,jdbcType=VARCHAR},
+      </if>
+      <if test="htzygsl != null" >
+        #{htzygsl,jdbcType=INTEGER},
+      </if>
+      <if test="lwpqygsl != null" >
+        #{lwpqygsl,jdbcType=INTEGER},
+      </if>
+      <if test="rs != null" >
+        #{rs,jdbcType=INTEGER},
+      </if>
+      <if test="rjlr != null" >
+        #{rjlr,jdbcType=VARCHAR},
+      </if>
+      <if test="df != null" >
+        #{df,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.AverageProfit" >
+    update AVERAGE_PROFIT
+    <set >
+      <if test="ml != null" >
+        ml = #{ml,jdbcType=VARCHAR},
+      </if>
+      <if test="zzc != null" >
+        zzc = #{zzc,jdbcType=VARCHAR},
+      </if>
+      <if test="lr != null" >
+        lr = #{lr,jdbcType=VARCHAR},
+      </if>
+      <if test="htzygsl != null" >
+        htzygsl = #{htzygsl,jdbcType=INTEGER},
+      </if>
+      <if test="lwpqygsl != null" >
+        lwpqygsl = #{lwpqygsl,jdbcType=INTEGER},
+      </if>
+      <if test="rs != null" >
+        rs = #{rs,jdbcType=INTEGER},
+      </if>
+      <if test="rjlr != null" >
+        rjlr = #{rjlr,jdbcType=VARCHAR},
+      </if>
+      <if test="df != null" >
+        df = #{df,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.AverageProfit" >
+    update AVERAGE_PROFIT
+    set ml = #{ml,jdbcType=VARCHAR},
+      zzc = #{zzc,jdbcType=VARCHAR},
+      lr = #{lr,jdbcType=VARCHAR},
+      htzygsl = #{htzygsl,jdbcType=INTEGER},
+      lwpqygsl = #{lwpqygsl,jdbcType=INTEGER},
+      rs = #{rs,jdbcType=INTEGER},
+      rjlr = #{rjlr,jdbcType=VARCHAR},
+      df = #{df,jdbcType=VARCHAR},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByTargetVal">
+    update AVERAGE_PROFIT
+    <set>
+      <if test="htzygsl != null" >
+        htzygsl = #{htzygsl,jdbcType=INTEGER},
+      </if>
+      <if test="lwpqygsl != null" >
+        lwpqygsl = #{lwpqygsl,jdbcType=INTEGER},
+      </if>
+      <if test="df != null" >
+        df = #{df,jdbcType=INTEGER},
+      </if>
+      rs = #{htzygsl,jdbcType=INTEGER} + #{lwpqygsl,jdbcType=INTEGER},
+      rjlr = lr / rs
+       
+    </set>
+where  month = #{endMonth,jdbcType=VARCHAR}
+ 
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

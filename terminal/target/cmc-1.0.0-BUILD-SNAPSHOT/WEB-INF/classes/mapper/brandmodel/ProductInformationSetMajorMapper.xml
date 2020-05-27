@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.brandmodel.ProductInformationSetMajorMapper" >
+
+<!--查询产品经理视图所有的操盘产品  -->
+ <select id="selectListEntry" resultType="ProductInformationSetMajor">
+<!-- SELECT
+	a.brandname,
+	a.spec,
+	SUM(AMOUNT) amount,b.`PMNAME` pm
+FROM
+	ZD_RESULT_OPER_LSLJ_AREA_D a LEFT JOIN zd_ctms_require b ON a.`BRANDNAME`=b.`BRANDNAME` AND a.`SPEC`=b.`SPEC`
+WHERE 
+	DODATE BETWEEN (
+		SELECT
+			DATE_ADD(
+				CURDATE(),
+				INTERVAL - DAY (CURDATE()) + 1 DAY
+			)
+	)
+AND (SELECT LAST_DAY(CURDATE()))
+GROUP BY
+	brandname,
+	spec
+ORDER BY
+	amount DESC LIMIT 0,10 -->
+	
+<!-- SELECT c.brandname,c.spec,c.amount,b.PMNAME PM
+FROM
+(SELECT
+ a.brandname,
+ a.spec,
+ SUM(AMOUNT) amount
+FROM
+ ZD_RESULT_OPER_LSLJ_AREA_D a 
+WHERE 
+ DODATE BETWEEN (
+  SELECT
+   DATE_ADD(
+    CURDATE(),
+    INTERVAL - DAY (CURDATE()) + 1 DAY
+   )
+ )
+AND (SELECT LAST_DAY(CURDATE()))
+GROUP BY
+
+ spec
+ORDER BY
+ amount DESC LIMIT 0,10) c 
+LEFT JOIN 
+(SELECT brandname,spec,pmname from zd_ctms_require where filetime BETWEEN REPLACE(
+  DATE_ADD(
+    CURDATE(),
+    INTERVAL - DAY (CURDATE()) + 1 DAY
+   ),'-',''
+ )
+AND REPLACE(LAST_DAY(CURDATE()),'-','') GROUP BY spec) b
+ON c.`BRANDNAME`=b.`BRANDNAME` AND c.`SPEC`=b.`SPEC` -->
+
+
+	(SELECT 
+  brandname,
+  spec,
+  SUM(AMOUNT) amount 
+FROM
+  ZD_RESULT_OPER_LSLJ_AREA_D 
+WHERE DODATE BETWEEN 
+  (SELECT 
+    DATE_ADD(
+      CURDATE(),
+      INTERVAL - DAY (CURDATE()) + 1 DAY
+    )) 
+  AND 
+  (SELECT 
+    LAST_DAY(CURDATE())) 
+GROUP BY spec 
+ORDER BY amount DESC 
+LIMIT 0, 10 ) ORDER BY amount ASC 
+<!-- (SELECT 
+  brandname,
+  spec,
+  SUM(AMOUNT) amount 
+FROM
+  ZD_RESULT_OPER_LSLJ_AREA_D 
+WHERE DODATE BETWEEN 
+  '2019-10-01'
+AND '2019-10-31' 
+GROUP BY spec 
+ORDER BY amount DESC 
+LIMIT 0, 10 ) ORDER BY amount ASC	 -->
+	
+
+ 
+ </select>
+ 
+ <!--查询当前时间距离开始销售的时间之间有多少天  -->
+ 
+ <select id="selectTimeRange" resultType="Integer">
+ 
+ SELECT DATEDIFF((SELECT CURDATE()),
+(SELECT MIN(DODATE) FROM ZD_RESULT_OPER_LSLJ_AREA_D 
+WHERE BRANDNAME = #{BRANDNAME} AND SPEC =#{SPEC})) FROM DUAL
+ 
+ </select>
+ 
+ <!--更新产品规划信息主表操作  -->
+ 
+ <update id="updateDate">
+ 
+ update ZD_RESULT_OPER_PRODUCT_ALL_INFO set RANGER=#{RANGER} where BRANDNAME = #{BRANDNAME} AND SPEC =#{SPEC}
+ 
+ </update>
+ 
+<!--更新总量到总表中  --> 
+ 
+<update id="updateToatal" parameterType="ProductInformationSetMajor">
+
+update ZD_RESULT_OPER_PRODUCT_ALL_INFO 
+<set >
+     <!--  <if test="BRANDNAME != null" >
+        BRANDNAME = #{BRANDNAME},
+      </if>
+      <if test="SPEC != null" >
+        SPEC = #{SPEC},
+      </if> -->
+      <if test="METERDES != null" >
+        METERDES = #{METERDES},
+      </if>
+      <if test="ranger != null" >
+        ranger = #{ranger},
+      </if>
+      <if test="METER != null" >
+        METER = #{METER},
+      </if>
+       <if test="SNAME != null" >
+        SNAME = #{SNAME},
+      </if>
+       <if test="PM != null" >
+        PM = #{PM},
+      </if>
+       <if test="PRICELEVLE != null" >
+        PRICELEVLE = #{PRICELEVLE},
+      </if>
+       <if test="PURPRICE != null" >
+        PURPRICE = #{PURPRICE},
+      </if>
+       <if test="COPERMODEL != null" >
+        COPERMODEL = #{COPERMODEL},
+      </if>
+       <if test="COMPETBRANDNAME1 != null" >
+        COMPETBRANDNAME1 = #{COMPETBRANDNAME1},
+      </if>
+       <if test="COMPETSPEC1 != null" >
+        COMPETSPEC1 = #{COMPETSPEC1},
+      </if>
+       <if test="COMPETBRANDNAME2 != null" >
+        COMPETBRANDNAME2 = #{COMPETBRANDNAME2},
+      </if>
+       <if test="COMPETSPEC2 != null" >
+        COMPETSPEC2 = #{COMPETSPEC2},
+      </if>
+       <if test="COMPETBRANDNAME3 != null" >
+        COMPETBRANDNAME3 = #{COMPETBRANDNAME3},
+      </if>
+       <if test="COMPETSPEC3 != null" >
+        COMPETSPEC3 = #{COMPETSPEC3},
+      </if>
+       <if test="BIBRANDNAME1 != null" >
+        BIBRANDNAME1 = #{BIBRANDNAME1},
+      </if>
+       <if test="BISPEC1 != null" >
+        BISPEC1 = #{BISPEC1},
+      </if>
+       <if test="BIBRANDNAME2 != null" >
+        BIBRANDNAME2 = #{BIBRANDNAME2},
+      </if>
+       <if test="BISPEC2 != null" >
+        BISPEC2 = #{BISPEC2},
+      </if>
+       <if test="BIBRANDNAME3 != null" >
+        BIBRANDNAME3 = #{BIBRANDNAME3},
+      </if>
+       <if test="BISPEC3 != null" >
+        BISPEC3 = #{BISPEC3},
+      </if>
+       <if test="TOTALSALEAMOUNT != 0" >
+        TOTAL_SALEAMOUNT = #{TOTALSALEAMOUNT},
+      </if>
+       <if test="TOTALINCOME != 0" >
+        TOTAL_INCOME = #{TOTALINCOME},
+      </if>
+       <if test="TOTALMAORI != 0" >
+        TOTAL_MAORI = #{TOTALMAORI},
+      </if>
+       <if test="TOTALSHARE != 0" >
+        TOTAL_SHARE = #{TOTALSHARE},
+      </if>
+       <if test="TOTALOVERAMOUNT != 0" >
+        TOTAL_OVERAMOUNT = #{TOTALOVERAMOUNT},
+      </if>
+       <if test="TOTALTURNOVERTIME != 0" >
+        TOTAL_TURNOVER_TIME = #{TOTALTURNOVERTIME},
+      </if>
+    </set>
+
+where BRANDNAME = #{BRANDNAME} AND SPEC =#{SPEC}
+
+</update> 
+ 
+ <!--通过品牌和型号查询数据  -->
+ <select id="selectOnePm" resultType="ProductInformationSetMajor">
+ 
+SELECT BRANDNAME,SPEC,METERDES,SNAME,SNAME FROM ZD_RESULT_OPER_PRODUCT_ALL_INFO  where BRANDNAME = #{BRANDNAME} AND SPEC =#{SPEC}
+ 
+ </select>
+ 
+ <!--存数据到top10表中  -->
+ <insert id="insertMajor" parameterType="ProductInformationSetMajor" >
+ INSERT INTO topBrand10 (BRANDNAME, SPEC,PM ) VALUES (#{BRANDNAME},#{SPEC},#{PM})
+
+ 
+  </insert>
+ <!--查top10中的数据到操盘主页面  -->
+ <select id="selectListTop10" resultType="ProductInformationSetMajor">
+ 
+  SELECT DISTINCT brandname,spec,pm FROM topBrand10 ORDER BY id desc LIMIT 0,10  
+ 
+ 
+ </select>
+ 
+ <!--通过品牌和型号查询top10中的数据  -->
+ 
+ <select id="selectOneTop10" resultType="ProductInformationSetMajor">
+ 
+SELECT BRANDNAME,SPEC FROM topBrand10  where BRANDNAME = #{BRANDNAME} AND SPEC =#{SPEC}
+ 
+ </select>
+ 
+ <update id="updateTop10" parameterType="ProductInformationSetMajor">
+ 
+ update topBrand10 set BRANDNAME = #{BRANDNAME} AND SPEC =#{SPEC} where BRANDNAME = #{BRANDNAME} AND SPEC =#{SPEC}
+ 
+ </update>
+ 
+ 
+ <select id="selectBrandTop10" resultType="string" >
+SELECT brandname FROM (SELECT 
+	brandname,
+	
+	SUM(AMOUNT) amount 
+FROM
+	ZD_RESULT_OPER_LSLJ_AREA_D 
+
+	
+GROUP BY
+	brandname 
+ORDER BY
+	amount DESC ) AS t
+    
+  </select>
+ 
+  <select id="selectModelTop10" parameterType="ProductInformationSetMajor" resultType="string">
+   SELECT DISTINCT
+   spec
+    FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE brandname=#{BRANDNAME}
+   
+  </select>
+ 
+ 
+ <select id="selectNewPM" resultType="ProductInformationSetMajor">
+ SELECT brandname,spec,  COUNT(DISTINCT brandname, spec),PMNAME PM FROM zd_ctms_require WHERE BRANDNAME = #{BRANDNAME} AND SPEC =#{SPEC}
+ </select>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <sitemesh>
+     <!-- 指明满足“/*”的页面，将被“/WEB-INF/views/decorators/decorator.html”所装饰 -->
+     <mapping path="/*" decorator="/WEB-INF/views/layout/default.jsp" />
+ 
+     <!-- 指明满足“/exclude.jsp*”的页面，将被排除，不被装饰 -->
+     <!--<mapping path="/exclude.jsp*" exclue="true" />-->
+     <mapping path="**/dialog/**" exclue="true" />
+     <mapping path="**/entry/**" exclue="true" />
+ 
+       <mapping path="/salesOfOurCompany.do" exclue="true"/>
+       
+       <!-- 一下渠道弹框 -->
+       <mapping path="/hallIdentityMap/modalShow.do" exclue="true"/>
+       <mapping path="/hallIdentifyInfo/normalModalShow.do" exclue="true"/>
+       <mapping path="/hallIdentifyInfo/dynamicModalShow.do" exclue="true"/>
+       <mapping path="/customerIdentifyInfo/normalModalShow.do" exclue="true"/>
+       <mapping path="/customerIdentifyInfo/dynamicModalShow.do" exclue="true"/>
+      
+      
+ </sitemesh>

@@ -1,0 +1,475 @@
+package com.asiainfo.cmc.qudao.controller.customerChannel;
+
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.ModelAndView;
+
+import tk.mybatis.mapper.util.StringUtil;
+
+import com.asiainfo.cmc.config.DS;
+import com.asiainfo.cmc.qudao.enties.CusChanPortray;
+import com.asiainfo.cmc.qudao.enties.SevenPort;
+import com.asiainfo.cmc.qudao.enties.ZdHallTshop;
+import com.asiainfo.cmc.qudao.service.ICustomerChannelService;
+import com.asiainfo.cmc.qudao.utils.MyDateFormat;
+import com.asiainfo.cmc.qudao.vo.StoreBattleVo;
+
+@Controller
+@RequestMapping(value = "/customerChannel")
+public class CustomerChannelController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(CustomerChannelController.class);
+	
+    @Resource
+    private ICustomerChannelService customerChannelService;
+	
+	@DS("dataSource")@RequestMapping(value = "/index", method = {RequestMethod.GET,RequestMethod.POST})
+	public ModelAndView  hallHome(StoreBattleVo vo) {
+		logger.info("跳转到渠道厅店页面");
+		ModelAndView mv = new ModelAndView ();
+		List<Map<String,String>>    citys = MyDateFormat.getCitys();
+		mv.addObject("citys", citys);
+		if(StringUtil.isEmpty(vo.getStartMonth())){
+			vo.setStartMonth(MyDateFormat.getStartMonth(MyDateFormat.getPrevMonth(),5));
+		}
+		if(StringUtil.isEmpty(vo.getEndMonth())){
+			//vo.setEndMonth(MyDateFormat.getPrevMonth());
+			vo.setEndMonth("201910");
+		}
+		
+		if(StringUtil.isEmpty(vo.getTag1())){
+			vo.setTag1("广州");
+		}
+		mv.addObject("vo",vo);
+		//返回厂商列表信息、并设置默认选中的厂商
+		List<StoreBattleVo> customers = customerChannelService.listAllCustomer(vo);
+		if(vo!=null && vo.getCusOrgacode()!=null && !isContins(customers,vo.getCusOrgacode())){
+			vo.setId(vo.getCusOrgacode());
+			vo.setText(vo.getCustname());
+			customers.add(vo);
+		}
+		mv.addObject("customers",customers);
+		
+		mv.setViewName("customerChannel/customer_channel");	 
+		return mv;
+	}
+	//厅店页面跳转
+	
+	@DS("dataSource")@RequestMapping(value = "/hall", method = {RequestMethod.GET,RequestMethod.POST})
+	public ModelAndView  home(StoreBattleVo vo) {
+		logger.info("跳转到渠道客商页面");
+		ModelAndView mv = new ModelAndView ();
+		List<Map<String,String>>    citys = MyDateFormat.getCitys();
+		mv.addObject("citys", citys);
+		if(StringUtil.isEmpty(vo.getStartMonth())){
+			vo.setStartMonth(MyDateFormat.getStartMonth(MyDateFormat.getPrevMonth(),5));
+		}
+		if(StringUtil.isEmpty(vo.getEndMonth())){
+			//vo.setEndMonth(MyDateFormat.getPrevMonth());
+			vo.setEndMonth("201910");
+		}
+		
+		if(StringUtil.isEmpty(vo.getTag1())){
+			vo.setTag1("广州");
+		}
+		mv.addObject("vo",vo);
+		//返回厂商列表信息、并设置默认选中的厂商
+		List<StoreBattleVo> customers = customerChannelService.listAllHallNew(vo);
+		if(vo!=null && vo.getCusOrgacode()!=null && !isContins(customers,vo.getCusOrgacode())){
+			vo.setId(vo.getCusOrgacode());
+			vo.setText(vo.getCustname());
+			customers.add(vo);
+		}
+		mv.addObject("customers",customers);
+		
+		mv.setViewName("customerChannel/hallIdentity_channel");	 
+		return mv;
+	}
+	
+/**
+ * 厅店画像页面初始化加载的方法	
+ * @param vo
+ * @return
+ */
+	
+	@DS("dataSource")@RequestMapping(value = "/listHallChanPortray", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public Map<String,Object> listHallChanPortray(@RequestBody StoreBattleVo vo) {
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpSession session = attrs.getRequest().getSession();
+		Map<String,Object> data = new HashMap<String,Object>();
+
+		//点击月份、地市		
+		List<StoreBattleVo> customers = customerChannelService.listAllHallNew(vo);		
+		if(StringUtil.isEmpty(vo.getCusOrgacode()) ){				
+			vo.setCusOrgacode((customers==null || customers.size()==0)?"":customers.get(0).getCusOrgacode());
+		}else{
+			if(!isContins(customers,vo.getCusOrgacode())){
+				vo.setId(vo.getCusOrgacode());
+				vo.setText(vo.getCustname());
+				customers.add(vo);
+			}
+		}
+		data.put("customers", customers);	
+		
+		if(vo.getIds()==null || vo.getIds().size()==0){
+			if(vo.getTypeOrder()==null || vo.getTypeOrder().size()==0){
+				List<Integer> typeOrder = (List<Integer>)session.getAttribute("typeOrder");
+				if(typeOrder==null || typeOrder.size()==0){
+					typeOrder = Arrays.asList(5,6,1,2,3,4); 
+				}
+				data.put("typeOrder", typeOrder);
+				vo.setTypeOrder(typeOrder);
+			}
+			
+			//关注特性定制中所有的字段、和默认选中. 一下sql查询出展示的维度
+			List<CusChanPortray> allUsefulField = customerChannelService.listPortrayFieldInHallPortrait();
+			if(vo.getIds()==null||vo.getIds().size()==0){
+				vo.setIds(getDefaultIdentityCustomization(allUsefulField,vo.getTypeOrder()));
+			}
+			data.put("allUsefulField", allUsefulField);
+			List<Integer> allIds = new ArrayList<Integer>();
+			for(CusChanPortray c : allUsefulField){
+				allIds.add(c.getId());
+			}
+			data.put("defaultIdentityCustomizationIds", allIds);		
+		}
+		if(vo.getTypeOrder()!=null && vo.getTypeOrder().size()!=0){
+			session.setAttribute("typeOrder", vo.getTypeOrder());
+		}		
+		
+		//根据选中的ids获取厅店画像信息		
+		List<CusChanPortray> portrays = customerChannelService.listHallPortray(vo);	 						
+		data.put("portrays", portrays);		
+
+		return data;
+	}
+	
+/**
+ * 七口客商选择框功能的实现	
+ * @param vo
+ * @return
+ */
+	
+	@DS("dataSource")@RequestMapping(value = "/sevenAndPort", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public List<SevenPort> indexs(@RequestBody SevenPort vo) {	
+		String startMonth = vo.getStartMonth();
+		String endMonth = vo.getEndMonth();
+//		String startMonth = "201806";
+//		String endMonth = "201808";
+		StringBuilder start = new StringBuilder(startMonth);//构造一个StringBuilder对象
+		StringBuilder end = new StringBuilder(endMonth);//构造一个StringBuilder对象
+		start.insert(4, "-");//在指定的位置1，插入指定的字符串
+		start.insert(7, "-01");
+		end.insert(4, "-");//在指定的位置1，插入指定的字符串
+		end.insert(7, "-01");
+	    String startMonth1 = start.toString();
+	    String endMonth1 = end.toString();  
+        vo.setDodateMonth(startMonth1);
+        vo.setDodateEndMonth(endMonth1);
+        List<SevenPort> sevenListAllCustomer = customerChannelService.sevenListAllCustomer(vo);
+        
+        
+		return sevenListAllCustomer;
+	}
+	
+	
+	/**
+	 * 厅店属性选择框功能的实现	
+	 * @param vo
+	 * @return
+	 */
+		
+		@DS("dataSource")@RequestMapping(value = "/hallPort", method = {RequestMethod.GET,RequestMethod.POST})
+		@ResponseBody
+		public List<SevenPort> indexsHall(@RequestBody SevenPort vo) {	
+
+	        List<SevenPort> sevenListAllCustomer = customerChannelService.hallListPort(vo);
+	        
+	        
+			return sevenListAllCustomer;
+		}
+	
+	
+	
+	
+	
+	
+	@DS("dataSource")@RequestMapping(value = "/listCusChanPortray", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public Map<String,Object> listCusChanPortray(@RequestBody StoreBattleVo vo) {
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpSession session = attrs.getRequest().getSession();
+		Map<String,Object> data = new HashMap<String,Object>();
+         
+		//点击月份、地市		
+		List<StoreBattleVo> customers = customerChannelService.listAllCustomer(vo);		
+		if(StringUtil.isEmpty(vo.getCusOrgacode()) ){				
+			vo.setCusOrgacode((customers==null || customers.size()==0)?"":customers.get(0).getCusOrgacode());
+		}else{
+			if(!isContins(customers,vo.getCusOrgacode())){
+				vo.setId(vo.getCusOrgacode());
+				vo.setText(vo.getCustname());
+				customers.add(vo);
+			}
+		}
+		data.put("customers", customers);	
+		
+		if(vo.getIds()==null || vo.getIds().size()==0){
+			if(vo.getTypeOrder()==null || vo.getTypeOrder().size()==0){
+				List<Integer> typeOrder = (List<Integer>)session.getAttribute("typeOrder");
+				if(typeOrder==null || typeOrder.size()==0){
+					typeOrder = Arrays.asList(5,6,1,2,3,4); 
+				}
+				data.put("typeOrder", typeOrder);
+				vo.setTypeOrder(typeOrder);
+			}
+			
+			//关注特性定制中所有的字段、和默认选中
+			List<CusChanPortray> allUsefulField = customerChannelService.listPortrayFieldInCusChanl();
+			if(vo.getIds()==null||vo.getIds().size()==0){
+				vo.setIds(getDefaultIdentityCustomization(allUsefulField,vo.getTypeOrder()));
+			}
+			data.put("allUsefulField", allUsefulField);
+			List<Integer> allIds = new ArrayList<Integer>();
+			for(CusChanPortray c : allUsefulField){
+				allIds.add(c.getId());
+			}
+			data.put("defaultIdentityCustomizationIds", allIds);		
+		}
+		if(vo.getTypeOrder()!=null && vo.getTypeOrder().size()!=0){
+			session.setAttribute("typeOrder", vo.getTypeOrder());
+		}		
+		
+		//根据选中的ids获取画像信息		
+		List<CusChanPortray> portrays = customerChannelService.listCustmerPortray(vo);	 						
+		data.put("portrays", portrays);		
+
+		return data;
+	}
+	
+	@DS("dataSource")@RequestMapping(value = "/clickCity", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public Map<String,Object> clickCity(@RequestBody StoreBattleVo vo) {
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpSession session = attrs.getRequest().getSession();
+		Map<String,Object> data = new HashMap<String,Object>();
+
+		//点击地市	
+		if(vo.getTag1().equals("全省")) {
+			vo.setTag1("");
+		}
+		String startMonth = vo.getStartMonth();
+		startMonth=startMonth.substring(0,6);
+		vo.setStartMonth(startMonth);
+		String endMonth = vo.getEndMonth();
+		endMonth=endMonth.substring(0,6);
+		vo.setEndMonth(endMonth);
+		
+		List<StoreBattleVo> customers = customerChannelService.listAllCustomer(vo);
+		vo.setCusOrgacode((customers==null || customers.size()==0)?"":customers.get(0).getCusOrgacode());		
+		data.put("customers", customers);					
+		
+		//根据选中的ids获取画像信息		
+		if(vo.getIds()!=null) {
+		List<CusChanPortray> portrays = customerChannelService.listCustmerPortray(vo);	 						
+		data.put("portrays", portrays);		
+		}
+		return data;
+	}
+	
+	//厅店的click事件
+	
+	@DS("dataSource")@RequestMapping(value = "/clickCityHallNew", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public Map<String,Object> clickCityHall(@RequestBody StoreBattleVo vo) {
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpSession session = attrs.getRequest().getSession();
+		Map<String,Object> data = new HashMap<String,Object>();
+
+		//点击地市	
+		if(vo.getTag1().equals("全省")) {
+			vo.setTag1("");
+		}
+		String startMonth = vo.getStartMonth();
+		startMonth=startMonth.substring(0,6);
+		vo.setStartMonth(startMonth);
+		String endMonth = vo.getEndMonth();
+		endMonth=endMonth.substring(0,6);
+		vo.setEndMonth(endMonth);
+		
+		List<StoreBattleVo> customers = customerChannelService.listAllHallNew(vo);
+		vo.setCusOrgacode((customers==null || customers.size()==0)?"":customers.get(0).getCusOrgacode());		
+		data.put("customers", customers);					
+		
+		//根据选中的ids获取画像信息		
+		if(vo.getIds()!=null) {
+		List<CusChanPortray> portrays = customerChannelService.listHallPortray(vo);	 						
+		data.put("portrays", portrays);		
+		}
+		return data;
+	}
+	
+	
+	
+	private boolean isContins(List<StoreBattleVo> customers, String cust) {
+		for(StoreBattleVo s : customers){
+			if(cust.equals(s.getCusOrgacode())){
+				return true;
+			}
+		}
+		return false;
+	}
+/**
+ * 加载厅店的所有厅店名称
+ * @param vo
+ * @return
+ */
+	
+	@DS("dataSource")@RequestMapping(value = "/clickCityHall", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public List<String> clickCityHall(@RequestBody ZdHallTshop vo) {
+		ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		HttpSession session = attrs.getRequest().getSession();
+		Map<String,Object> data = new HashMap<String,Object>();
+		List<String> customers=null;
+		//点击地市	
+		if(vo.getAreaname().equals("全省")) {
+			vo.setAreaname("");
+		}
+		if(!vo.getStartMonth().equals("")&&!vo.getEndMonth().equals("")) {
+			String startMonth = vo.getStartMonth();
+			startMonth=startMonth.substring(0,6);
+//			StringBuffer stringBuilder1=new StringBuffer(startMonth);
+//			stringBuilder1.insert(4, "-");
+//			stringBuilder1.insert(7, "-01");
+//		    String yy= stringBuilder1.toString();
+			vo.setStartMonth(startMonth);
+			
+			String endMonth = vo.getEndMonth();
+			endMonth=endMonth.substring(0,6);
+//			StringBuffer stringBuilder2=new StringBuffer(endMonth);
+//			stringBuilder2.insert(4, "-");
+//			stringBuilder2.insert(7, "-01");
+//			String zz= stringBuilder2.toString();
+			vo.setEndMonth(endMonth);
+			
+			
+//		}else {
+//		if(!vo.getStartMonth().equals("")) {
+//			StringBuffer stringBuilder1=new StringBuffer(vo.getStartMonth());
+//			stringBuilder1.insert(4, "-");
+//			stringBuilder1.insert(7, "-01");
+//		    String yy= stringBuilder1.toString();
+//			vo.setStartMonth(yy);
+//		}
+//		if(!vo.getEndMonth().equals("")) {
+//			StringBuffer stringBuilder2=new StringBuffer(vo.getEndMonth());
+//			stringBuilder2.insert(4, "-");
+//			stringBuilder2.insert(7, "-01");
+//			String zz= stringBuilder2.toString();
+//			vo.setEndMonth(zz);
+//		}
+//		}
+//		String startMonth = vo.getStartMonth();
+//		startMonth=startMonth.substring(0,6);
+//		vo.setStartMonth(startMonth);
+//		String endMonth = vo.getEndMonth();
+//		endMonth=endMonth.substring(0,6);
+//		vo.setEndMonth(endMonth);
+		
+		 customers = customerChannelService.listAllHall(vo);		
+	
+	}
+		return customers;
+	}
+	
+	
+	@DS("dataSource")@RequestMapping(value = "/vagueQuery", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public List<StoreBattleVo> vagueQuery(@RequestBody StoreBattleVo vo) {
+		List<StoreBattleVo> vagueQuery = customerChannelService.vagueQuery(vo);
+		return vagueQuery;
+	}
+	//厅店搜索功能的实现
+	@DS("dataSource")@RequestMapping(value = "/vagueQueryTing", method = {RequestMethod.GET,RequestMethod.POST})
+	@ResponseBody
+	public List<StoreBattleVo> vagueQueryTing(@RequestBody StoreBattleVo vo) {
+		List<StoreBattleVo> vagueQuery = customerChannelService.vagueQuery1(vo);
+		return vagueQuery;
+	}
+	
+	
+	
+	
+	/**
+	 * 获取默认的关注特性定制
+	 */
+    public List<Integer> getDefaultIdentityCustomization(List<CusChanPortray> allField,List<Integer> typeOrder){
+    	List<String> list = new ArrayList<String>();
+    	for(int i=0;i<typeOrder.size()&&i<3;i++){
+    		list.add(String.valueOf(typeOrder.get(i)));
+    	}
+    	
+    	List<Integer> ids = new ArrayList<Integer>();
+    	int t1 = 0;
+    	int t2 = 0;
+    	int t3 = 0;
+    	int t4 = 0;
+    	int t5 = 0;
+    	int t6 = 0;
+    	for(CusChanPortray cc : allField){
+    		if("1".equals(cc.getType())  && list.contains(cc.getType()) ){
+    			if(cc.getShowType()!=0&&cc.getShowType()!=1&&t1<3){
+    				ids.add(cc.getId());
+    				t1++;
+    			}
+    		}else if("2".equals(cc.getType())  && list.contains(cc.getType()) ){
+    			if(cc.getShowType()!=0&&cc.getShowType()!=1&&t2<3){
+    				ids.add(cc.getId());
+    				t2++;
+    			}
+    		}else if("3".equals(cc.getType())  && list.contains(cc.getType()) ){
+    			if(cc.getShowType()!=0&&cc.getShowType()!=1&&t3<3){
+    				ids.add(cc.getId());
+    				t3++;
+    			}
+    		}else if("4".equals(cc.getType())   && list.contains(cc.getType()) ){
+    			if(cc.getShowType()!=0&&cc.getShowType()!=1&&t4<3){
+    				ids.add(cc.getId());
+    				t4++;
+    			}
+    		}else if("5".equals(cc.getType())  && list.contains(cc.getType()) ){
+    			if(cc.getShowType()!=0&&cc.getShowType()!=1&&t5<3){
+    				ids.add(cc.getId());
+    				t5++;
+    			}
+    		}else if("6".equals(cc.getType())  && list.contains(cc.getType()) ){
+    			if(cc.getShowType()!=0&&cc.getShowType()!=1&&t6<3){
+    				ids.add(cc.getId());
+    				t6++;
+    			}
+    		}   		   		
+    	}  
+		return ids;   	
+    }
+}

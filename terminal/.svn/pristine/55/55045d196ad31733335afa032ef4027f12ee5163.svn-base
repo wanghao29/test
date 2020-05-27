@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.gfKpi.operateIncome.OwnBrandMultiIncomeMapper" >
+	 <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.gfKpi.operateIncome.OwnBrandMultiIncome" >
+	    <constructor >
+	      <arg column="MONTH" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="sr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="srtz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="qnwcsr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="mbz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="sjwcd" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="qnwcd" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="bysrwcl" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="fz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      
+	    </constructor>
+	 </resultMap>
+	 <sql id="Base_Column_List" >
+	   MONTH  billcyc , sr sr,srtz srtz, qnwcsr qnwcsr, mbz mbz,sjwcd sjwcd,qnwcd qnwcd, bysrwcl bysrwcl,  fz fz 
+	 </sql>
+	 <select id="queryData" resultType="com.asiainfo.cmc.enties.gfKpi.operateIncome.OwnBrandMultiIncome"  parameterType="Map" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from KPI_INCOME_MUILTI_FORM   where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]>
+	   
+	</select>
+	<update id="calculatedScore">
+      call own_brand_multi_income(${startMonth},#{endMonth})
+   </update>
+</mapper>

@@ -1,0 +1,91 @@
+package com.asiainfo.cmc.test;
+
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.junit.Test;
+
+import com.asiainfo.cmc.enties.Goods;
+import com.asiainfo.cmc.mapper.GoodsMapper;
+import com.asiainfo.cmc.utils.MyBatisUtil;
+import junit.framework.Assert;
+public class test {
+	@Test
+    public void getGoodsPagerTest() {
+        int skip=4;
+        int size=2;
+        SqlSession session=MyBatisUtil.getSession();
+        try {
+        	GoodsMapper bookdao=session.getMapper(GoodsMapper.class);
+            List<Goods> goods=bookdao.getGoodsPager();
+            System.out.println( goods.size());
+        } finally {
+            session.close();
+        }
+    }
+
+    @Test
+    public void getGoodsByIdTest() {
+        SqlSession session=MyBatisUtil.getSession();
+        try {
+        	GoodsMapper bookdao=session.getMapper(GoodsMapper.class);
+            Goods goods=bookdao.getGoodsById(1);
+            System.out.println(  goods.getId());
+        } finally {
+            session.close();
+        }
+    }
+    
+    @Test
+    public void getGoodsCountTest() {
+        SqlSession session=MyBatisUtil.getSession();
+        try {
+        	GoodsMapper bookdao=session.getMapper(GoodsMapper.class);
+        	 System.out.println(  bookdao.getGoodsCount());
+        } finally {
+            session.close();
+        }
+    }
+    
+    @Test
+    public void insertTest() {
+        SqlSession session=MyBatisUtil.getSession();
+        try {
+            Goods entity=new Goods();
+            entity.setName("正宗无锡阳山水蜜桃新鲜水果水密桃12个6斤装江浙沪皖顺丰包邮");
+            entity.setPrice(108);
+            entity.setPicture("nopic.jpg");
+            GoodsMapper bookdao=session.getMapper(GoodsMapper.class);
+            System.out.println(  bookdao.insert(entity));
+        } finally {
+            session.close();
+        }
+    }
+
+/*    @Test
+    public void deleteTest() {
+        SqlSession session=MyBatisUtil.getSession();
+        try {
+        	GoodsMapper bookdao=session.getMapper(GoodsMapper.class);
+            Assert.assertEquals(1, bookdao.delete(12));
+        } finally {
+            session.close();
+        }
+    }*/
+
+    @Test
+    public void update() {
+        SqlSession session=MyBatisUtil.getSession();
+        try {
+        	GoodsMapper bookdao=session.getMapper(GoodsMapper.class);
+            Goods entity=bookdao.getGoodsById(10);
+            entity.setName("正宗无锡阳山水蜜桃新鲜水果水密桃12个6斤装");
+            entity.setPrice(107);
+            entity.setPicture("nopicture.jpg");
+
+            System.out.println(  bookdao.update(entity));
+        } finally {
+            session.close();
+        }
+    }
+}

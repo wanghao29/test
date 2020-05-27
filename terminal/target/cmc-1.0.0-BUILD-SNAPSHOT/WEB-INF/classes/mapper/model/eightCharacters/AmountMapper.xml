@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.asiainfo.cmc.mapper.model.eightCharacters.AmountMapper">
+	<resultMap id="ImportPeopleNumMap" type="com.asiainfo.cmc.enties.importExcel.ImportPeopleNum" >
+    	<result column="8type" jdbcType="VARCHAR" property="type8" />
+    	<result column="dimension" jdbcType="VARCHAR" property="dimension" />
+    	<result column="month" jdbcType="VARCHAR" property="month" />
+    	<result column="AREANAME" jdbcType="VARCHAR" property="AREANAME" />
+    	<result column="people_num" jdbcType="BIGINT" property="people_num" />
+  	</resultMap>
+  	<resultMap id="ImportTeamMap" type="com.asiainfo.cmc.enties.importExcel.ImportTeamIncom" >
+    	<result column="type" jdbcType="VARCHAR" property="type" />
+    	<result column="month" jdbcType="VARCHAR" property="month" />
+    	<result column="AREANAME" jdbcType="VARCHAR" property="city" />
+    	<result column="value" jdbcType="VARCHAR" property="value" />
+  	</resultMap>
+  	<resultMap id="ImportCostMap" type="com.asiainfo.cmc.enties.importExcel.ImportCost" >
+    	<result column="8type" jdbcType="VARCHAR" property="type8" />
+    	<result column="stat_day" jdbcType="VARCHAR" property="month" />
+    	<result column="AREANAME" jdbcType="VARCHAR" property="AREANAME" />
+    	<result column="dimension" jdbcType="VARCHAR" property="dimension" />
+    	<result column="kpiName" jdbcType="VARCHAR" property="kpiName" />
+    	<result column="commission" jdbcType="FLOAT" property="commission" />
+    	<result column="cost" jdbcType="FLOAT" property="cost" />
+  	</resultMap>
+	<resultMap id="ImportGrossMap" type="com.asiainfo.cmc.enties.importExcel.ImportGrossProfit" >
+    	<result column="month" jdbcType="VARCHAR" property="month" />
+    	<result column="city" jdbcType="VARCHAR" property="city" />
+    	<result column="brand" jdbcType="VARCHAR" property="brand" />
+    	<result column="value" jdbcType="FLOAT" property="value" />
+  	</resultMap>
+<!--    <resultMap id="ZdEightDimDict" type="com.asiainfo.cmc.enties.model.eightCharacters.ZdEightDimDict" >
+    	<result column="month" jdbcType="VARCHAR" property="month" />
+    	<result column="city" jdbcType="VARCHAR" property="city" />
+    	<result column="brand" jdbcType="VARCHAR" property="brand" />
+    	<result column="value" jdbcType="FLOAT" property="value" />
+  	</resultMap> -->
+  	   <resultMap id="ZdEightDimDict" type="com.asiainfo.cmc.enties.model.eightCharacters.ZdEightDimDict" >
+  	     <constructor >
+    	<arg column="id" jdbcType="VARCHAR" javaType="java.lang.String" />
+    	<arg column="dim" jdbcType="VARCHAR" javaType="java.lang.String"/>
+    	<arg column="dimDesc" jdbcType="VARCHAR" javaType="java.lang.String" />
+     	<arg column="parentDim" jdbcType="VARCHAR" javaType="java.lang.String" />
+     	<arg column="parentDimDesc" jdbcType="VARCHAR" javaType="java.lang.String" />
+     	<arg column="resultTable" jdbcType="VARCHAR" javaType="java.lang.String" />
+      	<arg column="charType" jdbcType="VARCHAR" javaType="java.lang.String"/>
+       	<arg column="dimType" jdbcType="VARCHAR" javaType="java.lang.String" />
+        <arg column="unit" jdbcType="VARCHAR" javaType="java.lang.String" />
+           </constructor>
+  	</resultMap>
+ 
+  	
+    <select id="getDimMods" parameterType="java.util.Map" resultType="ZdEightDimDict">
+    	SELECT  id id , dim dim, dim_desc dimDesc, parent_dim parentDim, parent_dim_desc parentDimDesc,   char_type charType ,dim_type dimType,unit unit FROM zd_8dim_dict
+			  <where>
+				 <if test="@Ognl@isNotEmpty(kpi_value)">
+				         dim in  (select dim_key from  zd_8kpi_dict where kpi_key = #{kpi_value})
+				 </if>
+			 </where>
+			ORDER  by dim_type;
+    </select>
+  <select id="getKpis" parameterType="java.util.Map" resultType="java.util.Map">
+  		select distinct kpi_key kpiKey,kpi_name KpiName,kpi_cycle kpiCycle from zd_8kpi_dict  
+  		<where>
+				 <if test="@Ognl@isNotEmpty(type_8)">
+				         type_8 = #{type_8}
+				 </if>
+		</where>
+  
+  </select>
+  <select id="getDimDictByDim" parameterType="java.util.Map" resultType="ZdEightDimDict">
+    	SELECT  id id , dim dim, dim_desc dimDesc, parent_dim parentDim, parent_dim_desc parentDimDesc, result_table resultTable, char_type charType ,dim_type dimType,unit unit,kpi_cycle kpiCycle FROM zd_8dim_dict
+    	where dim = #{dim_key}
+   </select>
+
+<!-- <insert id="importPeopleNum" parameterType="java.util.List" >
+		INSERT INTO  ZD_8TYPE_IMPORT_PEOPLENO 
+            (month, 8type, dimension,AREANAME,people_num)
+    	VALUES
+    	<foreach collection ="list" item="ImportPeopleNum" separator =",">
+         (#{ImportPeopleNum.month}, #{ImportPeopleNum.type8}, #{ImportPeopleNum.dimension}, #{ImportPeopleNum.AREANAME}, #{ImportPeopleNum.people_num})
+    	</foreach >
+	</insert> -->
+
+	<insert id="importPeopleNum" parameterType="java.util.List" >
+		INSERT INTO  zd_etype_import_peopleno 
+            (month, etype, dimension,areaname,people_num)
+    	VALUES
+    	<foreach collection ="list" item="ImportPeopleNum" separator =",">
+         (#{ImportPeopleNum.month}, #{ImportPeopleNum.type8}, #{ImportPeopleNum.dimension}, #{ImportPeopleNum.AREANAME}, #{ImportPeopleNum.people_num})
+    	</foreach >
+	</insert>
+
+	<insert id="importTeam" parameterType="java.util.List" >
+		INSERT INTO  zd_etype_import_team_income 
+            (month,areaname,type,value)
+    	VALUES 
+    	<foreach collection ="list" item="ImportTeam" separator =",">
+         (#{ImportTeam.month}, #{ImportTeam.city}, #{ImportTeam.type}, #{ImportTeam.value})
+    	</foreach >
+	</insert>
+<!-- 		<insert id="importTeam" parameterType="java.util.List" >
+		INSERT INTO  ZD_8TYPE_IMPORT_TEAM_INCOME 
+            (month,AREANAME,TYPE,value)
+    	VALUES 
+    	<foreach collection ="list" item="ImportTeam" separator =",">
+         (#{ImportTeam.month}, #{ImportTeam.city}, #{ImportTeam.type}, #{ImportTeam.value})
+    	</foreach >
+	</insert> -->
+	<insert id="importCost" parameterType="java.util.List" >
+		INSERT INTO  ZD_8TYPE_IMPORT_COMMISSION_COST 
+            (stat_day,8type,dimension,kpiName,AREANAME,commission,cost)
+    	VALUES 
+    	<foreach collection ="list" item="ImportCost" separator =",">
+         (#{ImportCost.month}, #{ImportCost.type8}, #{ImportCost.dimension}, #{ImportCost.kpiName}, #{ImportCost.AREANAME}, #{ImportCost.commission}, #{ImportCost.cost})
+    	</foreach >
+	</insert>
+	
+	<insert id="importGross" parameterType="java.util.List" >
+		INSERT INTO  ZD_8TYPE_IMPORT_GROSS_PROFIT_CITY 
+            (month,city,value)
+    	VALUES 
+    	<foreach collection ="list" item="ImportGross" separator ="," >
+         (#{ImportGross.month}, #{ImportGross.city}, #{ImportGross.value})
+    	</foreach >
+	</insert>
+	<insert id="importGross_brand" parameterType="java.util.List" >
+		INSERT INTO  ZD_8TYPE_IMPORT_GROSS_PROFIT_BRAND 
+            (month,brand,value)
+    	VALUES 
+    	<foreach collection ="list" item="ImportGross" separator ="," >
+         (#{ImportGross.month},  #{ImportGross.brand}, #{ImportGross.value})
+    	</foreach >
+	</insert>
+	<!-- 促销人员表的数据处理 -->
+	<select id="getPersonList" resultMap="ImportPeopleNumMap">
+	select month, 8type,dimension,AREANAME,people_num  from ZD_8TYPE_IMPORT_PEOPLENO 
+	 where  month <![CDATA[>= #{startMonth} AND month <= #{stopMonth}]]>  
+	  <if test='@Ognl@isNotEmpty(city)'> and  AREANAME =#{city}</if> 
+	 order by month
+     limit ${pageNo},${pageSize}
+	</select>
+	<select id="getTotalByPerson" resultType="java.lang.Integer">
+	select count(1)  from ZD_8TYPE_IMPORT_PEOPLENO 
+	 where  month <![CDATA[>= #{startMonth} AND month <= #{stopMonth}]]> 
+	  <if test='@Ognl@isNotEmpty(city)'> and  AREANAME =#{city}</if> 
+	</select>
+	
+	<!-- 团队收入的数据处理 -->
+	<select id="getTeamList" resultMap="ImportTeamMap">
+	select month, type,AREANAME,value  from ZD_8TYPE_IMPORT_TEAM_INCOME 
+	 where  month <![CDATA[>= #{startMonth} AND month <= #{stopMonth}]]> 
+	 <if test='@Ognl@isNotEmpty(areaname)'> and  AREANAME =#{areaname}</if>
+	 <if test='@Ognl@isNotEmpty(type)'> and  type =#{type}</if> 
+	 order by month
+     limit ${pageNo},${pageSize}
+	</select>
+	<select id="getTotalByTeam" resultType="java.lang.Integer">
+	select count(1)  from ZD_8TYPE_IMPORT_TEAM_INCOME 
+	 where  month <![CDATA[>= #{startMonth} AND month <= #{stopMonth}]]>  
+	 <if test='@Ognl@isNotEmpty(areaname)'> and  AREANAME =#{areaname}</if>
+	 <if test='@Ognl@isNotEmpty(type)'> and  type =#{type}</if> 
+	</select>
+	
+	<!-- 编辑费用的数据处理 -->
+	<select id="getCostList" resultMap="ImportCostMap">
+	select stat_day, 8type,dimension,kpiName,AREANAME,commission,cost  from ZD_8TYPE_IMPORT_COMMISSION_COST 
+	 where  stat_day <![CDATA[>= #{startMonth} AND stat_day <= #{stopMonth}]]> 
+	 <if test='@Ognl@isNotEmpty(city)'> and  AREANAME =#{city}</if> 
+	 <if test='@Ognl@isNotEmpty(kpi)'> and  kpiName =#{kpi}</if> 
+	 order by stat_day
+     limit ${pageNo},${pageSize}
+	</select>
+	<select id="getTotalByCost" resultType="java.lang.Integer">
+	select count(1)  from ZD_8TYPE_IMPORT_COMMISSION_COST 
+	 where  stat_day <![CDATA[>= #{startMonth} AND stat_day <= #{stopMonth}]]>  
+	 <if test='@Ognl@isNotEmpty(city)'> and  AREANAME =#{city}</if>
+	 <if test='@Ognl@isNotEmpty(kpi)'> and  kpiName =#{kpi}</if> 
+	</select>
+	
+	<!-- 毛利额的数据处理 -->
+	<select id="getGrossList" resultMap="ImportGrossMap">
+	select month, city,brand,value  from ZD_8TYPE_IMPORT_GROSS_PROFIT 
+	 where  month <![CDATA[>= #{startMonth} AND month <= #{stopMonth}]]> 
+	 <if test='@Ognl@isNotEmpty(city)'> and  city =#{city}</if> 
+	 <if test='@Ognl@isNotEmpty(brand)'> and  brand like CONCAT('',#{brand},'%') </if> 
+	 order by month
+     limit ${pageNo},${pageSize}
+	</select>
+	<select id="getTotalByGross" resultType="java.lang.Integer">
+	select count(1)  from ZD_8TYPE_IMPORT_GROSS_PROFIT 
+	 where  month <![CDATA[>= #{startMonth} AND month <= #{stopMonth}]]>  
+	 <if test='@Ognl@isNotEmpty(city)'> and  city =#{city}</if>
+	 <if test='@Ognl@isNotEmpty(brand)'> and brand like CONCAT('',#{brand},'%') </if> 
+	</select>
+	
+	
+	<update id="updateByPerson" >
+		update ZD_8TYPE_IMPORT_PEOPLENO set people_num=#{people_num} where month=#{
+		month} and  8type=#{type8} and dimension=#{dimension} and AREANAME=#{areaname}
+	</update>
+	
+	<update id="updateByTeam" >
+		update ZD_8TYPE_IMPORT_TEAM_INCOME set value=#{value} where month=#{
+		month} and  type=#{type} and AREANAME=#{city}
+	</update>
+
+	<update id="updateByCost" >
+		update ZD_8TYPE_IMPORT_COMMISSION_COST 
+		set  cost = #{cost},commission=  #{commission}
+		 where stat_day=#{month} and  8type=#{type8} and AREANAME=#{areaname} and dimension=#{dimension} and kpiName=#{kpiName} 
+	</update>
+	
+	<update id="updateByGross" >
+		update ZD_8TYPE_IMPORT_GROSS_PROFIT 
+		set  value = #{value}
+		 where month=#{month} and  city=#{city} and brand=#{brand}
+	</update>
+	
+	<!-- 新增  -->
+		<!-- 费用 -->
+	<insert id="addCost" >
+		insert into  ZD_8TYPE_IMPORT_COMMISSION_COST (stat_day,8type,dimension,kpiName,AREANAME,commission,cost)
+		values (#{addMonth} ,#{addType8},#{addDimension},#{addKpiName},#{addCity},#{addCommission},#{addCost})
+	</insert>
+	<select id="selectCost" resultType="java.lang.Integer">
+		select count(1) from ZD_8TYPE_IMPORT_COMMISSION_COST 
+	 	where  stat_day = #{addMonth} and 8type=#{addType8} and dimension=#{addDimension}  and  kpiName =#{addKpiName}  and  AREANAME =#{addCity} 
+	</select>
+		<!-- 促销人员数 -->
+	<insert id="addPerson" >
+		insert into  ZD_8TYPE_IMPORT_PEOPLENO (month,8type,dimension,AREANAME,people_num)
+		values (#{addMonth} ,#{addType8},#{addDimension},#{addCity},#{addPeople_num})
+	</insert>
+	<select id="selectPerson" resultType="java.lang.Integer">
+		select count(1) from ZD_8TYPE_IMPORT_PEOPLENO 
+	 	where  month = #{addMonth} and 8type=#{addType8} and dimension=#{addDimension}  and  AREANAME =#{addCity} 
+	</select>
+		<!-- 售后团队收入 -->
+	<insert id="addTeam" >
+		insert into  ZD_8TYPE_IMPORT_TEAM_INCOME (month,type,AREANAME,value)
+		values (#{addMonth} ,#{addType},#{addCity},#{addValue})
+	</insert>
+	<select id="selectTeam" resultType="java.lang.Integer">
+		select count(1) from ZD_8TYPE_IMPORT_TEAM_INCOME 
+	 	where  month = #{addMonth} and type=#{addType}  and  AREANAME =#{addCity} 
+	</select>
+		<!-- 毛利额-->
+	<insert id="addGross" >
+		insert into  ZD_8TYPE_IMPORT_GROSS_PROFIT (month,city,brand,value)
+		values (#{addMonth} ,#{addCity},#{addBrand},#{addValue})
+	</insert>
+	<select id="selectGross" resultType="java.lang.Integer">
+		select count(1) from ZD_8TYPE_IMPORT_GROSS_PROFIT 
+	 	where  month = #{addMonth} and city=#{addCity}  and  brand like CONCAT('',#{brand},'%')
+	</select>
+	
+	
+	<select id="getInventory_number" resultType="SumProvstockGd">
+	select IFNULL(SUM(STAGE1_AMOUNT),0) STAGE1_AMOUNT,IFNULL(SUM(STAGE2_AMOUNT),0) STAGE2_AMOUNT,IFNULL(SUM(STAGE3_AMOUNT),0) STAGE3_AMOUNT,IFNULL(SUM(STAGE4_AMOUNT),0) STAGE4_AMOUNT,
+	IFNULL(SUM(STAGE5_AMOUNT),0) STAGE5_AMOUNT,IFNULL(SUM(STAGE6_AMOUNT),0) STAGE6_AMOUNT  
+	 from  SUM_PROVSTOCK_GD where CYCLE_DAY in (#{months})
+	</select>
+	
+	<select id="getInventory_money" resultType="SumProvstockGd">
+	select IFNULL(SUM(STAGE1_MONEY),0) STAGE1_MONEY,IFNULL(SUM(STAGE2_MONEY),0) STAGE2_MONEY,IFNULL(SUM(STAGE3_MONEY),0) STAGE3_MONEY,IFNULL(SUM(STAGE4_MONEY),0) STAGE4_MONEY,
+	IFNULL(SUM(STAGE5_MONEY),0) STAGE5_MONEY,IFNULL(SUM(STAGE6_MONEY),0) STAGE6_MONEY 
+	 from  SUM_PROVSTOCK_GD where CYCLE_DAY in (#{months})
+	</select>
+	
+	<select id="getInventory_all" resultType="SumProvstockGd">
+	select IFNULL(SUM(STOCK_AMOUNT),0) STOCK_AMOUNT,ROUND(IFNULL(SUM(STOCK_MONEY),0),0) STOCK_MONEY from  SUM_PROVSTOCK_GD
+	 where CYCLE_DAY in (#{months})
+	</select>
+	
+	<!-- 毛利额总览-地市 -->
+	<select id="gross_profit_city" resultType="java.lang.String">
+	select round(IFNULL(sum(value),0)*10000,2) value from ZD_8TYPE_IMPORT_GROSS_PROFIT_CITY 
+	 where  month <![CDATA[>=#{startMonth}  AND month <= #{stopMonth}]]>   
+	</select>
+	<!-- 毛利额总览-品牌 -->
+	<select id="gross_profit_brand" resultType="java.lang.String">
+	select round(IFNULL(sum(value),0)*10000,2) value from ZD_8TYPE_IMPORT_GROSS_PROFIT_BRAND 
+	 where  month <![CDATA[>=#{startMonth}  AND month <= #{stopMonth}]]>
+	</select>
+	
+	<!-- 删除要导入的月份  实现重新导入-->
+	
+
+	<delete id="delete_gross" >
+			ALTER TABLE   ${tableName}  delete where  ${monthField} in 
+		<foreach collection ="monSet" item="month" open="(" separator="," close=")" >
+         #{month}
+    	</foreach >
+	</delete>
+<!-- 	<delete id="delete_gross" >
+		delete from ${tableName} where  ${monthField} in 
+		<foreach collection ="monSet" item="month" open="(" separator="," close=")" >
+         #{month}
+    	</foreach >
+	</delete> -->
+	
+	
+	<select id="getConfirmInfo" resultType="Zd8typeInfoConfirm" >
+		select DIM,DIM_DESC,INFO_PERSON,CONFIRM from ZD_8TYPE_INFO_CONFIRM WHERE DIM = #{dim}
+	</select>
+	<select id="zlConfirmInfTS" resultType="Zd8typeInfoConfirm">
+		select DIM,DIM_DESC,INFO_PERSON,CONFIRM from ZD_8TYPE_INFO_CONFIRM WHERE DIM = #{id}
+	</select>
+	<select id ="getConfirmLog" resultType="Zd8typeInfoConfirmLog" >
+		select ID,KPIID,PERSON,CONFIRMTIME,MONTH,STATE,REMARKS FROM ZD_8TYPE_INFO_CONFIRM_LOG
+		 WHERE MONTH=#{month} and KPIID=#{kpiKey}  
+	</select>
+	<delete id="delete_confirm_log"  >
+		delete from  ZD_8TYPE_INFO_CONFIRM_LOG WHERE KPIID=#{kpiKey} and MONTH=#{month}
+	</delete>
+	<insert id="insertInfo"  >
+		insert into ZD_8TYPE_INFO_CONFIRM_LOG (KPIID,PERSON,CONFIRMTIME,MONTH,STATE,REMARKS) values(#{kpiKey},#{person},#{confirmTime},#{month},#{state},#{remarks})
+	</insert>
+	<select id="getMbz" resultType="java.lang.String">
+		select  IFNULL(${field},0) mbz from ${tableName}  where month like CONCAT(SUBSTR(#{month},1,4),'%') LIMIT 0,1
+	</select>
+	<select id="getProfitRemarks" resultType="java.lang.String">
+		select remarks from ZD_8TYPE_INFO_PROFIT_REMARKS WHERE month = #{month} and kpiId = #{kpiId}
+	</select>
+	<delete id="deleteProfitR">
+		delete from ZD_8TYPE_INFO_PROFIT_REMARKS WHERE month = #{month} and kpiId = #{kpiId}
+	</delete>
+	<insert id="saveProfitR">
+		insert into  ZD_8TYPE_INFO_PROFIT_REMARKS (month,kpiId,kpiName,remarks) VALUES (#{month},#{kpiId},#{kpiName},#{remarks})
+	</insert>
+	<select id="getRemarks" resultType="java.lang.String">
+		select remarks from ZD_8TYPE_INFO_PROFIT_REMARKS WHERE month = #{month} and kpiId = #{kpiId}
+	</select>
+	<insert id="saveRemarks">
+		insert into  ZD_8TYPE_INFO_PROFIT_REMARKS (month,kpiId,kpiName,remarks) VALUES (#{month},#{kpiId},#{kpiName},#{remarks})
+	</insert>
+	
+	<insert id="insertWuweiyiti">
+		insert into  zd_result_8wuweiyiti_t (month,dimension,dimension2,subtype,amount,income,zsml,ywml,dtml,mll,order_id) 
+		VALUES (#{month},#{dimension},#{dimension2},#{subtype},#{amount},#{income},#{zsml},#{ywml},#{dtml},#{mll},#{order_id})
+	</insert>
+	<insert id="insertWugexiaomie">
+		insert into  zd_result_8wugexiaomie_t (month,dimension,dimension2,amount,income,ywml,dtml,mll,gsfy,zjlr,zjlrl,gswtffy,gslrze)
+		 VALUES (#{month},#{dimension},#{dimension2},#{amount},#{income},#{ywml},#{dtml},#{mll},#{gsfy},#{zjlr},#{zjlrl},#{gswtffy},#{gslrze})
+	</insert>
+	<insert id="insertInfoProfitCost">
+		insert into  zd_8type_info_profit_cost (month, costName,value)
+		 VALUES (#{month},#{costName}, #{value} )
+	</insert>
+	<delete id="deleteWuweiyiti">
+		ALTER TABLE zd_result_8wuweiyiti_t delete    WHERE month = #{month}  
+	</delete>
+	
+	<delete id="deleteWugexiaomie">
+		ALTER TABLE zd_result_8wugexiaomie_t delete    WHERE month = #{month}  
+	</delete>
+	
+     <delete id="deleteInfoProfitCost">
+		ALTER TABLE zd_8type_info_profit_cost delete    WHERE month = #{month}  
+	</delete>
+	
+	
+</mapper>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.RepaymentAccuracyForecastMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.RepaymentAccuracyForecast" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="sjhk" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="jhhk" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="hkyczqd" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="hkyczqddf" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sjhk, jhhk, hkyczqd, hkyczqddf, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from REPAYMENT_ACCURACY_FORECAST
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+    <select id="selectByMonth" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from REPAYMENT_ACCURACY_FORECAST
+    where month = #{month}
+  </select>
+  
+  <select id="selectRepaymentAccuracyForecast" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from REPAYMENT_ACCURACY_FORECAST
+    where month = #{month}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from REPAYMENT_ACCURACY_FORECAST
+    <include refid="dynamicWhere" />
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from REPAYMENT_ACCURACY_FORECAST
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from REPAYMENT_ACCURACY_FORECAST
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from REPAYMENT_ACCURACY_FORECAST 
+    where <![CDATA[ month <= #{endMonth}]]>
+    order by month desc LIMIT 0,1
+  </select>
+
+  <select id="getKeyData" resultType="Map">
+    select
+    sum(hyyhsl) hyyhsls,sum(wqqkzb) wqqkzbs,sum(df) dfs,sum(sjjd) sjjds
+    from REPAYMENT_ACCURACY_FORECAST
+  </select>
+
+  <select id="getLastMonthWcqkzb" resultType="Float">
+    select ifnull(hkyczqd,0) from REPAYMENT_ACCURACY_FORECAST where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="Float">
+    select ifnull(hkyczqd,0) from REPAYMENT_ACCURACY_FORECAST where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from REPAYMENT_ACCURACY_FORECAST
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.RepaymentAccuracyForecast" >
+    insert into REPAYMENT_ACCURACY_FORECAST (id, sjhk, jhhk, hkyczqd, 
+      hkyczqddf, month)
+    values (#{id,jdbcType=INTEGER}, #{sjhk,jdbcType=REAL}, #{jhhk,jdbcType=REAL}, ROUND(#{sjhk,jdbcType=REAL}/#{jhhk,jdbcType=REAL} ,4), 
+      #{hkyczqddf,jdbcType=REAL}, #{month,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.RepaymentAccuracyForecast" >
+    insert into REPAYMENT_ACCURACY_FORECAST
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sjhk != null" >
+        sjhk,
+      </if>
+      <if test="jhhk != null" >
+        jhhk,
+      </if>
+      <if test="hkyczqd != null" >
+        hkyczqd,
+      </if>
+      <if test="hkyczqddf != null" >
+        hkyczqddf,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sjhk != null" >
+        #{sjhk,jdbcType=REAL},
+      </if>
+      <if test="jhhk != null" >
+        #{jhhk,jdbcType=REAL},
+      </if>
+      <if test="hkyczqd != null" >
+        #{hkyczqd,jdbcType=REAL},
+      </if>
+      <if test="hkyczqddf != null" >
+        #{hkyczqddf,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.RepaymentAccuracyForecast" >
+    update REPAYMENT_ACCURACY_FORECAST
+    <set >
+      <if test="sjhk != null" >
+        sjhk = #{sjhk,jdbcType=REAL},
+      </if>
+      <if test="jhhk != null" >
+        jhhk = #{jhhk,jdbcType=REAL},
+      </if>
+      <if test="hkyczqd != null" >
+        hkyczqd = #{hkyczqd,jdbcType=REAL},
+      </if>
+      <if test="hkyczqddf != null" >
+        hkyczqddf = #{hkyczqddf,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByReceivePayment" parameterType="com.asiainfo.cmc.enties.RepaymentAccuracyForecast" >
+    update REPAYMENT_ACCURACY_FORECAST
+    set sjhk = #{sjhk,jdbcType=REAL},
+      jhhk = #{jhhk,jdbcType=REAL},
+      hkyczqd = ROUND(sjhk/jhhk,4),
+      hkyczqddf = #{hkyczqddf,jdbcType=REAL} 
+    where month = #{month,jdbcType=VARCHAR}
+  </update>
+
+<!--   <update id="updateByReceivePayment">
+    <if test="sjhk != null" >
+      sjhk = #{sjhk,jdbcType=REAL},
+    </if>
+    <if test="jhhk != null" >
+      jhhk = #{jhhk,jdbcType=REAL},
+    </if>
+    <if test="hkyczqddf != null" >
+      hkyczqddf = #{hkyczqddf,jdbcType=REAL},
+    </if>
+    <if test="sjhk != null or jhhk != null" >
+    hkyczqd = sjhk/jhhk
+    </if>
+  </update>
+ -->
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

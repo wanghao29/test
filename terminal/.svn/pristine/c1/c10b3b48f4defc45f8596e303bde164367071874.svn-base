@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.StockTurnoverRatioMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.StockTurnoverRatio" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="yycb" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="hlwcb" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="sjdbcb" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="sgtzx" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="qnzjywcb" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="chjz" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="hlwchjz" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="chzzl" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="ljchzzl" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="mbz" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="df" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, yycb, hlwcb, sjdbcb, sgtzx, qnzjywcb, chjz, hlwchjz, chzzl, ljchzzl, mbz, df, 
+    month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from STOCK_TURNOVER_RATIO
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from STOCK_TURNOVER_RATIO
+    <include refid="dynamicWhere" />
+    order by month desc
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from STOCK_TURNOVER_RATIO
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from STOCK_TURNOVER_RATIO
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from STOCK_TURNOVER_RATIO 
+    where <![CDATA[ month = #{endMonth}]]>
+    order by month desc LIMIT 0,1
+  </select>
+  
+  <select id="selectstockTurnover" resultMap="BaseResultMap" >
+ 	select
+    <include refid="Base_Column_List" />
+    from STOCK_TURNOVER_RATIO
+    WHERE month= #{month}
+  </select>
+  
+  <select id="getKeyData" resultType="Map">
+    select
+    sum(hyyhsl) hyyhsls,sum(wqqkzb) wqqkzbs,sum(df) dfs,sum(sjjd) sjjds
+    from STOCK_TURNOVER_RATIO
+  </select>
+
+  <select id="getLastMonthWcqkzb" resultType="java.lang.String">
+    select ifnull(ljchzzl,0) from STOCK_TURNOVER_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="java.lang.String">
+    select ifnull(ljchzzl,0) from STOCK_TURNOVER_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from STOCK_TURNOVER_RATIO
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.StockTurnoverRatio" >
+    insert into STOCK_TURNOVER_RATIO (id, yycb, hlwcb, sjdbcb, 
+      sgtzx, qnzjywcb, chjz, hlwchjz, 
+      chzzl, ljchzzl, mbz, df, 
+      month)
+    values (#{id,jdbcType=INTEGER}, #{yycb,jdbcType=REAL}, #{hlwcb,jdbcType=REAL}, #{sjdbcb,jdbcType=REAL}, 
+      #{sgtzx,jdbcType=REAL}, #{qnzjywcb,jdbcType=REAL}, #{chjz,jdbcType=REAL}, #{hlwchjz,jdbcType=REAL}, 
+      #{chzzl,jdbcType=REAL}, #{ljchzzl,jdbcType=REAL}, #{mbz,jdbcType=INTEGER}, #{df,jdbcType=REAL}, 
+      #{month,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.StockTurnoverRatio" >
+    insert into STOCK_TURNOVER_RATIO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="yycb != null" >
+        yycb,
+      </if>
+      <if test="hlwcb != null" >
+        hlwcb,
+      </if>
+      <if test="sjdbcb != null" >
+        sjdbcb,
+      </if>
+      <if test="sgtzx != null" >
+        sgtzx,
+      </if>
+      <if test="qnzjywcb != null" >
+        qnzjywcb,
+      </if>
+      <if test="chjz != null" >
+        chjz,
+      </if>
+      <if test="hlwchjz != null" >
+        hlwchjz,
+      </if>
+      <if test="chzzl != null" >
+        chzzl,
+      </if>
+      <if test="ljchzzl != null" >
+        ljchzzl,
+      </if>
+      <if test="mbz != null" >
+        mbz,
+      </if>
+      <if test="df != null" >
+        df,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="yycb != null" >
+        #{yycb,jdbcType=REAL},
+      </if>
+      <if test="hlwcb != null" >
+        #{hlwcb,jdbcType=REAL},
+      </if>
+      <if test="sjdbcb != null" >
+        #{sjdbcb,jdbcType=REAL},
+      </if>
+      <if test="sgtzx != null" >
+        #{sgtzx,jdbcType=REAL},
+      </if>
+      <if test="qnzjywcb != null" >
+        #{qnzjywcb,jdbcType=REAL},
+      </if>
+      <if test="chjz != null" >
+        #{chjz,jdbcType=REAL},
+      </if>
+      <if test="hlwchjz != null" >
+        #{hlwchjz,jdbcType=REAL},
+      </if>
+      <if test="chzzl != null" >
+        #{chzzl,jdbcType=REAL},
+      </if>
+      <if test="ljchzzl != null" >
+        #{ljchzzl,jdbcType=REAL},
+      </if>
+      <if test="mbz != null" >
+        #{mbz,jdbcType=INTEGER},
+      </if>
+      <if test="df != null" >
+        #{df,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.StockTurnoverRatio" >
+    update STOCK_TURNOVER_RATIO
+    <set >
+      <if test="yycb != null" >
+        yycb = #{yycb,jdbcType=REAL},
+      </if>
+      <if test="hlwcb != null" >
+        hlwcb = #{hlwcb,jdbcType=REAL},
+      </if>
+      <if test="sjdbcb != null" >
+        sjdbcb = #{sjdbcb,jdbcType=REAL},
+      </if>
+      <if test="sgtzx != null" >
+        sgtzx = #{sgtzx,jdbcType=REAL},
+      </if>
+      <if test="qnzjywcb != null" >
+        qnzjywcb = #{qnzjywcb,jdbcType=REAL},
+      </if>
+      <if test="chjz != null" >
+        chjz = #{chjz,jdbcType=REAL},
+      </if>
+      <if test="hlwchjz != null" >
+        hlwchjz = #{hlwchjz,jdbcType=REAL},
+      </if>
+      <if test="chzzl != null" >
+        chzzl = #{chzzl,jdbcType=REAL},
+      </if>
+      <if test="ljchzzl != null" >
+        ljchzzl = #{ljchzzl,jdbcType=REAL},
+      </if>
+      <if test="mbz != null" >
+        mbz = #{mbz,jdbcType=INTEGER},
+      </if>
+      <if test="df != null" >
+        df = #{df,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.StockTurnoverRatio" >
+    update STOCK_TURNOVER_RATIO
+    set yycb = #{yycb,jdbcType=REAL},
+      hlwcb = #{hlwcb,jdbcType=REAL},
+      sjdbcb = #{sjdbcb,jdbcType=REAL},
+      sgtzx = #{sgtzx,jdbcType=REAL},
+      qnzjywcb = #{qnzjywcb,jdbcType=REAL},
+      chjz = #{chjz,jdbcType=REAL},
+      hlwchjz = #{hlwchjz,jdbcType=REAL},
+      chzzl = #{chzzl,jdbcType=REAL},
+      ljchzzl = #{ljchzzl,jdbcType=REAL},
+      mbz = #{mbz,jdbcType=INTEGER},
+      df = #{df,jdbcType=REAL},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByTargetVal">
+  <!-- update STOCK_TURNOVER_RATIO
+  set
+  <if test="sgtzx != null" >
+    sgtzx = #{sgtzx,jdbcType=REAL},
+    qnzjywcb = yycb-hlwcb-sjdbcb-${sgtzx},
+    chzzl = (yycb-hlwcb-sjdbcb-${sgtzx}) * 2 / (chjz+hlwchjz) * 365/(select DAYOFMONTH(LAST_DAY(now())) + 0),
+    ljchzzl = (yycb-hlwcb-sjdbcb-${sgtzx}) / chjz * ((select DAYOFMONTH(LAST_DAY(now())) + 0)/12),
+  </if>
+  <if test="mbz != null" >
+    mbz = #{mbz,jdbcType=INTEGER},
+  </if>
+  df = (
+  case
+  when((((yycb-hlwcb-sjdbcb-sgtzx) / chjz * ((select DAYOFMONTH(LAST_DAY(now())) + 0)/12)) /  mbz) &gt;= 1 ) then 3
+  when((((yycb-hlwcb-sjdbcb-sgtzx) / chjz * ((select DAYOFMONTH(LAST_DAY(now())) + 0)/12)) /  mbz) &lt; 0.8 ) then 0
+  else 15*ljchzzl/mbz-12
+    end
+  )
+    <include refid="dynamicWhere" /> -->
+    call STOCK_TURNOVER_RATIO(#{mbz},#{sgtzx},#{endMonth})
+    
+    
+  </update>
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

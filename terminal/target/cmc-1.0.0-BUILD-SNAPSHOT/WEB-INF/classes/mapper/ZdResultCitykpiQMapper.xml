@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.cmc.mapper.ZdResultCitykpiQMapper">
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.ZdResultCitykpiQ">
+    	<id property="year" column="year" jdbcType="VARCHAR"/>
+		<id property="quarter" column="quarter" jdbcType="VARCHAR"/>
+		<id property="city" column="city" jdbcType="VARCHAR"/>
+		<id property="kpiname" column="kpiname" jdbcType="VARCHAR"/>
+		<result property="operationCenter" column="operation_center" jdbcType="VARCHAR"/>
+		<result property="YGoal" column="y_goal" jdbcType="NUMERIC"/>
+		<result property="YValue" column="y_value" jdbcType="NUMERIC"/>
+		<result property="YRate" column="y_rate" jdbcType="NUMERIC"/>
+		<result property="QGoal" column="q_goal" jdbcType="NUMERIC"/>
+		<result property="QValue" column="q_value" jdbcType="NUMERIC"/>
+		<result property="QRate" column="q_rate" jdbcType="NUMERIC"/>
+		<result property="progress" column="progress" jdbcType="NUMERIC"/>
+		<result property="score" column="score" jdbcType="NUMERIC"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    year, quarter, city, kpiname, operation_center, y_goal, y_value, y_rate, q_goal, q_value, q_rate, progress, 
+    score
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.asiainfo.cmc.enties.ZdResultCitykpiQ" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ZD_RESULT_CITYKPI_Q
+    where year = #{year,jdbcType=VARCHAR}
+      and quarter = #{quarter,jdbcType=VARCHAR}
+      and city = #{city,jdbcType=VARCHAR}
+      and kpiname = #{kpiname,jdbcType=VARCHAR}
+  </select>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.ZdResultCitykpiQ">
+    update ZD_RESULT_CITYKPI_Q
+    <set>
+      <if test="YGoal != null">
+        y_goal = #{YGoal,jdbcType=NUMERIC},
+      </if>
+      <if test="YValue != null">
+        y_value = #{YValue,jdbcType=NUMERIC},
+      </if>
+      <if test="YRate != null">
+        y_rate = #{YRate,jdbcType=NUMERIC},
+      </if>
+      <if test="QGoal != null">
+        q_goal = #{QGoal,jdbcType=NUMERIC},
+      </if>
+      <if test="QValue != null">
+        q_value = #{QValue,jdbcType=NUMERIC},
+      </if>
+      <if test="QRate != null">
+        q_rate = #{QRate,jdbcType=NUMERIC},
+      </if>
+      <if test="progress != null">
+        progress = #{progress,jdbcType=NUMERIC},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=NUMERIC},
+      </if>
+    </set>
+    where year = #{year,jdbcType=VARCHAR}
+      and quarter = #{quarter,jdbcType=VARCHAR}
+      and city = #{city,jdbcType=VARCHAR}
+      and kpiname = #{kpiname,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.ZdResultCitykpiQ">
+    update ZD_RESULT_CITYKPI_Q
+    set y_goal = #{YGoal,jdbcType=NUMERIC},
+      y_value = #{YValue,jdbcType=NUMERIC},
+      y_rate = #{YRate,jdbcType=NUMERIC},
+      q_goal = #{QGoal,jdbcType=NUMERIC},
+      q_value = #{QValue,jdbcType=NUMERIC},
+      q_rate = #{QRate,jdbcType=NUMERIC},
+      progress = #{progress,jdbcType=NUMERIC},
+      score = #{score,jdbcType=NUMERIC}
+    where year = #{year,jdbcType=VARCHAR}
+      and quarter = #{quarter,jdbcType=VARCHAR}
+      and city = #{city,jdbcType=VARCHAR}
+      and kpiname = #{kpiname,jdbcType=VARCHAR}
+  </update>
+  
+   <select id="findAllByParam" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" />
+		FROM ZD_RESULT_CITYKPI_Q WHERE 1=1
+		<if test="@Ognl@isNotEmpty(year)"> AND year = #{year}  </if>
+		<if test="@Ognl@isNotEmpty(quarter)"> AND quarter = #{quarter}  </if>
+		order by operation_center,city asc
+	</select>
+</mapper>

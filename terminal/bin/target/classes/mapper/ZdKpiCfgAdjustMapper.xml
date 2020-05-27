@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.ZdKpiCfgAdjustMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.ZdKpiCfgAdjust" >
+        <result property="model" column="MODEL" />
+        <result property="kpiiID" column="KPIID" />
+        <result property="kpiName" column="KPINAME" />
+        <result property="tableName" column="TABLENAME" />
+        <result property="fieldID" column="FIELDID" />
+        <result property="fieldName" column="FIELDNAME" />
+  </resultMap>
+  
+   <resultMap id="LogBaseResultMap" type="com.asiainfo.cmc.enties.ZdKpiCfgAdjustLog" >
+   		<id property="id" column="id"/>
+        <result property="month" column="month" />
+        <result property="kpiID" column="KPIID" />
+        <result property="kpiName" column="KPINAME" />
+        <result property="fieldID" column="FIELDID" />
+        <result property="fieldName" column="FIELDNAME" />
+        <result property="tzq" column="TZQ" />
+        <result property="tzz" column="TZZ" />
+        <result property="tzh" column="TZH" />
+        <result property="tz_time" column="TZ_TIME" />
+        <result property="userID" column="USERID" />
+        <result property="userName" column="USERNAME" />
+        <result property="bz" column="BZ" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+  		 MODEL,KPIID,KPINAME,TABLENAME,FIELDID,FIELDNAME
+  </sql>
+  
+  <sql id="Log_Base_Column_List" >
+  		 id,month,KPIID,KPINAME,FIELDID,FIELDNAME,TZQ,TZZ,TZH,TZ_TIME,USERID,USERNAME,BZ
+  </sql>
+ 
+ <select id="getDataByKpiName" resultMap="BaseResultMap" parameterType="Map">
+ 	select 
+ 	<include refid="Base_Column_List" />
+ 	from ZD_KPI_CFG_ADJUST 
+ 	where KPINAME = #{flag}
+ </select>
+ 
+ <select id="getDataByParam" resultType="ProvinceAdjustField" parameterType="Map">
+ 	select ${columns} from ${tableName} where month = #{month}
+ </select>
+ 
+ <update id="updateAdjust" parameterType="Map">
+ 	update ${tableName} set ${field} = #{value} where month=#{zq_yf}
+ </update>
+ 
+  <update id="updateAdjustMbz" parameterType="Map">
+ 	update ${tableName} set ${field} = #{value} where month like CONCAT('',SUBSTRING(#{zq_yf},1,4),'%') 
+ </update>
+ 
+ <insert id="insertLog"  parameterType="Map">
+ 	insert into ZD_KPI_CFG_ADJUST_LOG (month,KPIID,KPINAME,FIELDID,FIELDNAME,TZQ,TZZ,TZH,TZ_TIME,USERID,USERNAME,BZ) values 
+ 	<foreach collection="adjustLogs" index="index" item="item" open="(" separator="),(" close=")">
+                 #{item.month},#{item.kpiID} ,#{item.kpiName} ,#{item.fieldID} ,#{item.fieldName} ,#{item.tzq} ,#{item.tzz} ,#{item.tzh} ,#{item.tz_time} ,#{item.userID} ,#{item.userName} , #{item.bz}    
+    </foreach> 
+ </insert>
+
+	<select id="getAdjustLogTable" parameterType="Map" resultMap="LogBaseResultMap">
+		select 
+		<include refid="Log_Base_Column_List" /> 
+		from  ZD_KPI_CFG_ADJUST_LOG where month =#{month} and KPINAME=#{kpiName} 
+		<if test="fieldName != null and  fieldName != ''">
+			and FIELDNAME=#{fieldName}
+		</if>
+		<if test="startTime != null and  startTime != ''">
+			and SUBSTRING(TZ_TIME,1,9) <![CDATA[>=#{startTime}]]>
+		</if>
+		<if test="stopTime != null and  stopTime != ''">
+			and SUBSTRING(TZ_TIME,1,9) <![CDATA[<=#{stopTime}]]>
+		</if>
+		limit #{pageNo},#{pageSize}
+	</select>
+	
+	<select id="getTotalByParam" resultType="java.lang.Integer" parameterType="Map">
+		select count(1) from ZD_KPI_CFG_ADJUST_LOG where month =#{month} and KPINAME=#{kpiName}
+		<if test="fieldName != null and  fieldName != ''">
+			and FIELDNAME=#{fieldName}
+		</if>
+		<if test="startTime != null and  startTime != ''">
+			and SUBSTRING(TZ_TIME,1,9) <![CDATA[>=#{startTime}]]>
+		</if>
+		<if test="stopTime != null and  stopTime != ''">
+			and SUBSTRING(TZ_TIME,1,9) <![CDATA[<=#{stopTime}]]>
+		</if>
+	</select>
+	
+	<select id="getFieldNames"	resultType="java.lang.String" parameterType="Map">
+		SELECT FIELDNAME FROM ZD_KPI_CFG_ADJUST WHERE KPINAME = #{flag}
+	</select>
+	
+</mapper>

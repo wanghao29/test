@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.BrandProductSalesIncomeMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.BrandProductSalesIncome" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="zyppsr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sgtzxm" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zyppsjsrlj" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zyppdxtzdsr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zyppdxtzdsrlj" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zyppsjsrmbz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zyppdxtzdsrmbz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zyppsjsrwcl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zyppdxtzdsrwcl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="df" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, zyppsr, sgtzxm, zyppsjsrlj, zyppdxtzdsr, zyppdxtzdsrlj, zyppsjsrmbz, zyppdxtzdsrmbz, 
+    zyppsjsrwcl, zyppdxtzdsrwcl, df, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from BRAND_PRODUCT_SALES_INCOME
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from BRAND_PRODUCT_SALES_INCOME
+    <include refid="dynamicWhere"/>
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from BRAND_PRODUCT_SALES_INCOME
+    <include refid="dynamicWhere"/>
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from BRAND_PRODUCT_SALES_INCOME
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month 
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from BRAND_PRODUCT_SALES_INCOME
+    where <![CDATA[month <= #{endMonth}]]>
+    order by month desc LIMIT 0,1
+  </select>
+
+  <select id="getKeyData" resultType="Map">
+    select
+    sum(hyyhsl) hyyhsls,sum(wqqkzb) wqqkzbs,sum(df) dfs,sum(sjjd) sjjds
+    from BRAND_PRODUCT_SALES_INCOME
+  </select>
+
+  <select id="selectBrandSalesIncome" resultMap="BaseResultMap">
+  	select
+    <include refid="Base_Column_List" />
+    from BRAND_PRODUCT_SALES_INCOME
+   where month=#{month}
+  </select>
+
+  <select id="getLastMonthWcqkzb" resultType="Float">
+    select ifnull(ljchzzl,0) from BRAND_PRODUCT_SALES_INCOME where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="Float">
+    select ifnull(ljchzzl,0) from BRAND_PRODUCT_SALES_INCOME where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from BRAND_PRODUCT_SALES_INCOME
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="map" >
+    insert into BRAND_PRODUCT_SALES_INCOME (id, zyppsr, sgtzxm, 
+      zyppsjsrlj, zyppdxtzdsr, zyppdxtzdsrlj, 
+      zyppsjsrmbz, zyppdxtzdsrmbz, zyppsjsrwcl, 
+      zyppdxtzdsrwcl, df, month
+      )
+    values (#{id,jdbcType=INTEGER}, #{zyppsr,jdbcType=VARCHAR}, #{sgtzxm,jdbcType=VARCHAR}, 
+      #{zyppsjsrlj,jdbcType=VARCHAR}, #{zyppdxtzdsr,jdbcType=VARCHAR}, #{zyppdxtzdsrlj,jdbcType=VARCHAR}, 
+      #{zyppsjsrmbz,jdbcType=VARCHAR}, #{zyppdxtzdsrmbz,jdbcType=VARCHAR}, #{zyppsjsrwcl,jdbcType=VARCHAR}, 
+      #{zyppdxtzdsrwcl,jdbcType=VARCHAR}, #{df,jdbcType=VARCHAR}, #{month,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="map" >
+    insert into BRAND_PRODUCT_SALES_INCOME
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="zyppsr != null" >
+        zyppsr,
+      </if>
+      <if test="sgtzxm != null" >
+        sgtzxm,
+      </if>
+      <if test="zyppsjsrlj != null" >
+        zyppsjsrlj,
+      </if>
+      <if test="zyppdxtzdsr != null" >
+        zyppdxtzdsr,
+      </if>
+      <if test="zyppdxtzdsrlj != null" >
+        zyppdxtzdsrlj,
+      </if>
+      <if test="zyppsjsrmbz != null" >
+        zyppsjsrmbz,
+      </if>
+      <if test="zyppdxtzdsrmbz != null" >
+        zyppdxtzdsrmbz,
+      </if>
+      <if test="zyppsjsrwcl != null" >
+        zyppsjsrwcl,
+      </if>
+      <if test="zyppdxtzdsrwcl != null" >
+        zyppdxtzdsrwcl,
+      </if>
+      <if test="df != null" >
+        df,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="zyppsr != null" >
+        #{zyppsr,jdbcType=VARCHAR},
+      </if>
+      <if test="sgtzxm != null" >
+        #{sgtzxm,jdbcType=VARCHAR},
+      </if>
+      <if test="zyppsjsrlj != null" >
+        #{zyppsjsrlj,jdbcType=VARCHAR},
+      </if>
+      <if test="zyppdxtzdsr != null" >
+        #{zyppdxtzdsr,jdbcType=VARCHAR},
+      </if>
+      <if test="zyppdxtzdsrlj != null" >
+        #{zyppdxtzdsrlj,jdbcType=VARCHAR},
+      </if>
+      <if test="zyppsjsrmbz != null" >
+        #{zyppsjsrmbz,jdbcType=VARCHAR},
+      </if>
+      <if test="zyppdxtzdsrmbz != null" >
+        #{zyppdxtzdsrmbz,jdbcType=VARCHAR},
+      </if>
+      <if test="zyppsjsrwcl != null" >
+        #{zyppsjsrwcl,jdbcType=VARCHAR},
+      </if>
+      <if test="zyppdxtzdsrwcl != null" >
+        #{zyppdxtzdsrwcl,jdbcType=VARCHAR},
+      </if>
+      <if test="df != null" >
+        #{df,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="map" >
+    update BRAND_PRODUCT_SALES_INCOME
+    <set >
+      <if test="sgtzxm != null" >
+        sgtzxm = #{sgtzxm,jdbcType=VARCHAR},
+      </if>
+       <if test="sgtzxm != null" >
+        zyppsr_sgtzxm = zyppsr - #{sgtzxm,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="map" >
+    update BRAND_PRODUCT_SALES_INCOME
+    set zyppsr = #{zyppsr,jdbcType=VARCHAR},
+      sgtzxm = #{sgtzxm,jdbcType=VARCHAR},
+      zyppsjsrlj = #{zyppsjsrlj,jdbcType=VARCHAR},
+      zyppdxtzdsr = #{zyppdxtzdsr,jdbcType=VARCHAR},
+      zyppdxtzdsrlj = #{zyppdxtzdsrlj,jdbcType=VARCHAR},
+      zyppsjsrmbz = #{zyppsjsrmbz,jdbcType=VARCHAR},
+      zyppdxtzdsrmbz = #{zyppdxtzdsrmbz,jdbcType=VARCHAR},
+      zyppsjsrwcl = #{zyppsjsrwcl,jdbcType=VARCHAR},
+      zyppdxtzdsrwcl = #{zyppdxtzdsrwcl,jdbcType=VARCHAR},
+      df = #{df,jdbcType=VARCHAR},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByTargetVal">
+    call  BRAND_PRODUCT_SALES_INCOME( #{zyppsjsrmbz},#{zyppdxtzdsrmbz},#{endMonth})
+<!--     <if test="sgtzxm != null" >
+      set sgtzxm = #{sgtzxm,jdbcType=VARCHAR}
+    </if>
+    <if test="zyppsjsrmbz != null" >
+      set zyppsjsrmbz = #{zyppsjsrmbz,jdbcType=VARCHAR},
+      zyppsjsrwcl = zyppsjsrlj / ${zyppsjsrmbz}
+    </if>
+    <if test="zyppdxtzdsrmbz != null" >
+      set zyppdxtzdsrmbz = #{zyppdxtzdsrmbz,jdbcType=VARCHAR},
+      set zyppdxtzdsrwcl = zyppdxtzdsrlj / ${zyppdxtzdsrmbz}
+    </if>
+    df=(
+      case
+      when (zyppsjsrwcl &lt; 1 and zyppdxtzdsrwcl &lt; 1 and (zyppsjsrlj + zyppdxtzdsrlj) / (zyppsjsrmbz + zyppdxtzdsrmbz) &lt;= 1) then 0
+      when ((zyppsrlj + zyppdxtzdsrlj) / (zyppsjsrmbz + zyppdxtzdsrmbz) &gt;= 1.32) then 4
+      else 15.625 * (zyppsrlj + zyppdxtzdsrlj) / (zyppsjsrmbz + zyppdxtzdsrmbz) - 15.625
+      end
+    )
+    <include refid="dynamicWhere"/> -->
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.ModelInternetMapper" >
+
+<!--查询一条数据  FORMAT(rebateCatched,2)  -->
+<select id="selectDate"  resultType="string">
+        select CONVERT(SUM(saleamount),DECIMAL(12,0)) saleamount 
+from zd_result_internet_lsl
+where stat_day <![CDATA[>= #{start} AND stat_day <= #{end}]]>
+</select>
+
+<select id="selectDateI"  parameterType="com.asiainfo.cmc.enties.InternetIndex" resultType="string">
+        select sum(indexvalue) 
+from kpi_internet_index
+where lsltype=#{lsltype} and datetype=#{datetype}
+and datevalue <![CDATA[>= #{start} AND datevalue <= #{end}]]> 
+</select>
+
+<!--互联网完成情况大类取数  -->
+
+<select id="listBig"  resultType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT TYPE,CONVERT(SUM(saleamount),DECIMAL(12,0)) saleamount
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{start} AND stat_day <= #{end}]]>
+GROUP BY TYPE
+ORDER BY saleamount DESC
+
+
+</select>
+
+<!--互联网完成情况品牌取数  -->
+
+<select id="listBrand"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+select brand,CONVERT(SUM(saleamount),DECIMAL(12,0)) saleamount
+from zd_result_internet_lsl 
+where stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+and type=#{type}
+group by brand
+order by saleamount desc
+
+
+
+</select>
+
+
+<!--互联网完成情况机型取数  -->
+<select id="listSpec"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+select spec,CONVERT(SUM(saleamount),DECIMAL(12,0)) saleamount
+from zd_result_internet_lsl 
+where stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+and type=#{type} and brand=#{brand}
+group by spec
+order by saleamount desc
+
+
+
+
+</select>
+<!--互联网完成情况配置取数  -->
+<select id="listMemory"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT MEMORY,CONVERT(SUM(saleamount),DECIMAL(12,0)) saleamount
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+AND TYPE=#{type} AND brand=#{brand} AND spec=#{spec}
+GROUP BY MEMORY
+ORDER BY saleamount DESC
+
+
+
+</select>
+<!--互联网完成情况颜色取数  -->
+<select id="listColor"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT color,CONVERT(SUM(saleamount),DECIMAL(12,0)) saleamount
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+AND TYPE=#{type} AND brand=#{brand} AND spec=#{spec} AND MEMORY=#{memory}
+GROUP BY color
+ORDER BY saleamount DESC
+
+
+
+</select>
+<!--互联网完成情况渠道取数  -->
+<select id="listClientName"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT clientname,CONVERT(SUM(saleamount),DECIMAL(12,0)) saleamount
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+AND TYPE=#{type} AND brand=#{brand} AND spec=#{spec} AND MEMORY=#{memory} AND color=#{color}
+AND clientname LIKE '%集中电商%'
+GROUP BY clientname
+ORDER BY saleamount DESC
+
+
+
+</select>
+
+<!--库存周转量  -->
+
+<select id="listAllStock"  resultType="com.asiainfo.cmc.enties.StockTurnOver" parameterType="string">
+
+SELECT s.type,s.brand,s.spec,
+CASE WHEN l.saleamount IS NOT NULL THEN s.stock/l.saleamount
+ELSE '-' END kczz,
+s.stock,
+CASE WHEN l.saleamount IS NULL THEN 0 ELSE  l.saleamount END saleamount,
+CASE WHEN q1.saleamount IS NULL THEN 0 ELSE q1.saleamount END 'mall10086',
+CASE WHEN q2.saleamount IS NULL THEN 0 ELSE q2.saleamount END 'jdmall',
+CASE WHEN q3.saleamount IS NULL THEN 0 ELSE q3.saleamount END 'pddmall',
+CASE WHEN q4.saleamount IS NULL THEN 0 ELSE q4.saleamount END 'phonemall',
+CASE WHEN q5.saleamount IS NULL THEN 0 ELSE q5.saleamount END 'tmchinamall',
+CASE WHEN q6.saleamount IS NULL THEN 0 ELSE q6.saleamount END 'tmphonemall',
+CASE WHEN q7.saleamount IS NULL THEN 0 ELSE q7.saleamount END 'pabankmall',
+CASE WHEN q8.saleamount IS NULL THEN 0 ELSE q8.saleamount END 'gdphonemall',
+CASE WHEN q9.saleamount IS NULL THEN 0 ELSE q9.saleamount END 'ydpddmall',
+CASE WHEN q10.saleamount IS NULL THEN 0 ELSE q10.saleamount END 'zjtmmall',
+CASE WHEN q11.saleamount IS NULL THEN 0 ELSE q11.saleamount END 'gsbankmall',
+CASE WHEN q12.saleamount IS NULL THEN 0 ELSE q12.saleamount END 'hzlmall',
+CASE WHEN q13.saleamount IS NULL THEN 0 ELSE q13.saleamount END 'wecatmall'
+FROM zd_result_internt_stock s 
+LEFT JOIN 
+(
+SELECT brand,spec,SUM(saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day<![CDATA[>REPLACE(DATE_SUB(#{time},INTERVAL 7 day),'-','')  and a.stat_day<=#{time}]]>
+AND a.clientname LIKE '%集中电商%'
+GROUP BY brand,spec
+) l ON l.brand=s.brand AND l.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商--10086商城'
+GROUP BY a.brand,a.spec,a.clientname) q1 ON q1.brand=s.brand AND q1.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商--京东商城'
+GROUP BY a.brand,a.spec,a.clientname) q2 ON q2.brand=s.brand AND q2.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商-拼多多店铺'
+GROUP BY a.brand,a.spec,a.clientname) q3 ON q3.brand=s.brand AND q3.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商-拼多多店铺'
+GROUP BY a.brand,a.spec,a.clientname) q4 ON q4.brand=s.brand AND q4.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商--手机商城自营'
+GROUP BY a.brand,a.spec,a.clientname) q5 ON q5.brand=s.brand AND q5.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商-天猫中国移动手机官方旗舰店'
+GROUP BY a.brand,a.spec,a.clientname) q6 ON q6.brand=s.brand AND q6.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商-中国移动平安银行手机官方旗舰店'
+GROUP BY a.brand,a.spec,a.clientname) q7 ON q7.brand=s.brand AND q7.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商--手机商城广东'
+GROUP BY a.brand,a.spec,a.clientname) q8 ON q8.brand=s.brand AND q8.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商-中国移动拼多多手机官方旗舰店'
+GROUP BY a.brand,a.spec,a.clientname) q9 ON q9.brand=s.brand AND q9.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商--浙江天猫店'
+GROUP BY a.brand,a.spec,a.clientname) q10 ON q10.brand=s.brand AND q10.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商--工商银行'
+GROUP BY a.brand,a.spec,a.clientname) q11 ON q11.brand=s.brand AND q11.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商-和助力'
+GROUP BY a.brand,a.spec,a.clientname) q12 ON q12.brand=s.brand AND q12.spec=s.spec
+LEFT JOIN
+(SELECT a.brand,a.spec,a.clientname,SUM(a.saleamount) saleamount FROM zd_result_internet_lsl a
+WHERE a.stat_day=#{time} and  clientname='集中电商--微信商城'
+GROUP BY a.brand,a.spec,a.clientname) q13 ON q13.brand=s.brand AND q13.spec=s.spec
+WHERE s.stat_day=#{time} 
+
+
+
+</select>
+
+
+
+<!--收入 -->
+
+
+<!--查询一条数据  FORMAT(rebateCatched,2)  -->
+<select id="selectDateIncome"  resultType="string">
+        select CONVERT(SUM(saleincom),DECIMAL(12,0)) saleincom
+from zd_result_internet_lsl
+where stat_day <![CDATA[>= #{start} AND stat_day <= #{end}]]>
+</select>
+
+<select id="selectDateIIncome"  parameterType="com.asiainfo.cmc.enties.InternetIndex" resultType="string">
+        select sum(indexvalue) 
+from kpi_internet_index
+where lsltype=#{lsltype} and datetype=#{datetype}
+and datevalue <![CDATA[>= #{start} AND datevalue <= #{end}]]> 
+</select>
+
+<!--互联网完成情况大类取数  -->
+
+<select id="listBigIncome"  resultType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT TYPE,CONVERT(SUM(saleincom),DECIMAL(12,0)) saleincom
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{start} AND stat_day <= #{end}]]>
+GROUP BY TYPE
+ORDER BY saleincom DESC
+
+
+</select>
+
+<!--互联网完成情况品牌取数  -->
+
+<select id="listBrandIncome"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+select brand,CONVERT(SUM(saleincom),DECIMAL(12,0)) saleincom
+from zd_result_internet_lsl 
+where stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+and type=#{type}
+group by brand
+order by saleincom desc
+
+
+
+</select>
+
+
+<!--互联网完成情况机型取数  -->
+<select id="listSpecIncome"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+select spec,CONVERT(SUM(saleincom),DECIMAL(12,0)) saleincom
+from zd_result_internet_lsl 
+where stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+and type=#{type} and brand=#{brand}
+group by spec
+order by saleincom desc
+
+
+
+
+</select>
+<!--互联网完成情况配置取数  -->
+<select id="listMemoryIncome"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT MEMORY,CONVERT(SUM(saleincom),DECIMAL(12,0)) saleincom
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+AND TYPE=#{type} AND brand=#{brand} AND spec=#{spec}
+GROUP BY MEMORY
+ORDER BY saleincom DESC
+
+
+
+</select>
+<!--互联网完成情况颜色取数  -->
+<select id="listColorIncome"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT color,CONVERT(SUM(saleincom),DECIMAL(12,0)) saleincom
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+AND TYPE=#{type} AND brand=#{brand} AND spec=#{spec} AND MEMORY=#{memory}
+GROUP BY color
+ORDER BY saleincom DESC
+
+
+
+</select>
+<!--互联网完成情况渠道取数  -->
+<select id="listClientNameIncome"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT clientname,CONVERT(SUM(saleincom),DECIMAL(12,0)) saleincom
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+AND TYPE=#{type} AND brand=#{brand} AND spec=#{spec} AND MEMORY=#{memory} AND color=#{color}
+AND clientname LIKE '%集中电商%'
+GROUP BY clientname
+ORDER BY saleincom DESC
+
+
+
+</select>
+
+
+
+
+
+
+
+
+
+<!-- 利润  -->
+
+<!--查询一条数据  FORMAT(rebateCatched,2)  -->
+<select id="selectDateRote"  resultType="string">
+        select  CONVERT(SUM(saleprofit),DECIMAL(12,0)) saleprofit
+from zd_result_internet_lsl
+where stat_day <![CDATA[>= #{start} AND stat_day <= #{end}]]>
+</select>
+
+<select id="selectDateIRote"  parameterType="com.asiainfo.cmc.enties.InternetIndex" resultType="string">
+        select sum(indexvalue) 
+from kpi_internet_index
+where lsltype=#{lsltype} and datetype=#{datetype}
+and datevalue <![CDATA[>= #{start} AND datevalue <= #{end}]]> 
+</select>
+
+<!--互联网完成情况大类取数  -->
+
+<select id="listBigRote"  resultType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT TYPE, CONVERT(SUM(saleprofit),DECIMAL(12,0)) saleprofit
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{start} AND stat_day <= #{end}]]>
+GROUP BY TYPE
+ORDER BY saleprofit DESC
+
+
+</select>
+
+<!--互联网完成情况品牌取数  -->
+
+<select id="listBrandRote"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+select brand, CONVERT(SUM(saleprofit),DECIMAL(12,0)) saleprofit
+from zd_result_internet_lsl 
+where stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+and type=#{type}
+group by brand
+order by saleprofit desc
+
+
+
+</select>
+
+
+<!--互联网完成情况机型取数  -->
+<select id="listSpecRote"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+select spec, CONVERT(SUM(saleprofit),DECIMAL(12,0)) saleprofit
+from zd_result_internet_lsl 
+where stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+and type=#{type} and brand=#{brand}
+group by spec
+order by saleprofit desc
+
+
+
+
+</select>
+<!--互联网完成情况配置取数  -->
+<select id="listMemoryRote"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT MEMORY, CONVERT(SUM(saleprofit),DECIMAL(12,0)) saleprofit
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+AND TYPE=#{type} AND brand=#{brand} AND spec=#{spec}
+GROUP BY MEMORY
+ORDER BY saleprofit DESC
+
+
+
+</select>
+<!--互联网完成情况颜色取数  -->
+<select id="listColorRote"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT color, CONVERT(SUM(saleprofit),DECIMAL(12,0)) saleprofit
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+AND TYPE=#{type} AND brand=#{brand} AND spec=#{spec} AND MEMORY=#{memory}
+GROUP BY color
+ORDER BY saleprofit DESC
+
+
+
+</select>
+<!--互联网完成情况渠道取数  -->
+<select id="listClientNameRote"  resultType="com.asiainfo.cmc.enties.ModelInternet" parameterType="com.asiainfo.cmc.enties.ModelInternet">
+
+SELECT clientname, CONVERT(SUM(saleprofit),DECIMAL(12,0)) saleprofit
+FROM zd_result_internet_lsl 
+WHERE stat_day <![CDATA[>= #{startTime} AND stat_day <= #{endTime}]]>
+AND TYPE=#{type} AND brand=#{brand} AND spec=#{spec} AND MEMORY=#{memory} AND color=#{color}
+AND clientname LIKE '%集中电商%'
+GROUP BY clientname
+ORDER BY saleprofit DESC
+
+
+
+</select>
+
+
+
+
+
+</mapper>

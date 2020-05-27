@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.brandmodel.BrandPriceMapper" >
+ <resultMap id="BrandMap" type="com.asiainfo.cmc.enties.brandmodel.BrandPrice" >
+    <constructor >
+      <arg column="month" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="type" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="total" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="value1" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="value2" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="value3" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="value4" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="value5" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="value6" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="value7" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="value8" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="city" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+ 
+  <sql id="Brand_Column_List" >
+    month, type, total, value1, value2, value3, value4, value5, value6, value7, value8,
+     city
+  </sql>
+ 
+ <select id="selectBrandPrice" resultType="BrandPrice" >
+ 
+ 
+ 
+SELECT  
+    MAX(t1.month) month2, MAX(t1.type) type1,t1.city city1,SUM(t1.total) total1,SUM(t1.value1) value12,SUM(t1.value2) value22,SUM(t1.value3) value32,SUM(t1.value4) value42,SUM(t1.value5) value52,SUM(t1.value6) value62,
+    SUM(t1.value7) value72,SUM(t1.value8) value82,
+    
+    MAX(t0.month) MONTH, MAX(t0.TYPE) TYPE,t0.city city,SUM(t0.total) total,SUM(t0.value1) value1,SUM(t0.value2) value2,SUM(t0.value3) value3,SUM(t0.value4) value4,SUM(t0.value5) value5,SUM(t0.value6) value6,
+    SUM(t0.value7) value7,SUM(t0.value8) value8
+FROM 
+
+(SELECT  * FROM ZD_RESULT_OPER_PRICE_CAPACITY WHERE TYPE=1) t0
+LEFT JOIN 
+(SELECT  * FROM  ZD_RESULT_OPER_PRICE_CAPACITY WHERE TYPE=0) t1
+ON t0.month=t1.month AND t0.city=t1.city
+
+where t0.month &gt;= #{month} and t0.month &lt;=#{month2}
+
+GROUP BY t0.city
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  </select>
+ 
+  <insert id="insertBrandPrice" parameterType="com.asiainfo.cmc.enties.brandmodel.BrandPrice" >
+    insert into ZD_RESULT_OPER_PRICE_CAPACITY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="month != null" >
+        month,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="total != null" > 
+        total,
+      </if>
+      <if test="value1 != null" >
+        value1,
+      </if>
+      <if test="value2 != null" >
+        value2,
+      </if>
+      <if test="value3 != null" >
+        value3,
+      </if>
+      <if test="value4 != null" >
+        value4,
+      </if>
+      <if test="value5 != null" >
+        value5,
+      </if>
+      <if test="value6 != null" >
+        value6,
+      </if>
+       <if test="value7 != null" >
+        value7,
+      </if>
+       <if test="value8 != null" >
+        value8,
+      </if>
+      
+      <if test="city != null" >
+        city,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="month != null" >
+        #{month},
+      </if>
+      <if test="type != null" >
+        #{type},
+      </if>
+      <if test="total != null" > 
+        #{total},
+      </if>
+      <if test="value1 != null" >
+        #{value1},
+      </if>
+      <if test="value2 != null" >
+        #{value2},
+      </if>
+      <if test="value3 != null" >
+        #{value3},
+      </if>
+      <if test="value4 != null" >
+        #{value4},
+      </if>
+      <if test="value5 != null" >
+        #{value5},
+      </if>
+      <if test="value6 != null" >
+        #{value6},
+      </if>
+       <if test="value7 != null" >
+        #{value7},
+      </if>
+       <if test="value8 != null" >
+       #{value8},
+      </if>
+      
+      <if test="city != null" >
+        #{city},
+      </if>
+
+
+</trim>
+  </insert>
+ 
+ <select id="selectBrandPriceNew" resultType="BrandPrice" >
+ 
+ SELECT * FROM ZD_RESULT_OPER_PRICE_CAPACITY WHERE `month`=#{month}
+ 
+ </select>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.asiainfo.cmc.qudao.mapper.ZdResultCellQudaoMMapper">  
+    
+    <select id="listCellQudao" parameterType="com.asiainfo.cmc.qudao.vo.QudaoVo"  resultType="com.asiainfo.cmc.qudao.vo.QudaoVo">
+         SELECT STAT_MONTH statMonth,CITY_NAM cityNam,TERM_BRND termBrnd,TERM_MDL termMdl,
+             NE_NAM name,CELL_LONGITUDE longitude,CELL_LATITUDE latitude
+         FROM ZD_RESULT_CELL_QUDAO_M WHERE  STAT_MONTH =#{statMonth} AND CITY_NAM=#{cityNam} 
+             AND TERM_BRND=#{termBrnd}
+             <if test='termMdl!=null and termMdl!=""'> AND TERM_MDL=#{termMdl}</if> 
+             <if test='name!=null and name!=""'> AND NE_NAM=#{name}</if>    
+    </select>
+    
+    <select id="listFieldByMonths" parameterType="com.asiainfo.cmc.qudao.vo.QudaoVo"  resultType="map">
+         SELECT ${field} 
+         FROM ZD_RESULT_CELL_QUDAO_M 
+         WHERE CITY_NAM=#{cityNam} AND TERM_BRND=#{termBrnd} 
+	         <if test='termMdl!=null and termMdl!=""'>AND TERM_MDL=#{termMdl}</if>
+	         <if test='name!=null and name!=""'>AND NE_NAM=#{name}</if>         
+	         AND STAT_MONTH  in
+	         <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+	               #{item}       
+	         </foreach> 
+         GROUP BY  STAT_MONTH,CITY_NAM,TERM_BRND
+	         <if test='termMdl!=null and termMdl!=""'>,TERM_MDL</if>
+	         <if test='name!=null and name!=""'>, NE_NAM</if>           
+    </select>  
+    
+    <select id="getFieldByMonth" parameterType="com.asiainfo.cmc.qudao.vo.QudaoVo"  resultType="map">
+         SELECT ${field}
+         FROM ZD_RESULT_CELL_QUDAO_M 
+         WHERE CITY_NAM=#{cityNam} AND TERM_BRND=#{termBrnd} 
+	         <if test='termMdl!=null and termMdl!=""'>AND TERM_MDL=#{termMdl}</if>
+	         <if test='name!=null and name!=""'>AND NE_NAM=#{name}</if>
+	         AND STAT_MONTH=#{statMonth}
+         GROUP BY  STAT_MONTH,CITY_NAM,TERM_BRND
+         	 <if test='termMdl!=null and termMdl!=""'>,TERM_MDL</if>
+	         <if test='name!=null and name!=""'>, NE_NAM</if>   
+    </select>
+    
+    <select id="listBrand" parameterType="com.asiainfo.cmc.qudao.vo.QudaoVo"  resultType="string">
+         SELECT TERM_BRND FROM ZD_RESULT_CELL_QUDAO_M WHERE CITY_NAM=#{cityNam} AND STAT_MONTH =#{statMonth} GROUP BY TERM_BRND
+    </select>    
+    
+    <select id="listSpecByBrand" parameterType="com.asiainfo.cmc.qudao.vo.QudaoVo"  resultType="com.asiainfo.cmc.qudao.vo.QudaoVo">
+         SELECT TERM_MDL,MAX(a4g_plus_ind) a4g_plus_ind  FROM ZD_RESULT_CELL_QUDAO_M 
+         WHERE CITY_NAM=#{cityNam} AND STAT_MONTH =#{statMonth} AND TERM_BRND=#{termBrnd} GROUP BY TERM_MDL
+    </select>        
+</mapper>

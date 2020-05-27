@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.asiainfo.cmc.qudao.mapper.FollowCustomerSearchMapper">
+
+    <select id="listOrga_ZD_RESULT_CUSTOMER_DYNAMIC_D"  parameterType="com.asiainfo.cmc.qudao.vo.FollowCustomerSearchVo" resultType="String">
+		SELECT orgacode
+		FROM ZD_RESULT_CUSTOMER_DYNAMIC_D 
+		WHERE AREANAME=#{tag1} AND stat_day &gt;= #{startDay} AND stat_day &lt;= #{endDay}			
+		GROUP BY orgacode,AREANAME
+		HAVING 1=1
+	    <if test='cntnewStart!=null and cntnewStart!=""'>AND sum(cntnew) &gt;= #{cntnewStart}</if>
+	    <if test='cntnewEnd!=null and cntnewEnd!=""'>AND sum(cntnew) &lt;= #{cntnewEnd}</if>
+	    <if test='cntotherStart!=null and cntotherStart!=""'>AND sum(cntother) &gt;= #{cntotherStart}</if>
+	    <if test='cntotherEnd!=null and cntotherEnd!=""'>AND sum(cntother) &lt;= #{cntotherEnd}</if>
+	    <if test='cnt4gpStart!=null and cnt4gpStart!=""'>AND sum(cnt4gp) &gt;= #{cnt4gpStart}</if>
+	    <if test='cnt4gpEnd!=null and cnt4gpEnd!=""'>AND sum(cnt4gp) &lt;= #{cnt4gpEnd}</if>
+	    <if test='cntydStart!=null and cntydStart!=""'>AND sum(cntyd) &gt;= #{cntydStart}</if>
+	    <if test='cntydEnd!=null and cntydEnd!=""'>AND sum(cntyd) &lt;= #{cntydEnd}</if>
+	    <if test='cntselfStart!=null and cntselfStart!=""'>AND sum(cntself) &gt;= #{cntselfStart}</if>
+	    <if test='cntselfEnd!=null and cntselfEnd!=""'>AND sum(cntself) &lt;= #{cntselfEnd}</if>		
+    </select>    
+    <select id="listOrga_ZD_RESULT_CUSTOMER_NORMAL_M"  parameterType="com.asiainfo.cmc.qudao.vo.FollowCustomerSearchVo" resultType="String">
+		SELECT orgacode FROM ZD_RESULT_CUSTOMER_NORMAL_M 
+		WHERE AREANAME=#{tag1}  AND stat_month &gt;= SUBSTR(#{startDay}, 1,6) AND stat_month &lt;= SUBSTR(#{endDay}, 1,6)
+		GROUP BY orgacode,AREANAME
+		HAVING 1=1
+	    <if test='cntstockStart!=null and cntstockStart!=""'> AND sum(cntstock) &gt;= #{cntstockStart}</if>
+        <if test='cntstockEnd!=null and cntstockEnd!=""'>AND sum(cntstock) &lt;= #{cntstockEnd}</if>
+    </select>
+    
+    <select id="listOrga_ZD_CTMS_SO_D"  parameterType="com.asiainfo.cmc.qudao.vo.FollowCustomerSearchVo" resultType="String"> 
+		SELECT s.orgacode FROM
+		    (SELECT so.orgacode,so.city,so.amout_so amout_so,so.brandname,so.spec,IFNULL(so_zd1.amout_so_zd1,0) amout_so_zd1 FROM 
+				(SELECT providercode orgacode,AREANAME city,SUM(AMOUNT) amout_so,MAX(brandname) brandname,MAX(spec) spec
+					FROM ZD_CTMS_SO_D 
+					WHERE AREANAME=#{tag1}  AND REPLACE(DODATE,'-','') &gt;= #{startDay} AND REPLACE(DODATE,'-','') &lt;= #{endDay}
+					GROUP BY providercode
+		    		<if test='brandname!=null and brandname!=""'>,brandname</if>
+		    		<if test='spec!=null and spec!=""'>,spec</if>  ) so
+				LEFT JOIN
+					(SELECT providercode orgacode,AREANAME city,SUM(AMOUNT) amout_so_zd1,MAX(brandname) brandname,MAX(spec) spec
+					FROM ZD_CTMS_SO_D WHERE ISZD=1 
+					AND AREANAME=#{tag1}  AND REPLACE(DODATE,'-','') &gt;= #{startDay} AND REPLACE(DODATE,'-','') &lt;= #{endDay}
+					GROUP BY providercode
+		    		<if test='brandname!=null and brandname!=""'>,brandname</if>
+		    		<if test='spec!=null and spec!=""'>,spec</if>  ) so_zd1
+				ON so_zd1.orgacode = so.orgacode AND so_zd1.city=so.city 
+				    <if test='brandname!=null and brandname!=""'>AND so_zd1.brandname=so.brandname</if>
+				    <if test='spec!=null and spec!=""'>AND so_zd1.spec=so.spec</if>  				
+				) s				
+		WHERE 1=1
+	    <if test='brandname!=null and brandname!=""'>AND s.brandname = #{brandname}</if>
+	    <if test='spec!=null and spec!=""'>AND s.spec = #{spec}</if>   		
+	    <if test='amoutSoZd1Start!=null and amoutSoZd1Start!=""'>AND s.amout_so_zd1 &gt;= #{amoutSoZd1Start}</if>
+	    <if test='amoutSoZd1End!=null and amoutSoZd1End!=""'>AND s.amout_so_zd1 &lt;= #{amoutSoZd1End}</if>
+	    <if test='amoutSoStart!=null and amoutSoStart!=""'>AND s.amout_so &gt;= #{amoutSoStart}</if>
+	    <if test='amoutSoEnd!=null and amoutSoEnd!=""'>AND s.amout_so &lt;= #{amoutSoEnd}</if>	
+	    GROUP BY s.orgacode	
+    </select>   
+    <select id="listOrga_ZD_CTMS_SI_D"  parameterType="com.asiainfo.cmc.qudao.vo.FollowCustomerSearchVo" resultType="String">
+		SELECT s.orgacode FROM(
+	        SELECT AREANAME city,orgacode,SUM(AMOUNT) amount_si,MAX(brandname) brandname,MAX(spec) spec
+	        FROM ZD_CTMS_SI_D
+	        WHERE AREANAME=#{tag1}  AND REPLACE(DODATE,'-','') &gt;= #{startDay} AND REPLACE(DODATE,'-','') &lt;= #{endDay}
+	        GROUP BY orgacode
+	    	<if test='brandname!=null and brandname!=""'>,brandname</if>
+	    	<if test='spec!=null and spec!=""'>,spec</if>                    
+        ) s         
+        WHERE 1=1
+	    <if test='brandname!=null and brandname!=""'>AND s.brandname = #{brandname}</if>
+	    <if test='spec!=null and spec!=""'>AND s.spec = #{spec}</if>	     
+	    <if test='amoutSiStart!=null and amoutSiStart!=""'>AND s.amount_si &gt;= #{amoutSiStart}</if>
+	    <if test='amoutSiEnd!=null and amoutSiEnd!=""'>AND s.amount_si &lt;= #{amoutSiEnd}</if>
+	    GROUP BY s.orgacode			        	
+    </select>     
+
+    <select id="listOrga_zd_result_cust_portrait_new_m_pj"  parameterType="com.asiainfo.cmc.qudao.vo.FollowCustomerSearchVo" resultType="String">
+		SELECT cm.orgacode
+		FROM zd_result_cust_portrait_new_m cm	
+	    WHERE 1=1
+	    <if test='tag1!=null and tag1!=""'>AND AREANAME=#{tag1}</if>
+	    <if test='startDay!=null and startDay!=""'>AND month &gt;= SUBSTR(#{startDay}, 1,6)</if>
+	    <if test='endDay!=null and endDay!=""'>AND month &lt;= SUBSTR(#{endDay}, 1,6)</if>
+	       
+		GROUP BY orgacode,AREANAME   
+	    <if test='tag11!=null and tag11!=""'>,tag11</if>
+	    <if test='tag12!=null and tag12!=""'>,tag12</if> 
+		HAVING  1=1 
+	    
+	    <!-- 3、提货偏好 -->
+	    <if test='tag11!=null and tag11!=""'>AND cm.tag11 = #{tag11}</if>
+	    <if test='tag12!=null and tag12!=""'>AND cm.tag12 = #{tag12}</if>
+	    <if test='tag21Start!=null and tag21Start!=""'>AND SUM(cm.tag21) &gt;= #{tag21Start}</if>
+	    <if test='tag21End!=null and tag21End!=""'>AND SUM(cm.tag21) &lt;= #{tag21End}</if>
+	    <if test='tag16Start!=null and tag16Start!=""'>AND SUM(cm.tag16) &gt;= #{tag16Start}</if>
+	    <if test='tag16End!=null and tag16End!=""'>AND SUM(cm.tag16) &lt;= #{tag16End}</if>
+	    <if test='tag20Start!=null and tag20Start!=""'>AND SUM(cm.tag20) &gt;= #{tag20Start}</if>
+	    <if test='tag20End!=null and tag20End!=""'>AND SUM(cm.tag20) &lt;= #{tag20End}</if>		    	    	
+    </select>
+
+    <select id="listOrga_zd_result_cust_portrait_new_m"  parameterType="com.asiainfo.cmc.qudao.vo.FollowCustomerSearchVo" resultType="String">
+		SELECT cm.orgacode
+		FROM zd_result_cust_portrait_new_m cm	
+	    WHERE 1=1
+	    <if test='tag1!=null and tag1!=""'>AND AREANAME=#{tag1}</if>
+	    <if test='startDay!=null and startDay!=""'>AND month &gt;= SUBSTR(#{startDay}, 1,6)</if>
+	    <if test='endDay!=null and endDay!=""'>AND month &lt;= SUBSTR(#{endDay}, 1,6)</if>
+	       
+		GROUP BY orgacode,AREANAME   
+		HAVING  1=1 
+		
+	    <if test='netinValStart!=null and netinValStart!=""'>AND SUM(cm.netin_val) &gt;= #{netinValStart} </if>
+	    <if test='netinValEnd!=null and netinValEnd!=""'>AND SUM(cm.netin_val) &lt;= #{netinValEnd}</if>
+	    <if test='passengerVolStart!=null and passengerVolStart!=""'>AND SUM(cm.kll) &gt;= #{passengerVolStart}</if>
+	    <if test='passengerVolEnd!=null and passengerVolEnd!=""'>AND SUM(cm.kll) &lt;= #{passengerVolEnd}</if>
+	    <if test='usrNbrStockStart!=null and usrNbrStockStart!=""'>AND SUM(cm.nbrstock) &gt;= #{usrNbrStockStart}</if>
+	    <if test='usrNbrStockEnd!=null and usrNbrStockEnd!=""'>AND SUM(cm.nbrstock) &lt;= #{usrNbrStockEnd}</if>	
+	    
+	    <!-- 6、厅店扩展 -->
+	    <if test='usrNbrHallValStart!=null and usrNbrHallValStart!=""'>AND SUM(cm.usr_nbr_hall_val) &gt;= #{usrNbrHallValStart}</if>
+	    <if test='usrNbrHallValEnd!=null and usrNbrHallValEnd!=""'>AND SUM(cm.usr_nbr_hall_val) &lt;= #{usrNbrHallValEnd}</if>
+	    <if test='usrNbrHallStart!=null and usrNbrHallStart!=""'>AND SUM(cm.usr_nbr_hall) &gt;= #{usrNbrHallStart}</if>
+	    <if test='usrNbrHallEnd!=null and usrNbrHallEnd!=""'>AND SUM(cm.usr_nbr_hall) &lt;= #{usrNbrHallEnd}</if>	
+	    
+	    <!-- 7、DM流向	 -->
+	    <if test='netInRatioStart!=null and netInRatioStart!=""'>AND SUM(cm.net_in_ratio) &gt;= #{netInRatioStart}</if>
+	    <if test='netInRatioEnd!=null and netInRatioEnd!=""'>AND SUM(cm.net_in_ratio) &lt; #{netInRatioEnd}</if>
+	    <if test='blackCustRatioStart!=null and blackCustRatioStart!=""'>AND SUM(cm.black_cust_ratio) &gt;= #{blackCustRatioStart}</if>
+	    <if test='blackCustRatioEnd!=null and blackCustRatioEnd!=""'>AND SUM(cm.black_cust_ratio) &lt;= #{blackCustRatioEnd}</if>
+	    <if test='susCarkRatioStart!=null and susCarkRatioStart!=""'>AND SUM(cm.sus_cark_ratio) &gt;= #{susCarkRatioStart}</if>
+	    <if test='susCarkRatioEnd!=null and susCarkRatioEnd!=""'>AND SUM(cm.sus_cark_ratio) &lt;= #{susCarkRatioEnd}</if>
+	    <if test='oneThreeRatioStart!=null and oneThreeRatioStart!=""'>AND SUM(cm.one_three_ratio) &gt;= #{oneThreeRatioStart}</if>
+	    <if test='oneThreeRatioEnd!=null and oneThreeRatioEnd!=""'>AND SUM(cm.one_three_ratio) &lt;= #{oneThreeRatioEnd}</if>	
+	    
+	    <if test='countStart!=null and countStart!=""'>AND SUM(over_cell) &gt;= #{countStart}</if>
+	    <if test='countEnd!=null and countEnd!=""'>AND SUM(over_cell) &lt;= #{countEnd}</if>	    	    	
+    </select>
+    
+    <select id="listCust_zd_result_cust_portrait_new_m"  parameterType="com.asiainfo.cmc.qudao.vo.FollowCustomerSearchVo" resultType="FollowCustomerSearch">
+		SELECT cm.orgacode,MAX(cm.month) month,cm.areaname tag1,MAX(cm.custname) tag2,MAX(tag3) tag3,MAX(tag6) tag6,MAX(tag7) tag7
+		FROM zd_result_cust_portrait_new_m cm	
+	    WHERE 1=1
+	    <if test='tag1!=null and tag1!=""'>AND AREANAME=#{tag1}</if>
+	    <if test='startDay!=null and startDay!=""'>AND month &gt;= SUBSTR(#{startDay}, 1,6)</if>
+	    <if test='endDay!=null and endDay!=""'>AND month &lt;= SUBSTR(#{endDay}, 1,6)</if>
+	       
+		GROUP BY orgacode,AREANAME   
+	    <if test='tag11!=null and tag11!=""'>,tag11</if>
+	    <if test='tag12!=null and tag12!=""'>,tag12</if> 
+		HAVING  1=1 
+		
+	    <if test='netinValStart!=null and netinValStart!=""'>AND SUM(cm.netin_val) &gt;= #{netinValStart} </if>
+	    <if test='netinValEnd!=null and netinValEnd!=""'>AND SUM(cm.netin_val) &lt;= #{netinValEnd}</if>
+	    <if test='passengerVolStart!=null and passengerVolStart!=""'>AND SUM(cm.kll) &gt;= #{passengerVolStart}</if>
+	    <if test='passengerVolEnd!=null and passengerVolEnd!=""'>AND SUM(cm.kll) &lt;= #{passengerVolEnd}</if>
+	    <if test='usrNbrStockStart!=null and usrNbrStockStart!=""'>AND SUM(cm.nbrstock) &gt;= #{usrNbrStockStart}</if>
+	    <if test='usrNbrStockEnd!=null and usrNbrStockEnd!=""'>AND SUM(cm.nbrstock) &lt;= #{usrNbrStockEnd}</if>	
+	    
+	    <!-- 3、提货偏好 -->
+	    <if test='tag11!=null and tag11!=""'>AND cm.tag11 = #{tag11}</if>
+	    <if test='tag12!=null and tag12!=""'>AND cm.tag12 = #{tag12}</if>
+	    <if test='tag21Start!=null and tag21Start!=""'>AND SUM(cm.tag21) &gt;= #{tag21Start}</if>
+	    <if test='tag21End!=null and tag21End!=""'>AND SUM(cm.tag21) &lt;= #{tag21End}</if>
+	    <if test='tag16Start!=null and tag16Start!=""'>AND SUM(cm.tag16) &gt;= #{tag16Start}</if>
+	    <if test='tag16End!=null and tag16End!=""'>AND SUM(cm.tag16) &lt;= #{tag16End}</if>
+	    <if test='tag20Start!=null and tag20Start!=""'>AND SUM(cm.tag20) &gt;= #{tag20Start}</if>
+	    <if test='tag20End!=null and tag20End!=""'>AND SUM(cm.tag20) &lt;= #{tag20End}</if>	
+	    
+	    <!-- 6、厅店扩展 -->
+	    <if test='usrNbrHallValStart!=null and usrNbrHallValStart!=""'>AND SUM(cm.usr_nbr_hall_val) &gt;= #{usrNbrHallValStart}</if>
+	    <if test='usrNbrHallValEnd!=null and usrNbrHallValEnd!=""'>AND SUM(cm.usr_nbr_hall_val) &lt;= #{usrNbrHallValEnd}</if>
+	    <if test='usrNbrHallStart!=null and usrNbrHallStart!=""'>AND SUM(cm.usr_nbr_hall) &gt;= #{usrNbrHallStart}</if>
+	    <if test='usrNbrHallEnd!=null and usrNbrHallEnd!=""'>AND SUM(cm.usr_nbr_hall) &lt;= #{usrNbrHallEnd}</if>	
+	    
+	    <!-- 7、DM流向	 -->
+	    <if test='netInRatioStart!=null and netInRatioStart!=""'>AND SUM(cm.net_in_ratio) &gt;= #{netInRatioStart}</if>
+	    <if test='netInRatioEnd!=null and netInRatioEnd!=""'>AND SUM(cm.net_in_ratio) &lt; #{netInRatioEnd}</if>
+	    <if test='blackCustRatioStart!=null and blackCustRatioStart!=""'>AND SUM(cm.black_cust_ratio) &gt;= #{blackCustRatioStart}</if>
+	    <if test='blackCustRatioEnd!=null and blackCustRatioEnd!=""'>AND SUM(cm.black_cust_ratio) &lt;= #{blackCustRatioEnd}</if>
+	    <if test='susCarkRatioStart!=null and susCarkRatioStart!=""'>AND SUM(cm.sus_cark_ratio) &gt;= #{susCarkRatioStart}</if>
+	    <if test='susCarkRatioEnd!=null and susCarkRatioEnd!=""'>AND SUM(cm.sus_cark_ratio) &lt;= #{susCarkRatioEnd}</if>
+	    <if test='oneThreeRatioStart!=null and oneThreeRatioStart!=""'>AND SUM(cm.one_three_ratio) &gt;= #{oneThreeRatioStart}</if>
+	    <if test='oneThreeRatioEnd!=null and oneThreeRatioEnd!=""'>AND SUM(cm.one_three_ratio) &lt;= #{oneThreeRatioEnd}</if>	
+	    
+	    <if test='countStart!=null and countStart!=""'>AND SUM(over_cell) &gt;= #{countStart}</if>
+	    <if test='countEnd!=null and countEnd!=""'>AND SUM(over_cell) &lt;= #{countEnd}</if>	    	    	
+    </select>
+
+
+    <select id="getMaxValue"  parameterType="com.asiainfo.cmc.qudao.vo.FollowCustomerSearchVo" resultType="FollowCustomerSearch">
+SELECT * FROM 
+ (SELECT CITY,MAX(AMOUT_SO) AMOUT_SO,MAX(AMOUT_SO_ZD1) AMOUT_SO_ZD1,MAX(AMOUT_SI) AMOUT_SI,
+  MAX(cntnew) cntnew,MAX(cntother) cntother,MAX(cnt4gp) cnt4gp,MAX(cntyd) cntyd,MAX(cntself) cntself
+ FROM
+	(SELECT CITY,SUM(AMOUT_SO) AMOUT_SO,SUM(AMOUT_SO_ZD1) AMOUT_SO_ZD1,SUM(AMOUT_SI) AMOUT_SI,
+	SUM(cntnew) cntnew,SUM(cntother) cntother,SUM(cnt4gp) cnt4gp,SUM(cntyd) cntyd,SUM(cntself) cntself
+	FROM ZD_RESULT_FOLLOWCUST_MAX_D
+ 	WHERE <if test="tag1!=null and tag1!=''">  CITY=#{tag1} AND</if> DAY &gt;= #{startDay} AND DAY &lt;= #{endDay}
+<!--  WHERE CITY=#{tag1}  AND DAY &gt;= #{startDay} AND DAY &lt;= #{endDay}   -->
+ 	GROUP BY ORGACODE)dd )d
+LEFT JOIN
+ (SELECT CITY,MAX(netin_val) netin_val,MAX(passenger_vol) passenger_vol,MAX(usr_nbr_stock) usr_nbr_stock,
+ 	MAX(tag11) tag11,MAX(tag12) tag12,MAX(tag21) tag21,MAX(tag16) tag16,MAX(tag20) tag20,
+	MAX(usr_nbr_hall_val) usr_nbr_hall_val,MAX(usr_nbr_hall) usr_nbr_hall,MAX(dm_stock_rate) dm_stock_rate,MAX(diff_net_rate) diff_net_rate,
+	MAX(net_in_ratio) net_in_ratio,MAX(black_cust_ratio) black_cust_ratio,MAX(sus_cark_ratio) sus_cark_ratio,MAX(one_three_ratio) one_three_ratio,
+	MAX(count) count,MAX(cntstock) cntstock
+ FROM
+	(SELECT CITY,SUM(netin_val) netin_val,SUM(passenger_vol) passenger_vol,SUM(usr_nbr_stock) usr_nbr_stock,
+	MAX(tag11) tag11,MAX(tag12) tag12,SUM(tag21) tag21,SUM(tag16) tag16,SUM(tag20) tag20,
+	SUM(usr_nbr_hall_val) usr_nbr_hall_val,SUM(usr_nbr_hall) usr_nbr_hall,SUM(dm_stock_rate) dm_stock_rate,SUM(diff_net_rate) diff_net_rate,
+	SUM(net_in_ratio) net_in_ratio,SUM(black_cust_ratio) black_cust_ratio,SUM(sus_cark_ratio) sus_cark_ratio,SUM(one_three_ratio) one_three_ratio,
+	SUM(count) count,SUM(cntstock) cntstock
+	FROM ZD_RESULT_FOLLOWCUST_MAX_M
+ 	WHERE <if test="tag1!=null and tag1!=''">  CITY=#{tag1} AND</if> month &gt;= SUBSTR(#{startDay}, 1,6) AND month &lt;= SUBSTR(#{endDay}, 1,6)
+ <!--   WHERE CITY=#{tag1}   AND month &gt;= SUBSTR(#{startDay}, 1,6) AND month &lt;= SUBSTR(#{endDay}, 1,6)  -->
+ 	GROUP BY ORGACODE)mm )m
+ON d.CITY = m.CITY;     
+    </select>
+  
+</mapper>

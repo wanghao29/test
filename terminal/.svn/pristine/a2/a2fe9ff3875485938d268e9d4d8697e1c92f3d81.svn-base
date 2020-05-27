@@ -1,0 +1,22 @@
+package com.asiainfo.cmc.mapper;
+
+import java.util.List;
+
+import com.asiainfo.cmc.enties.CityKpi2019;
+
+/** 
+* @author 作者 Your-Name:wanghao 
+* @version 创建时间：2019年4月16日 下午3:21:33 
+* 
+*/
+
+public interface CityKpi2019Mapper {
+
+	int insert(CityKpi2019 record);
+	
+	//查询所有数据的呈现
+	List <CityKpi2019> selectAll(String spare);
+	//更新功能的实现
+		int updateSelective(CityKpi2019 record);
+	
+}

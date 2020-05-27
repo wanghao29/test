@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.BusinessIncomeMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.BusinessIncome" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="cwbbyysr" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="hlwsr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sjdbsr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="hlwsjdbsr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="bywcqk" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="bywcqktz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="qnwcsr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="qnwcd" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="mbz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="bysrwcl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sjwcd" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="fz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, cwbbyysr, hlwsr, sjdbsr, hlwsjdbsr, bywcqk, bywcqktz, qnwcsr, qnwcd, mbz, bysrwcl,
+    sjwcd, fz, month
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select
+    <include refid="Base_Column_List" />
+    from BUSINESS_INCOME
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectBusinessIncome" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from BUSINESS_INCOME
+    where month = #{month}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from BUSINESS_INCOME
+    <include refid="dynamicWhere"/>
+    order by month desc
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from BUSINESS_INCOME
+    <include refid="dynamicWhere"/>
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from BUSINESS_INCOME
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from BUSINESS_INCOME 
+   where month =  (select MAX(month) from BUSINESS_INCOME <where>  <if test="@Ognl@isNotEmpty(endMonth)"> month &lt;= #{endMonth} </if></where>)
+      
+   
+ 
+    order by id desc LIMIT 0,1
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from BUSINESS_INCOME
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.BusinessIncome" >
+    insert into BUSINESS_INCOME (id, cwbbyysr, hlwsr,
+      sjdbsr, hlwsjdbsr, bywcqk, bywcqktz,
+      qnwcsr, qnwcd, mbz, bysrwcl,
+      sjwcd, fz, month)
+    values (#{id,jdbcType=INTEGER}, #{cwbbyysr,jdbcType=REAL}, #{hlwsr,jdbcType=REAL},
+      #{sjdbsr,jdbcType=REAL}, #{hlwsjdbsr,jdbcType=REAL}, #{bywcqk,jdbcType=REAL}, #{bywcqktz,jdbcType=REAL},
+      #{qnwcsr,jdbcType=REAL}, #{qnwcd,jdbcType=REAL}, #{mbz,jdbcType=REAL}, #{bysrwcl,jdbcType=REAL},
+      #{sjwcd,jdbcType=REAL}, #{fz,jdbcType=REAL}, #{month,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.BusinessIncome" >
+    insert into BUSINESS_INCOME
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="cwbbyysr != null" >
+        cwbbyysr,
+      </if>
+      <if test="hlwsr != null" >
+        hlwsr,
+      </if>
+      <if test="sjdbsr != null" >
+        sjdbsr,
+      </if>
+      <if test="hlwsjdbsr != null" >
+        hlwsjdbsr,
+      </if>
+      <if test="bywcqk != null" >
+        bywcqk,
+      </if>
+      <if test="bywcqktz != null" >
+        bywcqktz,
+      </if>
+      <if test="qnwcsr != null" >
+        qnwcsr,
+      </if>
+      <if test="qnwcd != null" >
+        qnwcd,
+      </if>
+      <if test="mbz != null" >
+        mbz,
+      </if>
+      <if test="bysrwcl != null" >
+        bysrwcl,
+      </if>
+      <if test="sjwcd != null" >
+        sjwcd,
+      </if>
+      <if test="fz != null" >
+        fz,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="cwbbyysr != null" >
+        #{cwbbyysr,jdbcType=REAL},
+      </if>
+      <if test="hlwsr != null" >
+        #{hlwsr,jdbcType=REAL},
+      </if>
+      <if test="sjdbsr != null" >
+        #{sjdbsr,jdbcType=REAL},
+      </if>
+      <if test="hlwsjdbsr != null" >
+        #{hlwsjdbsr,jdbcType=REAL},
+      </if>
+      <if test="bywcqk != null" >
+        #{bywcqk,jdbcType=REAL},
+      </if>
+      <if test="bywcqktz != null" >
+        #{bywcqktz,jdbcType=REAL},
+      </if>
+      <if test="qnwcsr != null" >
+        #{qnwcsr,jdbcType=REAL},
+      </if>
+      <if test="qnwcd != null" >
+        #{qnwcd,jdbcType=REAL},
+      </if>
+      <if test="mbz != null" >
+        #{mbz,jdbcType=REAL},
+      </if>
+      <if test="bysrwcl != null" >
+        #{bysrwcl,jdbcType=REAL},
+      </if>
+      <if test="sjwcd != null" >
+        #{sjwcd,jdbcType=REAL},
+      </if>
+      <if test="fz != null" >
+        #{fz,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <update id="update" parameterType="Map">
+    update BUSINESS_INCOME
+    <set >
+      <if test="bywcqktz != null" >
+        bywcqk = ROUND(cwbbyysr - (hlwsr-hlwsjdbsr) - sjdbsr - #{bywcqktz,jdbcType=REAL},2) ,
+      </if>
+      <if test="bywcqktz != null" >
+        bywcqktz = #{bywcqktz,jdbcType=REAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByTargetVal">
+ <!--    update BUSINESS_INCOME
+    set
+      bywcqk = cwbbyysr - (hlwsr-hlwsjdbsr) - sjdbsr - bywcqktz ,
+      qnwcsr = (SELECT tmep from (select sum(qnwcsr) as tmep from BUSINESS_INCOME where month &lt;  #{endMonth,jdbcType=VARCHAR}   and month &gt;= CONCAT(YEAR(CURDATE()),'','01')) a) ,
+      qnwcd =  qnwcsr /${mbz},
+      bysrwcl = bywcqk/((SELECT DAY(LAST_DAY(CONCAT(month,'01'))))/365*${mbz}),
+      sjwcd = qnwcsr/${mbz} - DATEDIFF(LAST_DAY(now()),DATE_SUB(CURDATE(),INTERVAL dayofyear(now())-1 DAY) )/365,
+      mbz = #{mbz,jdbcType=REAL},
+      fz = (
+      case
+      WHEN (bywcqk/((SELECT DAY(LAST_DAY(CONCAT(month,'01'))))/365*${mbz})) &gt; 1 then 15
+      WHEN (bywcqk/((SELECT DAY(LAST_DAY(CONCAT(month,'01'))))/365*${mbz})) &lt; 0.8 then 0
+      ELSE 15*((bywcqk/((SELECT DAY(LAST_DAY(CONCAT(month,'01'))))/365*${mbz}))-0.8)*5
+      END )
+    <include refid="dynamicWhere"/> -->
+      call BUSINESS_INCOME(${mbz},#{endMonth})
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+
+
+  <!--运营收入查询条件-->
+  <sql id="dynamicWhereBusinessIncome">
+    <where>
+      <if test="id != null and id != ''" >AND ID  = #{id}</if>
+      <if test="cwbbyysr != null and cwbbyysr != ''" >AND CWBBYYSR  = #{cwbbyysr}</if>
+      <if test="hlwsr != null and hlwsr != ''" > AND HLWSR  = #{hlwsr}</if>
+      <if test="sjdbsr != null and sjdbsr != ''" > AND SJDBSR  = #{sjdbsr}</if>
+      <if test="hlwsjdbsr != null and hlwsjdbsr != ''" > AND HLWSJDBSR  = #{sjdbsr}</if>
+      <if test="bywcqk != null and bywcqk != ''" > AND BYWCQK = #{bywcqk}</if>
+      <if test="bywcqktz != null and bywcqktz != ''" > AND BYWCQKTZ  = #{bywcqktz}</if>
+      <if test="qnwcsr != null and qnwcsr != ''" > AND QNWCSR  = #{qnwcsr}</if>
+      <if test="qnwcd != null and qnwcd != ''" > AND QNWCD  = #{qnwcd}</if>
+      <if test="mbz != null and mbz != ''" >  AND MBZ  = #{mbz}</if>
+      <if test="bysrwcl != null and bysrwcl != ''" >  AND BYSRWCL  = #{bysrwcl}</if>
+      <if test="sjwcd != null and sjwcd != ''" >  AND SJWCD  = #{sjwcd}</if>
+      <if test="fz != null and fz != ''" >  AND FZ  = #{fz}</if>
+      <if test="month != null and month != ''" > AND MONTH  = #{month}</if>
+      <!--<![CDATA[AND rownum<=20]]>-->
+    </where>
+  </sql>
+
+  <!--<sql id="dynamicWhereBusinessIncome">-->
+    <!--<where>-->
+      <!--<if test="id != null" >AND ID  = #{id}</if>-->
+      <!--<if test="@Ognl@isNotEmpty(id)"> AND ID  = #{id} </if>-->
+      <!--<if test="@Ognl@isNotEmpty(cwbbyysr)"> AND CWBBYYSR  = #{cwbbyysr}  </if>-->
+      <!--<if test="@Ognl@isNotEmpty(hlwsr)"> AND HLWSR  = #{hlwsr}  </if>-->
+      <!--<if test="@Ognl@isNotEmpty(sjdbsr)"> AND SJDBSR  = #{sjdbsr}  </if>-->
+      <!--<if test="@Ognl@isNotEmpty(hlwsjdbsr)"> AND HLWSJDBSR  = #{hlwsjdbsr}  </if>-->
+      <!--<if test="@Ognl@isNotEmpty(bywcqk)"> AND BYWCQK = #{bywcqk}  </if>-->
+      <!--<if test="@Ognl@isNotEmpty(bywcqktz)"> AND BYWCQKTZ  = #{bywcqktz}   </if>-->
+      <!--<if test="@Ognl@isNotEmpty(qnwcsr)"> AND QNWCSR  = #{qnwcsr}  </if>-->
+      <!--<if test="@Ognl@isNotEmpty(qnwcd)"> AND QNWCD  = #{qnwcd} </if>-->
+      <!--<if test="@Ognl@isNotEmpty(mbz)"> AND MBZ  = #{mbz}  </if>-->
+      <!--<if test="@Ognl@isNotEmpty(bysrwcl)"> AND BYSRWCL  = #{bysrwcl}  </if>-->
+      <!--<if test="@Ognl@isNotEmpty(sjwcd)"> AND SJWCD  = #{sjwcd}  </if>-->
+      <!--<if test="@Ognl@isNotEmpty(fz)"> AND FZ  = #{fz}  </if>-->
+      <!--<if test="@Ognl@isNotEmpty(month)"> AND MONTH  = #{month}  </if>-->
+      <!--&lt;!&ndash;<![CDATA[AND rownum<=20]]>&ndash;&gt;-->
+    <!--</where>-->
+  <!--</sql>-->
+</mapper>

@@ -1,0 +1,61 @@
+package com.asiainfo.cmc.service.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.asiainfo.cmc.enties.CityKpi2019;
+
+import com.asiainfo.cmc.mapper.CityKpi2019Mapper;
+import com.asiainfo.cmc.service.CityKpi2019Service;
+
+/** 
+* @author 作者 Your-Name:wanghao 
+* @version 创建时间：2019年4月16日 下午3:11:24 
+* 
+*/
+@Service
+@Transactional
+public class CityKpi2019ServiceImpl implements CityKpi2019Service {
+	@Resource
+    private CityKpi2019Mapper cityKpi2019Mapper;
+	
+	
+	@Override
+	public int insertSelective(List<CityKpi2019> records) {
+		int insertNum = 0;
+		for(CityKpi2019 z : records){
+			//z.setSpare("1");
+			cityKpi2019Mapper.insert(z);
+			
+			insertNum++;
+		}
+		return insertNum;
+	}
+
+
+	@Override
+	public List<CityKpi2019> selectAll(String spare) {
+		// TODO Auto-generated method stub
+		return cityKpi2019Mapper.selectAll(spare);
+	}
+
+
+	@Override
+	public int updateSelective(List<CityKpi2019> records) {
+		int insertNum = 0;
+		for(CityKpi2019 z : records){
+			//z.setSpare("1");
+			cityKpi2019Mapper.updateSelective(z);
+			insertNum++;
+		}
+		return insertNum;
+		
+	}
+
+
+	
+}

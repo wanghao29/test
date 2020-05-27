@@ -1,0 +1,826 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.brandmodel.AbsoluteRangeMapper" >
+
+<!-- /**
+	 * 量
+	 */
+	 	 
+	当前销量    根据日指标来查询数据，查询出所选开始时间到结束时间每天的销量（时间格式是YYYY-MM-DD）  -->
+<select id="selectEveryDay" resultType="AbsoluteRange" >
+select BRANDNAME,SPEC,DODATE,sum(AMOUNT) AMOUNT from ZD_RESULT_OPER_LSLJ_AREA_D
+
+ where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} 
+ 
+ and SPEC=#{SPEC}  group by DODATE
+    
+</select>
+
+<!--月指标取数据 -->
+
+
+<select id="selectEveryMonth" resultType="AbsoluteRange" >
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,sum(AMOUNT) AMOUNT  from ZD_RESULT_OPER_LSLJ_AREA_D where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME}  and SPEC=#{SPEC} group by SUBSTR(DODATE,1,7)
+
+</select>
+<!--量 规划销量，算出选择的开始日期，与当前产品开始销售日期之间相差多少天  -->
+
+<select id="selectHowDay" resultType="int" >
+select DATEDIFF(#{DODATE},(select MIN(DODATE) from ZD_RESULT_OPER_LSLJ_AREA_D 
+where BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC})) 
+from dual
+</select>
+
+<!-- 其次，算出选择的结束日期，与开始日期之间相差多少天 -->
+
+<select id="selectHowDays" resultType="int" >
+select DATEDIFF(#{DODATE1},#{DODATE}) from dual
+</select>
+
+<!--判断产品生命周期 -->
+<select id="selectBrandLife" resultType="LifeDate" >
+SELECT CYCLE,DURATION,SALEAMOUNT,INCOME,MAORI,OVERAMOUNT,SHARE,TURNOVER_TIME FROM  
+ZD_RESULT_OPER_PRODUCT_CYCLE_INFO WHERE BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}
+
+</select>
+<!-- 量 算出开始月份距实际产生销量的月份相差几个月 -->
+
+<select id="selectMonthRange" resultType="int" >
+SELECT PERIOD_DIFF(DATE_FORMAT(CONCAT(#{DODATE},'-01'),'%Y%m'),
+    DATE_FORMAT((SELECT MIN(DODATE) FROM ZD_RESULT_OPER_LSLJ_AREA_D 
+    WHERE BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}),'%Y%m')) FROM DUAL
+</select>
+
+<!--算出开始月份距离结束月份相差多少个月  -->
+<select id="selectMonthDiffer" resultType="int" >
+SELECT PERIOD_DIFF(DATE_FORMAT(CONCAT(#{DODATE1},'-01'),'%Y%m'),
+DATE_FORMAT(CONCAT(#{DODATE},'-01'),'%Y%m')) FROM DUAL
+</select>
+
+
+
+
+
+<!--量   对标品销量日指标取数据  -->
+<select id="selectDayDate" resultType="AbsoluteRange">
+ SELECT BRANDNAME,SPEC,DODATE,SUM(AMOUNT) AS AMOUNT  FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN (SELECT DATE_ADD((SELECT MIN(DODATE) FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE 
+BRANDNAME=#{BRANDNAME2} and SPEC=#{SPEC2}), INTERVAL (SELECT DATEDIFF(#{DODATE},(SELECT MIN(#{DODATE}) 
+FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC})) FROM DUAL) DAY) 
+FROM DUAL) AND (SELECT DATE_ADD((SELECT MIN(#{DODATE}) FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE 
+BRANDNAME=#{BRANDNAME2} and SPEC=#{SPEC2}), 
+INTERVAL (SELECT DATEDIFF(#{DODATE1},(SELECT MIN(#{DODATE}) FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}))
+ FROM DUAL) DAY) FROM DUAL) AND 
+ BRANDNAME=#{BRANDNAME2} and SPEC=#{SPEC2} GROUP BY DODATE 
+
+</select>
+
+<!--量   对标品月取数据  -->
+<select id="selectMonthDate" resultType="AbsoluteRange">
+
+SELECT BRANDNAME,SPEC,SUBSTR(dodate,1,7) DODATE,SUM(AMOUNT) AMOUNT  FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME2}  and SPEC=#{SPEC2} GROUP BY SUBSTR(DODATE,1,7)
+
+</select>
+
+
+
+<!--量  竞品销量日指标取数据  -->
+
+<select id="selectDayDate1" resultType="AbsoluteRange">
+
+select BRANDNAME,SPEC,DODATE,sum(AMOUNT) as AMOUNT  from ZD_RESULT_OPER_LSLJ_AREA_D
+where DODATE  between (select date_add((select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D 
+where BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1}), interval (select datediff(#{DODATE},(select min(#{DODATE}) 
+from ZD_RESULT_OPER_LSLJ_AREA_D where BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC})) from dual) day) from dual) 
+and (select date_add((select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1}), 
+interval (select datediff(#{DODATE1},(select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where BRANDNAME=#{BRANDNAME} and 
+SPEC=#{SPEC})) from dual) day) from dual) and BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1} group by DODATE
+
+</select>
+
+<!--量  竞品销量月指标取数据  -->
+
+<select id="selectMonthDate1" resultType="AbsoluteRange">
+
+SELECT BRANDNAME,SPEC,SUBSTR(dodate,1,7) DODATE,SUM(AMOUNT) AMOUNT  FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME1}  and SPEC=#{SPEC1} GROUP BY SUBSTR(DODATE,1,7)
+
+
+</select>
+<!--                   价                                           -->
+
+<!--价   本品价格日指标取数据  -->
+<select id="selectPriceDay" resultType="AbsoluteRange">
+
+select BRANDNAME,SPEC,DODATE,avg(SALEPRICE) SALEPRICE from ZD_RESULT_OPER_LSLJ_AREA_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by DODATE
+
+</select>
+
+
+<!--价   本品二级市场价格日指标取数据  -->
+
+<select id="selectPriceDoubleDay" resultType="DoublePrice">
+
+select BRANDNAME,SPEC,DODATE,OPENPRICE from ZD_RESULT_OPER_OPEN_PRICE_FINAL_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}
+
+</select>
+
+<!--价   竞品二级市场价格日指标取数据  -->
+
+<select id="selectPriceDoubleCompetitive" resultType="DoublePrice">
+
+select BRANDNAME,SPEC,DODATE,OPENPRICE from ZD_RESULT_OPER_OPEN_PRICE_FINAL_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1}  GROUP BY DODATE
+
+</select>
+<!--价   本品价格月指标取数据  -->
+
+<select id="selectPriceMonth" resultType="AbsoluteRange">
+
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,avg(SALEPRICE) SALEPRICE  from ZD_RESULT_OPER_LSLJ_AREA_D where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} group by SUBSTR(DODATE,1,7)
+
+</select>
+
+<!--价   本品二级市场价格月指标取数据  -->
+
+<select id="selectPriceDoubleMonth" resultType="DoublePrice">
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,AVG(OPENPRICE ) OPENPRICE 
+FROM ZD_RESULT_OPER_OPEN_PRICE_FINAL_D WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY SUBSTR(DODATE,1,7)
+
+</select>
+
+<!--价   竞品二级市场价格月指标取数据  -->
+<select id="selectPriceDoubleCompetitiveMonth" resultType="DoublePrice">
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,AVG(OPENPRICE ) OPENPRICE 
+FROM ZD_RESULT_OPER_OPEN_PRICE_FINAL_D WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1} GROUP BY SUBSTR(DODATE,1,7)
+
+</select>
+
+<!--收  当前销量日指标取数据  -->
+
+<select id="selectIncomeDay" resultType="AbsoluteRange">
+select BRANDNAME,SPEC,DODATE,sum(AMOUNTPRICE) AMOUNTPRICE from ZD_RESULT_OPER_LSLJ_AREA_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by DODATE
+
+</select>
+
+<!--收  对标品收入日指标取数据  -->
+<select id="selectIncomeDays" resultType="AbsoluteRange">
+select BRANDNAME,SPEC,DODATE,sum(AMOUNTPRICE) AMOUNTPRICE from ZD_RESULT_OPER_LSLJ_AREA_D
+where DODATE  between (select date_add((select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME2} and SPEC=#{SPEC2}), interval (select datediff(#{DODATE},(select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC})) from dual) day) from dual) and (select date_add((select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME2} and SPEC=#{SPEC2}), interval (select datediff(#{DODATE1},(select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC})) from dual) day) from dual) and 
+BRANDNAME=#{BRANDNAME2} and SPEC=#{SPEC2} group by DODATE
+
+</select>
+<!--收  竞品收入日指标取数据  -->
+<select id="selectComeDays" resultType="AbsoluteRange">
+select BRANDNAME,SPEC,DODATE,sum(AMOUNTPRICE) AMOUNTPRICE  from ZD_RESULT_OPER_LSLJ_AREA_D
+where DODATE  between (select date_add((select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1}), interval (select datediff(#{DODATE},(select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC})) from dual) day) from dual) and (select date_add((select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1}), interval (select datediff(#{DODATE1},(select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC})) from dual) day) from dual) and 
+BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1} group by DODATE
+
+</select>
+
+
+<!--收  当前销量月指标取数据  -->
+<select id="selectIncomeMonth" resultType="AbsoluteRange">
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,sum(AMOUNTPRICE) AMOUNTPRICE  from ZD_RESULT_OPER_LSLJ_AREA_D where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} group by SUBSTR(DODATE,1,7)
+
+</select>
+
+<!--收  对标品收入月指标取数据  -->
+<select id="selectIncomeMonths" resultType="AbsoluteRange">
+SELECT BRANDNAME,SPEC,SUBSTR(dodate,1,7) dodate,SUM(AMOUNTPRICE) AMOUNTPRICE  FROM ZD_RESULT_OPER_LSLJ_AREA_D  WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME2} and SPEC=#{SPEC2} GROUP BY SUBSTR(DODATE,1,7)
+
+</select>
+
+<!--收  竞品收入月指标取数据  -->
+<select id="selectComeMonth" resultType="AbsoluteRange">
+SELECT BRANDNAME,SPEC,SUBSTR(dodate,1,7) dodate,SUM(AMOUNTPRICE) AMOUNTPRICE  FROM ZD_RESULT_OPER_LSLJ_AREA_D  WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1} GROUP BY SUBSTR(DODATE,1,7)
+
+</select>
+<!-- 存地市趋势 日指标取数据 -->
+
+<select id="cunAreaDay" resultType="StockSet">
+SELECT BRANDNAME,SPEC,AREANAME,DODATE,SUM(REAL_TIME_AMOUNT) REAL_TIME_AMOUNT FROM ZD_RESULT_OPER_STOCK_AREA_D 
+WHERE DODATE  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY AREANAME ORDER BY REAL_TIME_AMOUNT DESC
+</select>
+<!-- 存地市趋势 月指标取数据 -->
+
+<select id="cunAreaMonth" resultType="StockSet">
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7),AREANAME, SUM(REAL_TIME_AMOUNT) REAL_TIME_AMOUNT FROM ZD_RESULT_OPER_STOCK_AREA_D  WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY AREANAME ORDER BY REAL_TIME_AMOUNT DESC
+</select>
+
+<!-- 存  日指标取数据 -->
+
+<select id="selectDepositDay" resultType="StockSet">
+select BRANDNAME,SPEC,DODATE,sum(REAL_TIME_AMOUNT) REAL_TIME_AMOUNT from ZD_RESULT_OPER_STOCK_AREA_D
+where DODATE  between  #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by DODATE
+</select>
+<!--存去年的数据对比  -->
+<select id="selectLastYear" resultType="StockSet">
+SELECT BRANDNAME,SPEC,DODATE,SUM(REAL_TIME_AMOUNT) REAL_TIME_AMOUNT FROM ZD_RESULT_OPER_STOCK_AREA_D
+WHERE DODATE  BETWEEN (SELECT DATE_ADD( #{DODATE} , INTERVAL -1 YEAR) FROM DUAL) 
+AND (SELECT DATE_ADD(  #{DODATE1} , INTERVAL -1 YEAR) FROM DUAL) AND 
+BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}   GROUP BY DODATE
+</select>
+
+
+<!-- 存  月指标取数据 -->
+
+<select id="selectDepositMonth" resultType="StockSet">
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,sum(REAL_TIME_AMOUNT) REAL_TIME_AMOUNT from  ZD_RESULT_OPER_STOCK_AREA_D  
+where SUBSTR(DODATE,1,7)  between  #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  
+group by SUBSTR(DODATE,1,7)
+</select>
+<!--存月指标取数据  -->
+<select id="selectLastYearMonth" resultType="StockSet">
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,SUM(REAL_TIME_AMOUNT) REAL_TIME_AMOUNT FROM ZD_RESULT_OPER_STOCK_AREA_D
+WHERE SUBSTR(DODATE,1,7) BETWEEN (SELECT DATE_FORMAT(DATE_ADD(CONCAT(#{DODATE},'-01'), INTERVAL -1 YEAR),'%Y-%m') FROM DUAL) 
+AND (SELECT DATE_FORMAT(DATE_ADD(CONCAT(#{DODATE1},'-01'), INTERVAL -1 YEAR),'%Y-%m') FROM DUAL) 
+AND BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY SUBSTR(DODATE,1,7)
+</select>
+
+
+<!--利 日指标取数据  -->
+<!--当前利润  -->
+
+<select id="selectProfitDay" resultType="AbsoluteRange">
+select BRANDNAME,SPEC,DODATE,sum(SALECOSTPRICE) SALECOSTPRICE from ZD_RESULT_OPER_LSLJ_AREA_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by DODATE
+
+</select>
+<!--对标品利润  -->
+<select id="selectProductProfitDay" resultType="AbsoluteRange">
+select BRANDNAME,SPEC,DODATE,sum(SALECOSTPRICE) SALECOSTPRICE from ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN (SELECT DATE_ADD((SELECT MIN(DODATE) FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE 
+BRANDNAME=#{BRANDNAME2} and SPEC=#{SPEC2}), INTERVAL (SELECT DATEDIFF(#{DODATE},(SELECT MIN(#{DODATE}) 
+FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC})) FROM DUAL) DAY) 
+FROM DUAL) AND (SELECT DATE_ADD((SELECT MIN(#{DODATE}) FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE 
+BRANDNAME=#{BRANDNAME2} and SPEC=#{SPEC2}), 
+INTERVAL (SELECT DATEDIFF(#{DODATE1},(SELECT MIN(#{DODATE}) FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}))
+ FROM DUAL) DAY) FROM DUAL) AND 
+ BRANDNAME=#{BRANDNAME2} and SPEC=#{SPEC2} GROUP BY DODATE
+</select>
+
+
+<!--竞品利润  -->
+<select id="selectCompetitiveProductDay" resultType="AbsoluteRange">
+select BRANDNAME,SPEC,DODATE,sum(SALECOSTPRICE) SALECOSTPRICE from ZD_RESULT_OPER_LSLJ_AREA_D
+where DODATE  between (select date_add((select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1}), interval (select datediff(#{DODATE},(select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC})) from dual) day) from dual) and (select date_add((select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1}), interval (select datediff(#{DODATE1},(select min(#{DODATE}) from ZD_RESULT_OPER_LSLJ_AREA_D where 
+BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC})) from dual) day) from dual) and 
+BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1} group by DODATE
+
+</select>
+
+<!--利  月指标取数据  -->
+<!--当前利润  -->
+
+<select id="selectProfitMonth" resultType="AbsoluteRange">
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,sum(SALECOSTPRICE) SALECOSTPRICE  from ZD_RESULT_OPER_LSLJ_AREA_D where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} group by SUBSTR(DODATE,1,7)
+
+</select>
+<!--对标品利润  -->
+<select id="selectProductProfitMonth" resultType="AbsoluteRange">
+SELECT BRANDNAME,SPEC,SUBSTR(dodate,1,7) dodate,SUM(SALECOSTPRICE) SALECOSTPRICE FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME2} and SPEC=#{SPEC2} GROUP BY SUBSTR(DODATE,1,7)
+
+</select>
+
+
+<!--竞品利润  -->
+<select id="selectCompetitiveProductMonth" resultType="AbsoluteRange">
+SELECT BRANDNAME,SPEC,SUBSTR(dodate,1,7) dodate,SUM(SALECOSTPRICE) SALECOSTPRICE FROM ZD_RESULT_OPER_LSLJ_AREA_D WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME1} and SPEC=#{SPEC1} GROUP BY SUBSTR(DODATE,1,7)
+
+
+</select>
+
+<!--份 日指标取数据  -->
+<select id="selectShareDay" resultType="ShareFen">
+select BRANDNAME,SPEC,DODATE,avg(PRO_SHARE) PRO_SHARE from ZD_RESULT_OPER_SHARE_AREA_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by DODATE
+
+</select>
+
+<!--份 月指标取数据  -->
+<select id="selectShareMonth" resultType="ShareFen">
+
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,avg(PRO_SHARE) PRO_SHARE  from ZD_RESULT_OPER_SHARE_AREA_D where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} group by SUBSTR(DODATE,1,7)
+
+</select>
+
+<!--覆 日指标取数据  -->
+<select id="selectAccumulativeDay" resultType="OverCustomer">
+<!-- select BRANDNAME,SPEC,DODATE,sum(cnt) cnt from ZD_RESULT_OPER_OVER_CUST_AREA_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} and cnt>3  group by DODATE
+ -->
+SELECT
+BRANDNAME,DODATE,count(DISTINCT ORGACODE)  cnt
+FROM
+	(
+		SELECT
+			ORGACODE,BRANDNAME,DODATE,
+			sum(cnt) cntall
+		FROM
+			ZD_RESULT_OPER_OVER_CUST_AREA_D
+		WHERE
+			DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}
+		GROUP BY
+			ORGACODE
+	) c
+WHERE
+	c.cntall > 3  GROUP BY DODATE 
+ 
+ 
+ 
+ 
+</select>
+
+<!--覆 月指标取数据  -->
+<select id="selectAccumulativeMonth" resultType="OverCustomer">
+
+<!-- select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,sum(cnt) cnt from  ZD_RESULT_OPER_OVER_CUST_AREA_D  where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  and cnt>3  group by SUBSTR(DODATE,1,7) -->
+SELECT
+BRANDNAME,SUBSTR(DODATE,1,7) DODATE,count(DISTINCT ORGACODE)  cnt
+FROM
+	(
+		SELECT
+			ORGACODE,BRANDNAME,DODATE,
+			sum(cnt) cntall
+		FROM
+			ZD_RESULT_OPER_OVER_CUST_AREA_D
+		WHERE
+			SUBSTR(DODATE,1,7)  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}
+		GROUP BY
+			ORGACODE
+	) c
+WHERE
+	c.cntall > 3  GROUP BY SUBSTR(DODATE,1,7)
+
+
+
+
+
+
+</select>
+
+<!--秩  日指标取数据  -->
+<!--DM本地激活率  -->
+<select id="selectLocalDay" resultType="OderZhi">
+
+select BRANDNAME,SPEC,DODATE,avg(LOCAL_RATIO) LOCAL_RATIO from ZD_RESULT_OPER_ORDER_AREA_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by DODATE
+
+
+</select>
+
+
+<!--DM异地激活率  -->
+
+<select id="selectDifferentDay" resultType="OderZhi">
+
+select BRANDNAME,SPEC,DODATE,avg(REMOTE_RATIO) REMOTE_RATIO from ZD_RESULT_OPER_ORDER_AREA_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by DODATE
+
+
+</select>
+
+<!--疑似套机率  -->
+
+<select id="selectDoubtfulDay" resultType="OderZhi">
+
+select BRANDNAME,SPEC,DODATE,avg(YK_RATIO) YK_RATIO from ZD_RESULT_OPER_ORDER_AREA_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by DODATE
+
+
+</select>
+<!--秩  月指标取数据  -->
+<!--DM本地激活率  -->
+
+<select id="selectLocalMonth" resultType="OderZhi">
+
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,avg(LOCAL_RATIO) LOCAL_RATIO from ZD_RESULT_OPER_ORDER_AREA_D where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} group by SUBSTR(DODATE,1,7)
+
+
+</select>
+
+<!--DM异地激活率  -->
+
+<select id="selectDifferentMonth" resultType="OderZhi">
+
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,avg(REMOTE_RATIO) REMOTE_RATIO from ZD_RESULT_OPER_ORDER_AREA_D where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} group by SUBSTR(DODATE,1,7)
+
+
+</select>
+
+<!--疑似套机率  -->
+
+<select id="selectDoubtfulMonth" resultType="OderZhi">
+
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,avg(YK_RATIO) YK_RATIO  from ZD_RESULT_OPER_ORDER_AREA_D where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} group by SUBSTR(DODATE,1,7)
+
+
+</select>
+
+<!--五线七口销量 日指标取数据  -->
+
+<select id="selectFiveDate" resultType="AbsoluteLine">
+
+SELECT B.fiveName fiveName,B.savenName savenName, SUM(AMOUNT) AMOUNT ,A.LINECODE LINECODE,A.PORTCODE PORTCODE
+FROM ZD_RESULT_OPER_LSLJ_LINE_D A INNER JOIN AREA_PORT B ON  A.`LINECODE`=B.`fivePort` AND A.`PORTCODE`=B.`savenPort`
+WHERE DODATE  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  GROUP BY DODATE,LINECODE,PORTCODE
+
+
+</select>
+
+
+<!--五线七口销量 月指标取数据  -->
+
+<select id="selectFiveMonthDate" resultType="AbsoluteLine">
+
+SELECT B.fiveName,B.`savenName`, SUM(AMOUNT) AMOUNT 
+FROM ZD_RESULT_OPER_LSLJ_LINE_D A INNER JOIN AREA_PORT B ON  A.`LINECODE`=B.`fivePort` AND A.`PORTCODE`=B.`savenPort`
+WHERE DODATE  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  GROUP BY DODATE,LINECODE,PORTCODE
+
+
+</select>
+
+<!--销量趋势  日指标取数据  -->
+<select id="selectSayDay"  resultType="AbsoluteRange">
+select BRANDNAME,SPEC,DODATE,sum(AMOUNT) AMOUNT,sum(SALEPRICE) SALEPRICE,sum(SALECOSTPRICE) SALECOSTPRICE,sum(AMOUNTPRICE) AMOUNTPRICE from ZD_RESULT_OPER_LSLJ_AREA_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by DODATE
+
+</select>
+<!--去年同期 -->
+<select id="selectSayDay1"  resultType="AbsoluteRange">
+select BRANDNAME,SPEC,DODATE,sum(AMOUNT) AMOUNT,sum(SALEPRICE) SALEPRICE,sum(SALECOSTPRICE) SALECOSTPRICE,sum(AMOUNTPRICE) AMOUNTPRICE from ZD_RESULT_OPER_LSLJ_AREA_D
+where DODATE  between (select date_add( #{DODATE} , interval -1 year) from dual) 
+and (select date_add(  #{DODATE1} , interval -1 year) from dual) and 
+BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by DODATE
+
+</select>
+<!--销量趋势  月指标取数据  -->
+
+<select id="selectSayMonth"  resultType="AbsoluteRange">
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,sum(AMOUNT) AMOUNT,sum(SALEPRICE) SALEPRICE,sum(SALECOSTPRICE) SALECOSTPRICE,sum(AMOUNTPRICE) AMOUNTPRICE from ZD_RESULT_OPER_LSLJ_AREA_D where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} group by SUBSTR(DODATE,1,7)
+
+</select>
+<!--去年同期 -->
+<select id="selectSayMonth1"  resultType="AbsoluteRange">
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,sum(AMOUNT) AMOUNT,sum(SALEPRICE) SALEPRICE,sum(SALECOSTPRICE) SALECOSTPRICE,sum(AMOUNTPRICE) AMOUNTPRICE from ZD_RESULT_OPER_LSLJ_AREA_D
+where SUBSTR(DODATE,1,7) between (select DATE_FORMAT(date_add(CONCAT(#{DODATE},'-01'), interval -1 year),'%Y-%m') from dual) 
+and (select DATE_FORMAT(date_add(CONCAT(#{DODATE1},'-01'), interval -1 year),'%Y-%m') from dual) 
+and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by SUBSTR(DODATE,1,7)
+
+</select>
+
+<!--地市销量 日指标取数据  -->
+<select id="selectAreaDay" resultType="AbsoluteRange">
+select  BRANDNAME,SPEC,DODATE,AREANAME,sum(AMOUNT) AMOUNT,sum(SALEPRICE) SALEPRICE,sum(SALECOSTPRICE) SALECOSTPRICE,sum(AMOUNTPRICE) AMOUNTPRICE from ZD_RESULT_OPER_LSLJ_AREA_D
+where DODATE  between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by AREANAME ORDER BY AMOUNT DESC
+
+
+</select>
+
+
+<!--地市销量 月指标取数据  -->
+<select id="selectAreaMonth" resultType="AbsoluteRange">
+
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,AREANAME,sum(AMOUNT) AMOUNT,sum(SALEPRICE) SALEPRICE,sum(SALECOSTPRICE) SALECOSTPRICE,sum(AMOUNTPRICE) AMOUNTPRICE  from ZD_RESULT_OPER_LSLJ_AREA_D where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} group by AREANAME ORDER BY AMOUNT DESC
+
+</select>
+<!-- 重点产品达成率查询数据 -->
+
+
+
+<select id="selectListImportant" resultType="ImportantProduct">
+
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,AREANAME,sum(AMOUNT) AMOUNT  from ZD_RESULT_OPER_LSLJ_AREA_D where SUBSTR(DODATE,1,7)  
+between #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} group by SUBSTR(DODATE,1,7),AREANAME
+
+</select>
+
+<!--五线七口价格 日指标取数据  -->
+
+<select id="selectPriceDate" resultType="AbsoluteLine">
+
+SELECT B.fiveName fiveName,B.savenName savenName, SUM(SALEPRICE) SALEPRICE ,SUM(AMOUNTPRICE) AMOUNTPRICE ,SUM(SALECOSTPRICE) 
+SALECOSTPRICE, A.LINECODE LINECODE,A.PORTCODE PORTCODE
+FROM ZD_RESULT_OPER_LSLJ_LINE_D A INNER JOIN AREA_PORT B ON  A.`LINECODE`=B.`fivePort` AND A.`PORTCODE`=B.`savenPort`
+WHERE DODATE  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  GROUP BY DODATE,LINECODE,PORTCODE
+
+
+</select>
+
+
+<!--五线七口价格 月指标取数据  -->
+
+<select id="selectPriceMonthDate" resultType="AbsoluteLine">
+
+SELECT B.fiveName,B.`savenName`, SUM(SALEPRICE) SALEPRICE,SUM(AMOUNTPRICE) AMOUNTPRICE ,SUM(SALECOSTPRICE) SALECOSTPRICE 
+FROM ZD_RESULT_OPER_LSLJ_LINE_D A INNER JOIN AREA_PORT B ON  A.`LINECODE`=B.`fivePort` AND A.`PORTCODE`=B.`savenPort`
+WHERE DODATE  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  GROUP BY DODATE,LINECODE,PORTCODE
+
+
+</select>
+
+<!--份额销量趋势  日指标取数据  -->
+<select id="selectShareDayNow"  resultType="ShareFen">
+SELECT BRANDNAME,SPEC,DODATE,AVG(PRO_SHARE) PRO_SHARE FROM ZD_RESULT_OPER_SHARE_AREA_D
+WHERE DODATE  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  GROUP BY DODATE
+
+</select>
+<!--份额去年同期 -->
+<select id="selectShareYearDayNow"  resultType="ShareFen">
+SELECT BRANDNAME,SPEC,DODATE,AVG(PRO_SHARE) PRO_SHARE FROM ZD_RESULT_OPER_SHARE_AREA_D
+WHERE DODATE  BETWEEN (SELECT DATE_ADD( #{DODATE} , INTERVAL -1 YEAR) FROM DUAL) 
+AND (SELECT DATE_ADD(  #{DODATE1} , INTERVAL -1 YEAR) FROM DUAL) AND 
+BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  GROUP BY DODATE
+
+</select>
+<!--份额销量趋势  月指标取数据  -->
+
+<select id="selectSayMonthNow"  resultType="ShareFen">
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,AVG(PRO_SHARE) PRO_SHARE FROM ZD_RESULT_OPER_SHARE_AREA_D WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY SUBSTR(DODATE,1,7)
+
+</select>
+<!--份额去年同期 -->
+<select id="selectSayYearMonth"  resultType="ShareFen">
+select BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,AVG(PRO_SHARE) PRO_SHARE from ZD_RESULT_OPER_LSLJ_AREA_D
+where SUBSTR(DODATE,1,7) between (select DATE_FORMAT(date_add(CONCAT(#{DODATE},'-01'), interval -1 year),'%Y-%m') from dual) 
+and (select DATE_FORMAT(date_add(CONCAT(#{DODATE1},'-01'), interval -1 year),'%Y-%m') from dual) 
+and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  group by SUBSTR(DODATE,1,7)
+
+</select>
+
+<!--份额地市销量 日指标取数据  -->
+<select id="selectAreaShareDay" resultType="ShareFen">
+SELECT  BRANDNAME,SPEC,DODATE,AREANAME,AVG(PRO_SHARE) PRO_SHARE FROM  ZD_RESULT_OPER_SHARE_AREA_D
+WHERE DODATE  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  GROUP BY AREANAME ORDER BY PRO_SHARE DESC
+
+
+</select>
+
+
+<!--份额地市销量 月指标取数据  -->
+<select id="selectAreaShareMonth" resultType="ShareFen">
+
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,AREANAME,AVG(PRO_SHARE) PRO_SHARE FROM  ZD_RESULT_OPER_SHARE_AREA_D WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY AREANAME ORDER BY PRO_SHARE DESC
+
+</select>
+
+
+
+
+
+
+<!--覆盖销量趋势  日指标取数据  -->
+<select id="selectCoverDayNow"  resultType="OverCustomer">
+SELECT BRANDNAME,SPEC,DODATE,cnt FROM ZD_RESULT_OPER_OVER_CUST_AREA_D WHERE DODATE  
+  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY DODATE
+
+</select>
+<!--覆盖去年同期 -->
+<select id="selectCoverYearDayNow"  resultType="OverCustomer">
+  SELECT BRANDNAME,SPEC,DODATE,cnt FROM ZD_RESULT_OPER_OVER_CUST_AREA_D 
+WHERE DODATE  BETWEEN (SELECT DATE_ADD( #{DODATE} , INTERVAL -1 YEAR) FROM DUAL) 
+AND (SELECT DATE_ADD(  #{DODATE1} , INTERVAL -1 YEAR) FROM DUAL) AND 
+BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}   GROUP BY DODATE
+
+</select>
+<!--覆盖销量趋势  月指标取数据  -->
+
+<select id="selectCoverSayMonthNow"  resultType="OverCustomer">
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,SUM(cnt) cnt FROM ZD_RESULT_OPER_OVER_CUST_AREA_D  WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY SUBSTR(DODATE,1,7)
+
+</select>
+<!--覆盖去年同期 -->
+<select id="selectCoverSayYearMonth"  resultType="OverCustomer">
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,SUM(cnt) cnt FROM ZD_RESULT_OPER_OVER_CUST_AREA_D
+WHERE SUBSTR(DODATE,1,7) BETWEEN (SELECT DATE_FORMAT(DATE_ADD(CONCAT(#{DODATE},'-01'), INTERVAL -1 YEAR),'%Y-%m') FROM DUAL) 
+AND (SELECT DATE_FORMAT(DATE_ADD(CONCAT(#{DODATE1},'-01'), INTERVAL -1 YEAR),'%Y-%m') FROM DUAL) 
+AND BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  GROUP BY SUBSTR(DODATE,1,7)
+
+</select>
+
+<!--覆盖地市销量 日指标取数据  -->
+<select id="selectCoverAreaShareDay" resultType="OverCustomer">
+SELECT  BRANDNAME,SPEC,DODATE,AREANAME,cnt FROM ZD_RESULT_OPER_OVER_CUST_AREA_D
+WHERE DODATE  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  GROUP BY AREANAME ORDER BY cnt DESC
+
+
+</select>
+
+
+<!--覆盖地市销量 月指标取数据  -->
+<select id="selectCoverAreaShareMonth" resultType="OverCustomer">
+
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,AREANAME,SUM(cnt) cnt FROM ZD_RESULT_OPER_OVER_CUST_AREA_D  WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY AREANAME ORDER BY cnt DESC
+
+</select>
+
+
+
+
+<!--秩序销量趋势  日指标取数据  -->
+<select id="selectOrderDayNow"  resultType="OderZhi">
+SELECT BRANDNAME,SPEC,DODATE,LOCAL_RATIO FROM ZD_RESULT_OPER_ORDER_AREA_D WHERE DODATE  
+  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY DODATE
+
+</select>
+<!--秩序去年同期 -->
+<select id="selectOrderYearDayNow"  resultType="OderZhi">
+    SELECT BRANDNAME,SPEC,DODATE,LOCAL_RATIO FROM ZD_RESULT_OPER_ORDER_AREA_D
+WHERE DODATE  BETWEEN (SELECT DATE_ADD( #{DODATE} , INTERVAL -1 YEAR) FROM DUAL) 
+AND (SELECT DATE_ADD(  #{DODATE1} , INTERVAL -1 YEAR) FROM DUAL) AND 
+BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY DODATE
+
+</select>
+<!--秩序销量趋势  月指标取数据  -->
+
+<select id="selectOrderSayMonthNow"  resultType="OderZhi">
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,SUM(LOCAL_RATIO) LOCAL_RATIO FROM ZD_RESULT_OPER_ORDER_AREA_D  WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY SUBSTR(DODATE,1,7)
+
+</select>
+<!--秩序去年同期 -->
+<select id="selectOrderSayYearMonth"  resultType="OderZhi">
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,SUM(LOCAL_RATIO) LOCAL_RATIO FROM ZD_RESULT_OPER_ORDER_AREA_D 
+WHERE SUBSTR(DODATE,1,7) BETWEEN (SELECT DATE_FORMAT(DATE_ADD(CONCAT(#{DODATE},'-01'), INTERVAL -1 YEAR),'%Y-%m') FROM DUAL) 
+AND (SELECT DATE_FORMAT(DATE_ADD(CONCAT(#{DODATE1},'-01'), INTERVAL -1 YEAR),'%Y-%m') FROM DUAL) 
+AND BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  GROUP BY SUBSTR(DODATE,1,7)
+
+</select>
+
+<!--秩序地市销量 日指标取数据  -->
+<select id="selectOrderAreaShareDay" resultType="OderZhi">
+SELECT  BRANDNAME,SPEC,DODATE,AREANAME,LOCAL_RATIO FROM ZD_RESULT_OPER_ORDER_AREA_D
+WHERE DODATE  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  GROUP BY AREANAME ORDER BY LOCAL_RATIO DESC
+
+
+</select>
+
+
+<!--秩序地市销量 月指标取数据  -->
+<select id="selectOrderAreaShareMonth" resultType="OderZhi">
+
+SELECT BRANDNAME,SPEC,SUBSTR(DODATE,1,7) DODATE,AREANAME,SUM(LOCAL_RATIO) LOCAL_RATIO FROM ZD_RESULT_OPER_ORDER_AREA_D   WHERE SUBSTR(DODATE,1,7)  
+BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} GROUP BY AREANAME ORDER BY LOCAL_RATIO DESC
+
+</select>
+
+<!-- 查询销量汇总 -->
+
+<select id="selectTotalAmount" resultType="string">
+
+SELECT SUM(AMOUNT) AMOUNT FROM ZD_RESULT_OPER_LSLJ_AREA_D
+
+ WHERE DODATE BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} 
+
+</select>
+
+<!--查询收入汇总  -->
+<select id="selectTotalIncome" resultType="float">
+
+SELECT SUM(AMOUNTPRICE) AMOUNTPRICE FROM ZD_RESULT_OPER_LSLJ_AREA_D
+
+ WHERE DODATE BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} 
+
+</select>
+
+<!--查询覆盖客户数汇总  -->
+<select id="selectTotalCustomer" resultType="float">
+
+<!-- SELECT SUM(cnt) SALECOSTPRICE FROM ZD_RESULT_OPER_OVER_CUST_AREA_D
+
+ WHERE DODATE BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} -->
+ 
+ select count(DISTINCT ORGACODE)  SALECOSTPRICE from 
+(SELECT  ORGACODE,sum(cnt) cntall FROM ZD_RESULT_OPER_OVER_CUST_AREA_D
+WHERE  DODATE BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}
+GROUP BY ORGACODE) c 
+where c.cntall>3
+ 
+  
+
+</select>
+
+<!--查询覆盖门店数汇总  -->
+<select id="selectTotalStore" resultType="float">
+
+<!-- SELECT SUM(cnt) SALEPRICE FROM ZD_RESULT_OPER_OVER_HALL_AREA_D
+
+ WHERE DODATE  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}  -->
+  select count(DISTINCT ORGACODE)  SALECOSTPRICE from 
+(SELECT  ORGACODE,sum(cnt) cntall FROM ZD_RESULT_OPER_OVER_HALL_AREA_D
+WHERE  DODATE BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}
+GROUP BY ORGACODE) c 
+where c.cntall>3
+ 
+
+</select>
+
+
+
+
+
+<!-- 查询销量汇总 -->
+
+<select id="selectTotalAmountMonth" resultType="string">
+
+SELECT SUM(AMOUNT) AMOUNT FROM ZD_RESULT_OPER_LSLJ_AREA_D
+
+ WHERE SUBSTR(DODATE,1,7) BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} 
+
+</select>
+
+<!--查询收入汇总  -->
+<select id="selectTotalIncomeMonth" resultType="float">
+
+SELECT SUM(AMOUNTPRICE) AMOUNTPRICE FROM ZD_RESULT_OPER_LSLJ_AREA_D
+
+ WHERE SUBSTR(DODATE,1,7) BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} 
+
+</select>
+
+<!--查询覆盖客户数汇总  -->
+<select id="selectTotalCustomerMonth" resultType="float">
+
+<!-- SELECT SUM(cnt) SALECOSTPRICE FROM ZD_RESULT_OPER_OVER_CUST_AREA_D
+
+ WHERE SUBSTR(DODATE,1,7) BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} --> 
+
+select count(DISTINCT ORGACODE)  SALECOSTPRICE from 
+(SELECT  ORGACODE,sum(cnt) cntall FROM ZD_RESULT_OPER_OVER_CUST_AREA_D
+WHERE  SUBSTR(DODATE,1,7) BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} 
+GROUP BY ORGACODE) c 
+where c.cntall>3
+
+</select>
+
+<!--查询覆盖门店数汇总  -->
+<select id="selectTotalStoreMonth" resultType="float">
+
+<!-- SELECT SUM(cnt) SALEPRICE FROM ZD_RESULT_OPER_OVER_HALL_AREA_D
+
+ WHERE SUBSTR(DODATE,1,7)  BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} -->
+ 
+ select count(DISTINCT ORGACODE)  SALECOSTPRICE from 
+(SELECT  ORGACODE,sum(cnt) cntall FROM ZD_RESULT_OPER_OVER_HALL_AREA_D
+WHERE  SUBSTR(DODATE,1,7) BETWEEN #{DODATE} and #{DODATE1} and BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} 
+GROUP BY ORGACODE) c 
+where c.cntall>3
+ 
+ 
+  
+
+</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

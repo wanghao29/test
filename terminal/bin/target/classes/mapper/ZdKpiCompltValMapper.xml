@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.cmc.mapper.ZdKpiCompltValMapper">
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.ZdKpiCompltVal">
+    	<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="year" column="year" jdbcType="VARCHAR"/>
+		<result property="quarter" column="quarter" jdbcType="VARCHAR"/>
+		<result property="city" column="city" jdbcType="VARCHAR"/>
+		<result property="account" column="account" jdbcType="NUMERIC"/>
+		<result property="accountIn180" column="account_in180" jdbcType="NUMERIC"/>
+		<result property="proportionIn180" column="proportion_in180" jdbcType="NUMERIC"/>
+		<result property="scoreIn180" column="score_in180" jdbcType="NUMERIC"/>
+		<result property="accountOut180" column="account_out180" jdbcType="NUMERIC"/>
+		<result property="proportionOut180" column="proportion_out180" jdbcType="NUMERIC"/>
+		<result property="scoreOut180" column="score_out180" jdbcType="NUMERIC"/>
+		<result property="score" column="score" jdbcType="NUMERIC"/>
+		<result property="retailSales" column="retail_sales" jdbcType="NUMERIC"/>
+		<result property="retailPretaxProfits" column="retail_pretax_profits" jdbcType="NUMERIC"/>
+		<result property="shopScore" column="shop_score" jdbcType="NUMERIC"/>
+		<result property="saleProfits" column="sale_profits" jdbcType="NUMERIC"/>
+		<result property="hardwareGpr" column="hardware_gpr" jdbcType="NUMERIC"/>
+		<result property="efctCustAccount" column="efct_cust_account" jdbcType="NUMERIC"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, year, quarter, city, account, account_in180, proportion_in180, score_in180, account_out180, 
+    proportion_out180, score_out180, score, retail_sales, retail_pretax_profits, shop_score, 
+    sale_profits, hardware_gpr, efct_cust_account
+  </sql>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ZD_KPI_COMPLT_VAL
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.ZdKpiCompltVal">
+    insert into ZD_KPI_COMPLT_VAL (year, quarter, 
+      city, account, account_in180, 
+      proportion_in180, score_in180, account_out180, 
+      proportion_out180, score_out180, score, 
+      retail_sales, retail_pretax_profits, shop_score, 
+      sale_profits, hardware_gpr, efct_cust_account
+      )
+    values (#{year,jdbcType=VARCHAR}, #{quarter,jdbcType=VARCHAR}, 
+      #{city,jdbcType=VARCHAR}, #{account,jdbcType=DECIMAL}, #{accountIn180,jdbcType=DECIMAL}, 
+      #{proportionIn180,jdbcType=DECIMAL}, #{scoreIn180,jdbcType=DECIMAL}, #{accountOut180,jdbcType=DECIMAL}, 
+      #{proportionOut180,jdbcType=DECIMAL}, #{scoreOut180,jdbcType=DECIMAL}, #{score,jdbcType=DECIMAL}, 
+      #{retailSales,jdbcType=DECIMAL}, #{retailPretaxProfits,jdbcType=DECIMAL}, #{shopScore,jdbcType=DECIMAL}, 
+      #{saleProfits,jdbcType=DECIMAL}, #{hardwareGpr,jdbcType=DECIMAL}, #{efctCustAccount,jdbcType=DECIMAL}
+      )
+  </insert>
+  
+  <select id="findAllByParam" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" />
+		FROM ZD_KPI_COMPLT_VAL WHERE 1=1
+		<if test="@Ognl@isNotEmpty(year)"> AND year = #{year}  </if>
+		<if test="@Ognl@isNotEmpty(quarter)"> AND quarter = #{quarter}  </if>
+		<if test="@Ognl@isNotEmpty(city)"> AND city  LIKE #{city}  </if>
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from ZD_KPI_COMPLT_VAL
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.AccountReceivableTurnoverRatio" >
+    update ZD_KPI_COMPLT_VAL set    
+      year = #{year,jdbcType=VARCHAR},
+      quarter = #{quarter,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      account = #{account,jdbcType=NUMERIC},
+      account_in180 = #{accountIn180,jdbcType=NUMERIC},
+      proportion_in180 = #{proportionIn180,jdbcType=NUMERIC},
+      score_in180 = #{scoreIn180,jdbcType=NUMERIC},
+      account_out180 = #{accountOut180,jdbcType=NUMERIC},
+      account_out180 = #{accountOut180,jdbcType=NUMERIC},
+      proportion_out180 = #{proportionOut180,jdbcType=NUMERIC},
+      
+      score_out180 = #{scoreOut180,jdbcType=NUMERIC},
+      retail_sales = #{retailSales,jdbcType=NUMERIC},
+      retail_pretax_profits = #{retailPretaxProfits,jdbcType=NUMERIC},
+      shop_score = #{shopScore,jdbcType=NUMERIC},
+      sale_profits = #{saleProfits,jdbcType=NUMERIC},
+      hardware_gpr = #{hardwareGpr,jdbcType=NUMERIC},
+      efct_cust_account = #{efctCustAccount,jdbcType=NUMERIC}
+    where id = #{id,javaType=java.lang.Long,jdbcType=NUMERIC}
+  </update>  
+	
+</mapper>

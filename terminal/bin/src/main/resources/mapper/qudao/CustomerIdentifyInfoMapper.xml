@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.asiainfo.cmc.qudao.mapper.CustomerIdentifyInfoMapper">
+    <select id="listCustomerIdentifyInfoByIds" parameterType="com.asiainfo.cmc.qudao.vo.IdentifyInfoVo"  resultType="map">
+		SELECT REPLACE(SMONTH,'-','')  SMONTH, SUM(ZDCUSTAMOUNT) ZDCUSTAMOUNT,SUM(ZDCUSTSIAMOUNT) ZDCUSTSIAMOUNT,
+			SUM(ZDCUSTSOAMOUNT) ZDCUSTSOAMOUNT,SUM(ZDCUSTCUSTAMOUNT) ZDCUSTCUSTAMOUNT,SUM(ZDCUSTHALLSALL) ZDCUSTHALLSALL,SUM(ZDCUSTCNTSTOCK) ZDCUSTCNTSTOCK
+		FROM ZD_CUST_INFO_STATIC
+		WHERE <if test="areaname!=null and areaname!=''"> AREANAME = #{areaname} AND</if>  REPLACE(SMONTH,'-','') <![CDATA[>=]]> #{startMonth} and REPLACE(SMONTH,'-','') <![CDATA[<=]]> #{endMonth}           
+        GROUP BY SMONTH,AREANAME
+    </select>  
+    
+    <select id="listCustNormal" parameterType="com.asiainfo.cmc.qudao.vo.IdentifyInfoVo"  resultType="ZdResultCustomerNormalM">
+		SELECT 
+			CONCAT(#{startMonth},'-',#{endMonth}) stat_month,ORGACODE ORGACODE,MAX(CUSTNAME) CUSTNAME,MAX(AREANAME) AREANAME,MAX(LINKMAN) LINKMAN ,MAX(TEL)  TEL,
+			SUM(cntstock)  cntstock,SUM(cntdm) cntdm,SUM(KLL)  KLL,SUM(cntmaybechg) cntmaybechg,SUM(ARPU) ARPU,SUM(MOU) MOU,SUM(DOU) DOU,
+				SUM(malecnt) malecnt,SUM(femalecnt) femalecnt,
+			SUM(agecnt0) agecnt0,SUM(agecnt1) agecnt1,SUM(agecnt2) agecnt2,SUM(agecnt3) agecnt3,SUM(agecnt4) agecnt4,SUM(agecnt5) agecnt5,
+				SUM(agecnt6) agecnt6,SUM(agecnt7) agecnt7,
+			SUM(jobswcnt) jobswcnt,SUM(jobblcnt) jobblcnt,SUM(jobxycnt) jobxycnt,SUM(jobnmcnt) jobnmcnt,SUM(jobwlcnt) jobwlcnt,SUM(jobunknowcnt) jobunknowcnt,
+				SUM(TBapplecnt) TBapplecnt,SUM(TBhwcnt) TBhwcnt,SUM(TBoppocnt) TBoppocnt,SUM(TBvivocnt) TBvivocnt,SUM(TBjlcnt) TBjlcnt,SUM(TBsxcnt) TBsxcnt,
+			SUM(TBkpcnt) TBkpcnt,SUM(TBmicnt) TBmicnt,SUM(TBztecnt) TBztecnt,SUM(TBmz) TBmz,SUM(TByd) TByd,SUM(TBother) TBother,
+			SUM(pricecnt0) pricecnt0,SUM(pricecnt1) pricecnt1,SUM(pricecnt2) pricecnt2,SUM(pricecnt3) pricecnt3,SUM(pricecnt4) pricecnt4,SUM(pricecnt5) pricecnt5,
+				SUM(pricecnt6) pricecnt6,SUM(pricecnt7) pricecnt7,SUM(pricecnt8) pricecnt8,SUM(pricecnt9) pricecnt9,SUM(pricecnt10) pricecnt10,SUM(pricecnt11) pricecnt11,
+				SUM(pricecnt12) pricecnt12,SUM(pricecnt13) pricecnt13,SUM(pricecnt14) pricecnt14,SUM(pricecnt15) pricecnt15,SUM(pricecnt16) pricecnt16,SUM(pricecnt17) pricecnt17,
+			SUM(gprscnt0) gprscnt0,SUM(gprscnt1) gprscnt1,SUM(gprscnt2) gprscnt2,SUM(gprscnt3) gprscnt3,SUM(gprscnt4) gprscnt4,SUM(gprscnt5) gprscnt5,
+				SUM(gprscnt6) gprscnt6,SUM(gprscnt7) gprscnt7,SUM(gprscnt8) gprscnt8,SUM(gprscnt9) gprscnt9,SUM(gprscnt10) gprscnt10,
+			SUM(usefeecnt0) usefeecnt0,SUM(usefeecnt1) usefeecnt1,SUM(usefeecnt2) usefeecnt2,SUM(usefeecnt3) usefeecnt3,SUM(usefeecnt4) usefeecnt4,SUM(usefeecnt5) usefeecnt5,
+			SUM(yycnt0) yycnt0,SUM(yycnt1) yycnt1,SUM(yycnt2) yycnt2,SUM(yycnt3) yycnt3,SUM(yycnt4) yycnt4,SUM(yycnt5) yycnt5,SUM(yycnt6) yycnt6,SUM(yycnt7) yycnt7,
+			SUM(tcfeecnt0) tcfeecnt0,SUM(tcfeecnt1) tcfeecnt1,SUM(tcfeecnt2) tcfeecnt2,SUM(tcfeecnt3) tcfeecnt3,SUM(tcfeecnt4) tcfeecnt4,SUM(tcfeecnt5) tcfeecnt5,
+				SUM(tcfeecnt6) tcfeecnt6,SUM(tcfeecnt7) tcfeecnt7,SUM(tcfeecnt8) tcfeecnt8,SUM(tcfeecnt9) tcfeecnt9,SUM(tcfeecnt10) tcfeecnt10,SUM(tcfeecnt11) tcfeecnt11,
+				SUM(tcfeecnt12) tcfeecnt12,SUM(tcfeecnt13) tcfeecnt13,SUM(tcfeecnt14) tcfeecnt14,SUM(tcfeecnt15) tcfeecnt15
+		FROM ZD_RESULT_CUSTOMER_NORMAL_M
+        WHERE stat_month <![CDATA[>=]]> #{startMonth} and stat_month <![CDATA[<=]]> #{endMonth}
+           <if test="areaname!=null and areaname!=''"> AND AREANAME = #{areaname}</if> 
+            <if test='code!=null and code!=""'>AND ORGACODE like CONCAT('%',#{code},'%')</if>   
+            <if test='name!=null and name!=""'>AND CUSTNAME like CONCAT('%',#{name},'%')</if>   
+            <if test='link!=null and link!=""'>AND LINKMAN like CONCAT('%',#{link},'%')</if>   
+            <if test='tel!=null and tel!=""'>AND tel like CONCAT('%',#{tel},'%')</if>  				
+		GROUP BY ORGACODE                           
+    </select>      
+  
+    <select id="listCustDynamic" parameterType="com.asiainfo.cmc.qudao.vo.IdentifyInfoVo"  resultType="ZdResultCustomerDynamic">
+         SELECT * FROM ZD_RESULT_CUSTOMER_DYNAMIC_D WHERE <if test="areaname!=null and areaname!=''">AREANAME = #{areaname} AND </if>
+         stat_day <![CDATA[>=]]> #{startDay} AND stat_day <![CDATA[<=]]> #{endDay}  
+         <if test='code!=null and code!=""'>AND ORGACODE like CONCAT('%',#{code},'%')</if>   
+         <if test='name!=null and name!=""'>AND CUSTNAME like CONCAT('%',#{name},'%')</if>                    
+    </select> 
+    <!-- ///**************************** -->
+    <select id="getCustNormalFieldByMon" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+       SELECT ${FIELD} FROM ZD_RESULT_CUSTOMER_NORMAL_M WHERE ORGACODE=#{cusOrgacode}  <if test="tag1!=null and tag1!=''">and areaname=#{tag1}</if>
+	    <choose>
+		    <WHEN test="month != null">
+		    	AND stat_month=#{month} 	    
+		    </WHEN>
+		    <otherwise>
+		        AND stat_month IN
+		        <foreach collection="months" INDEX="index" item="item" OPEN="(" SEPARATOR="," CLOSE=")">
+		               #{item}       
+		        </foreach> 	                
+		    </otherwise>
+		</choose>                 
+        GROUP BY ORGACODE
+    </select>
+    <select id="getCustNormalFieldByMons" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select * from ZD_RESULT_CUSTOMER_NORMAL_M where  ORGACODE=#{cusOrgacode} <if test="tag1!=null and tag1!=''">and  areaname=#{tag1}</if>
+        and stat_month in
+        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>  
+	    order by month      
+    </select>  
+    
+<!--对客商统计图表数据展示sql进行改动，如果选择全省执行下面sql  -->    
+  <select id="listCustomerIdentifyInfoChange" parameterType="com.asiainfo.cmc.qudao.vo.IdentifyInfoVo"  resultType="map">
+		SELECT REPLACE(SMONTH,'-','')  SMONTH, SUM(ZDCUSTAMOUNT) ZDCUSTAMOUNT,SUM(ZDCUSTSIAMOUNT) ZDCUSTSIAMOUNT,
+			SUM(ZDCUSTSOAMOUNT) ZDCUSTSOAMOUNT,SUM(ZDCUSTCUSTAMOUNT) ZDCUSTCUSTAMOUNT,SUM(ZDCUSTHALLSALL) ZDCUSTHALLSALL,SUM(ZDCUSTCNTSTOCK) ZDCUSTCNTSTOCK
+		FROM ZD_CUST_INFO_STATIC
+		WHERE <if test="areaname!=null and areaname!=''"> AREANAME = #{areaname} AND</if>  REPLACE(SMONTH,'-','') <![CDATA[>=]]> #{startMonth} and REPLACE(SMONTH,'-','') <![CDATA[<=]]> #{endMonth}           
+        GROUP BY SMONTH
+    </select>  
+   
+   
+ <select id="listCustomerChangeAll" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo"  resultType="map">
+		SELECT
+      stat_month,
+	SUM(agecnt0) agecnt0,
+	SUM(agecnt1) agecnt1,
+	SUM(agecnt2) agecnt2,
+	SUM(agecnt3) agecnt3,
+	SUM(agecnt4) agecnt4,
+	SUM(agecnt5) agecnt5,
+	SUM(agecnt6) agecnt6,
+	SUM(agecnt7) agecnt7,
+	SUM(jobswcnt) jobswcnt,
+	SUM(jobblcnt) jobblcnt,
+	SUM(jobxycnt) jobxycnt,
+	SUM(jobnmcnt) jobnmcnt,
+	SUM(jobwlcnt) jobwlcnt,
+	SUM(TBapplecnt) TBapplecnt,
+	SUM(TBhwcnt) TBhwcnt,
+	SUM(TBoppocnt) TBoppocnt,
+	SUM(TBvivocnt) TBvivocnt,
+	SUM(TBjlcnt) TBjlcnt,
+	SUM(TBsxcnt) TBsxcnt,
+	SUM(TBkpcnt) TBkpcnt,
+	SUM(TBmicnt) TBmicnt,
+	SUM(TBztecnt) TBztecnt,
+	SUM(TBmz) TBmz,
+	SUM(TByd) TByd,
+	SUM(TBother) TBother,
+	SUM(pricecnt6) pricecnt6,
+	SUM(pricecnt7) pricecnt7,
+	SUM(pricecnt8) pricecnt8,
+	SUM(pricecnt9) pricecnt9,
+	SUM(pricecnt10) pricecnt10,
+	SUM(pricecnt11) pricecnt11,
+	SUM(pricecnt12) pricecnt12,
+	SUM(pricecnt13) pricecnt13,
+	SUM(pricecnt14) pricecnt14,
+	SUM(pricecnt15) pricecnt15,
+	SUM(pricecnt16) pricecnt16,
+	SUM(pricecnt17) pricecnt17,
+	SUM(gprscnt1) gprscnt1,
+	SUM(gprscnt2) gprscnt2,
+	SUM(gprscnt3) gprscnt3,
+	SUM(gprscnt4) gprscnt4,
+	SUM(gprscnt5) gprscnt5,
+	SUM(gprscnt6) gprscnt6,
+	SUM(gprscnt7) gprscnt7,
+	SUM(gprscnt8) gprscnt8,
+	SUM(gprscnt9) gprscnt9,
+	SUM(gprscnt10) gprscnt10,
+	SUM(usefeecnt1) usefeecnt1,
+	SUM(usefeecnt2) usefeecnt2,
+	SUM(usefeecnt3) usefeecnt3,
+	SUM(usefeecnt4) usefeecnt4,
+	SUM(usefeecnt5) usefeecnt5,
+	SUM(yycnt1) yycnt1,
+	SUM(yycnt2) yycnt2,
+	SUM(yycnt3) yycnt3,
+	SUM(yycnt4) yycnt4,
+	SUM(yycnt5) yycnt5,
+	SUM(yycnt6) yycnt6,
+	SUM(yycnt7) yycnt7,
+	SUM(tcfeecnt1) tcfeecnt1,
+	SUM(tcfeecnt2) tcfeecnt2,
+	SUM(tcfeecnt3) tcfeecnt3,
+	SUM(tcfeecnt4) tcfeecnt4,
+	SUM(tcfeecnt5) tcfeecnt5,
+	SUM(tcfeecnt6) tcfeecnt6,
+	SUM(tcfeecnt7) tcfeecnt7,
+	SUM(tcfeecnt8) tcfeecnt8,
+	SUM(tcfeecnt9) tcfeecnt9,
+	SUM(tcfeecnt10) tcfeecnt10,
+	SUM(tcfeecnt11) tcfeecnt11,
+	SUM(tcfeecnt12) tcfeecnt12,
+	SUM(tcfeecnt13) tcfeecnt13,
+	SUM(tcfeecnt14) tcfeecnt14,
+	SUM(tcfeecnt15) tcfeecnt15
+FROM
+	ZD_RESULT_CUSTOMER_NORMAL_M
+WHERE
+
+ areaname =#{areaname}
+AND stat_month IN (#{startMonth}, #{endMonth})
+
+    </select>   
+   
+    
+    
+    
+    
+        
+</mapper>

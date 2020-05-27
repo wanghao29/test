@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.gfKpi.operateCoordination.NetPhonesSalesProportionMapper" >
+ 
+	 <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.gfKpi.operateCoordination.NetPhonesSalesProportion" >
+	    <constructor >
+	      <arg column="MONTH" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="wnzlxsjxlzb" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="jbmbz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="jbdf" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="jlmbz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="jldf" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	       <arg column="nbzsmyddf" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	    </constructor>
+	 </resultMap>
+	 <sql id="Base_Column_List" >
+	   MONTH  billcyc , wnzlxsjxlzb wnzlxsjxlzb,jbmbz jbmbz, jbdf jbdf, jlmbz jlmbz,jldf jldf ,nbzsmyddf nbzsmyddf
+	 </sql>
+	 <select id="queryData" resultType="com.asiainfo.cmc.enties.gfKpi.operateCoordination.NetPhonesSalesProportion"  parameterType="Map" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from KPI_INNET_TERMINAL_SALE_PROPORTION   where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]>
+	   
+	</select>
+	<update id="calculatedScore">
+      call net_phones_sales_proportion(${startMonth},#{endMonth})
+   </update>
+   <insert id="insert"    parameterType="Map" >
+    insert KPI_INNET_TERMINAL_SALE_PROPORTION ( MONTH, wnzlxsjxlzb ,jbmbz , jbdf , jlmbz ,jldf,nbzsmyddf  )
+    								   VALUES(#{billcyc},#{wnzlxsjxlzb},#{jbmbz},#{jbdf},#{jlmbz},#{jldf},#{nbzsmyddf}  )
+   
+   </insert>
+   <select id="queryDataByMonth" resultType="com.asiainfo.cmc.enties.gfKpi.operateCoordination.NetPhonesSalesProportion"  parameterType="Map" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from KPI_INNET_TERMINAL_SALE_PROPORTION   where <![CDATA[MONTH = #{billcyc}    ]]>
+	   
+	</select>
+   	<update id="updateByMonth">
+        update KPI_INNET_TERMINAL_SALE_PROPORTION set wnzlxsjxlzb=${wnzlxsjxlzb},jbmbz=${jbmbz},jbdf=${jbdf},jlmbz=${jlmbz},jldf=${jldf},nbzsmyddf=${nbzsmyddf} where MONTH = #{billcyc}
+   </update>
+</mapper>

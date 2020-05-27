@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.ReduceItemMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.ReduceItem" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="kfxmc1" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kfxfs1" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="kfxmc2" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kfxfs2" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="kfxmc3" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kfxfs3" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="kfxmc4" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kfxfs4" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="kfxmc5" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kfxfs5" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="kfxmc6" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kfxfs6" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="kfxmc7" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kfxfs7" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="kfxmc8" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kfxfs8" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, kfxmc1, kfxfs1, kfxmc2, kfxfs2, kfxmc3, kfxfs3, kfxmc4, kfxfs4, kfxmc5, kfxfs5, 
+    kfxmc6, kfxfs6, kfxmc7, kfxfs7, kfxmc8, kfxfs8, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from REDUCE_ITEM
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from REDUCE_ITEM
+    <include refid="dynamicWhere" />
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from REDUCE_ITEM
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from REDUCE_ITEM
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getCountByMonth" resultType="java.lang.Integer">
+  	select
+    count(1)
+    from REDUCE_ITEM
+    where month=#{month}
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from REDUCE_ITEM
+    where <![CDATA[ month = #{endMonth}]]>
+    order by month desc LIMIT 0,1
+  </select>
+
+  <select id="getKeyData" resultType="Map">
+    select
+    sum(hyyhsl) hyyhsls,sum(wqqkzb) wqqkzbs,sum(df) dfs,sum(sjjd) sjjds
+    from REDUCE_ITEM
+  </select>
+
+  <select id="getLastMonthWcqkzb" resultType="Float">
+    select ifnull(hkyczqd,0) from REDUCE_ITEM where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="Float">
+    select ifnull(hkyczqd,0) from REDUCE_ITEM where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from REDUCE_ITEM
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <insert id="addReduceItem" parameterType="com.asiainfo.cmc.enties.ReduceItem">
+  	 insert into REDUCE_ITEM (id, kfxmc1, kfxfs1, 
+      kfxmc2, kfxfs2, kfxmc3, 
+      kfxfs3, kfxmc4, kfxfs4, kfxmc5, 
+      kfxfs5, kfxmc6, kfxfs6, kfxmc7, 
+      kfxfs7, kfxmc8, kfxfs8,month)
+    values (#{id,jdbcType=INTEGER}, #{kfxmc1,jdbcType=VARCHAR}, #{kfxfs1,jdbcType=REAL}, 
+      #{kfxmc2,jdbcType=VARCHAR}, #{kfxfs2,jdbcType=REAL}, #{kfxmc3,jdbcType=VARCHAR}, 
+      #{kfxfs3,jdbcType=REAL}, #{kfxmc4,jdbcType=VARCHAR}, #{kfxfs4,jdbcType=REAL}, #{kfxmc5,jdbcType=VARCHAR}, 
+      #{kfxfs5,jdbcType=REAL}, #{kfxmc6,jdbcType=VARCHAR}, #{kfxfs6,jdbcType=REAL}, #{kfxmc7,jdbcType=VARCHAR}, 
+      #{kfxfs7,jdbcType=REAL}, #{kfxmc8,jdbcType=VARCHAR}, #{kfxfs8,jdbcType=REAL},#{month,jdbcType=VARCHAR})
+  </insert>
+  
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.ReduceItem" >
+    insert into REDUCE_ITEM (id, kfxmc1, kfxfs1, 
+      kfxmc2, kfxfs2, kfxmc3, 
+      kfxfs3, kfxmc4, kfxfs4, kfxmc5, 
+      kfxfs5, kfxmc6, kfxfs6, kfxmc7, 
+      kfxfs7, kfxmc8, kfxfs8)
+    values (#{id,jdbcType=INTEGER}, #{kfxmc1,jdbcType=VARCHAR}, #{kfxfs1,jdbcType=REAL}, 
+      #{kfxmc2,jdbcType=VARCHAR}, #{kfxfs2,jdbcType=REAL}, #{kfxmc3,jdbcType=VARCHAR}, 
+      #{kfxfs3,jdbcType=REAL}, #{kfxmc4,jdbcType=VARCHAR}, #{kfxfs4,jdbcType=REAL}, #{kfxmc5,jdbcType=VARCHAR}, 
+      #{kfxfs5,jdbcType=REAL}, #{kfxmc6,jdbcType=VARCHAR}, #{kfxfs6,jdbcType=REAL}, #{kfxmc7,jdbcType=VARCHAR}, 
+      #{kfxfs7,jdbcType=REAL}, #{kfxmc8,jdbcType=VARCHAR}, #{kfxfs8,jdbcType=REAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.ReduceItem" >
+    insert into REDUCE_ITEM
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="kfxmc1 != null" >
+        kfxmc1,
+      </if>
+      <if test="kfxfs1 != null" >
+        kfxfs1,
+      </if>
+      <if test="kfxmc2 != null" >
+        kfxmc2,
+      </if>
+      <if test="kfxfs2 != null" >
+        kfxfs2,
+      </if>
+      <if test="kfxmc3 != null" >
+        kfxmc3,
+      </if>
+      <if test="kfxfs3 != null" >
+        kfxfs3,
+      </if>
+      <if test="kfxmc4 != null" >
+        kfxmc4,
+      </if>
+      <if test="kfxfs4 != null" >
+        kfxfs4,
+      </if>
+      <if test="kfxmc5 != null" >
+        kfxmc5,
+      </if>
+      <if test="kfxfs5 != null" >
+        kfxfs5,
+      </if>
+      <if test="kfxmc6 != null" >
+        kfxmc6,
+      </if>
+      <if test="kfxfs6 != null" >
+        kfxfs6,
+      </if>
+      <if test="kfxmc7 != null" >
+        kfxmc7,
+      </if>
+      <if test="kfxfs7 != null" >
+        kfxfs7,
+      </if>
+      <if test="kfxmc8 != null" >
+        kfxmc8,
+      </if>
+      <if test="kfxfs8 != null" >
+        kfxfs8,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="kfxmc1 != null" >
+        #{kfxmc1,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs1 != null" >
+        #{kfxfs1,jdbcType=REAL},
+      </if>
+      <if test="kfxmc2 != null" >
+        #{kfxmc2,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs2 != null" >
+        #{kfxfs2,jdbcType=REAL},
+      </if>
+      <if test="kfxmc3 != null" >
+        #{kfxmc3,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs3 != null" >
+        #{kfxfs3,jdbcType=REAL},
+      </if>
+      <if test="kfxmc4 != null" >
+        #{kfxmc4,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs4 != null" >
+        #{kfxfs4,jdbcType=REAL},
+      </if>
+      <if test="kfxmc5 != null" >
+        #{kfxmc5,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs5 != null" >
+        #{kfxfs5,jdbcType=REAL},
+      </if>
+      <if test="kfxmc6 != null" >
+        #{kfxmc6,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs6 != null" >
+        #{kfxfs6,jdbcType=REAL},
+      </if>
+      <if test="kfxmc7 != null" >
+        #{kfxmc7,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs7 != null" >
+        #{kfxfs7,jdbcType=REAL},
+      </if>
+      <if test="kfxmc8 != null" >
+        #{kfxmc8,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs8 != null" >
+        #{kfxfs8,jdbcType=REAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.ReduceItem" >
+    update REDUCE_ITEM
+    <set >
+      <if test="kfxmc1 != null" >
+        kfxmc1 = #{kfxmc1,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs1 != null" >
+        kfxfs1 = #{kfxfs1,jdbcType=REAL},
+      </if>
+      <if test="kfxmc2 != null" >
+        kfxmc2 = #{kfxmc2,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs2 != null" >
+        kfxfs2 = #{kfxfs2,jdbcType=REAL},
+      </if>
+      <if test="kfxmc3 != null" >
+        kfxmc3 = #{kfxmc3,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs3 != null" >
+        kfxfs3 = #{kfxfs3,jdbcType=REAL},
+      </if>
+      <if test="kfxmc4 != null" >
+        kfxmc4 = #{kfxmc4,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs4 != null" >
+        kfxfs4 = #{kfxfs4,jdbcType=REAL},
+      </if>
+      <if test="kfxmc5 != null" >
+        kfxmc5 = #{kfxmc5,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs5 != null" >
+        kfxfs5 = #{kfxfs5,jdbcType=REAL},
+      </if>
+      <if test="kfxmc6 != null" >
+        kfxmc6 = #{kfxmc6,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs6 != null" >
+        kfxfs6 = #{kfxfs6,jdbcType=REAL},
+      </if>
+      <if test="kfxmc7 != null" >
+        kfxmc7 = #{kfxmc7,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs7 != null" >
+        kfxfs7 = #{kfxfs7,jdbcType=REAL},
+      </if>
+      <if test="kfxmc8 != null" >
+        kfxmc8 = #{kfxmc8,jdbcType=VARCHAR},
+      </if>
+      <if test="kfxfs8 != null" >
+        kfxfs8 = #{kfxfs8,jdbcType=REAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.ReduceItem" >
+    update REDUCE_ITEM
+    set kfxmc1 = #{kfxmc1,jdbcType=VARCHAR},
+      kfxfs1 = #{kfxfs1,jdbcType=REAL},
+      kfxmc2 = #{kfxmc2,jdbcType=VARCHAR},
+      kfxfs2 = #{kfxfs2,jdbcType=REAL},
+      kfxmc3 = #{kfxmc3,jdbcType=VARCHAR},
+      kfxfs3 = #{kfxfs3,jdbcType=REAL},
+      kfxmc4 = #{kfxmc4,jdbcType=VARCHAR},
+      kfxfs4 = #{kfxfs4,jdbcType=REAL},
+      kfxmc5 = #{kfxmc5,jdbcType=VARCHAR},
+      kfxfs5 = #{kfxfs5,jdbcType=REAL},
+      kfxmc6 = #{kfxmc6,jdbcType=VARCHAR},
+      kfxfs6 = #{kfxfs6,jdbcType=REAL},
+      kfxmc7 = #{kfxmc7,jdbcType=VARCHAR},
+      kfxfs7 = #{kfxfs7,jdbcType=REAL},
+      kfxmc8 = #{kfxmc8,jdbcType=VARCHAR},
+      kfxfs8 = #{kfxfs8,jdbcType=REAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateByMonth" parameterType="com.asiainfo.cmc.enties.ReduceItem" >
+    update REDUCE_ITEM
+    set kfxmc1 = #{kfxmc1,jdbcType=VARCHAR},
+      kfxfs1 = #{kfxfs1,jdbcType=REAL},
+      kfxmc2 = #{kfxmc2,jdbcType=VARCHAR},
+      kfxfs2 = #{kfxfs2,jdbcType=REAL},
+      kfxmc3 = #{kfxmc3,jdbcType=VARCHAR},
+      kfxfs3 = #{kfxfs3,jdbcType=REAL},
+      kfxmc4 = #{kfxmc4,jdbcType=VARCHAR},
+      kfxfs4 = #{kfxfs4,jdbcType=REAL},
+      kfxmc5 = #{kfxmc5,jdbcType=VARCHAR},
+      kfxfs5 = #{kfxfs5,jdbcType=REAL},
+      kfxmc6 = #{kfxmc6,jdbcType=VARCHAR},
+      kfxfs6 = #{kfxfs6,jdbcType=REAL},
+      kfxmc7 = #{kfxmc7,jdbcType=VARCHAR},
+      kfxfs7 = #{kfxfs7,jdbcType=REAL},
+      kfxmc8 = #{kfxmc8,jdbcType=VARCHAR},
+      kfxfs8 = #{kfxfs8,jdbcType=REAL}
+    where month=#{month}
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

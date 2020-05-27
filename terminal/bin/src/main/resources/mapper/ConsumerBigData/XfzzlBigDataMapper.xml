@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.consumerBigData.XfzzlBigDataMapper" >
+  
+  <!-- 判断表是否存在 -->
+  <select id="tableExist" parameterType="XfzzlBigData" resultType="Integer">
+     SELECT count(1) FROM information_schema.TABLES WHERE table_name = #{tableName};
+  </select>
+  
+  <!-- 查询菜单 -->
+  <select id="listCntys" parameterType="XfzzlBigData" resultType="XfzzlBigData">
+     SELECT STAT_MO,CMCC_BRANCH_CD,CMCC_CTY_NAM,CMCC_CNTY_NAM,
+        CMCC_CNTY_NAM id, CMCC_CNTY_NAM text 
+	 FROM ${tableName}
+	 WHERE 1=1 
+	 	AND CMCC_CTY_NAM=#{cmccCtyNam}
+	 GROUP BY CMCC_CNTY_NAM
+  </select>
+  
+  <select id="listCurBrands" parameterType="XfzzlBigData" resultType="XfzzlBigData">
+	 SELECT STAT_MO,CMCC_BRANCH_CD,CMCC_CTY_NAM, CMCC_CNTY_NAM,CM_BRAND,  
+		 CM_BRAND id, CM_BRAND text 
+	 FROM ${tableName} 
+	 WHERE 1=1 
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> AND CMCC_CTY_NAM=#{cmccCtyNam}</if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> AND CMCC_CNTY_NAM=#{cmccCntyNam}</if>	 
+	 GROUP BY CM_BRAND
+  </select>
+  
+  <select id="listCurSpecs" parameterType="XfzzlBigData" resultType="XfzzlBigData">
+	 SELECT STAT_MO,CMCC_BRANCH_CD,CMCC_CTY_NAM, CMCC_CNTY_NAM,CM_BRAND, CM_TER_TYPE,
+			CM_TER_TYPE id, CM_TER_TYPE text 
+		FROM ${tableName} 
+	 WHERE 1=1 
+	    AND CM_BRAND=#{cmBrand}
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> AND CMCC_CTY_NAM=#{cmccCtyNam}</if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> AND CMCC_CNTY_NAM=#{cmccCntyNam}</if>	
+	GROUP BY CM_TER_TYPE
+  </select>   
+  
+  <!--加载常规画像 -->
+  <select id="getXfzzlBigData" parameterType="XfzzlBigData" resultType="map">
+	 SELECT ${field} FROM ${tableName} 
+	 WHERE 1=1 
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> AND CMCC_CTY_NAM=#{cmccCtyNam}</if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> AND CMCC_CNTY_NAM=#{cmccCntyNam}</if>
+	 	<if test="brndCd!=null and brndCd!='' "> AND BRND_CD=#{brndCd}</if>	
+	 	<if test="cmBrand!=null and cmBrand!='' "> AND CM_BRAND=#{cmBrand}</if>
+	 	<if test="cmTerType!=null and cmTerType!='' "> AND CM_TER_TYPE=#{cmTerType}</if>	 	
+    <trim prefix="GROUP BY" suffixOverrides=",">
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> CMCC_CTY_NAM, </if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> CMCC_CNTY_NAM, </if>
+	 	<if test="brndCd!=null and brndCd!='' "> BRND_CD, </if>	
+	 	<if test="cmBrand!=null and cmBrand!='' "> CM_BRAND, </if>
+	 	<if test="cmTerType!=null and cmTerType!='' "> CM_TER_TYPE </if>	    
+    </trim>
+  </select>   
+
+<!--加载消费者机龄分布-->
+  <select id="getJlfxBigData" parameterType="XfzzlBigData" resultType="map">
+	 SELECT ${field} FROM ${tableName} 
+	 WHERE 1=1 
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> AND CMCC_CTY_NAM=#{cmccCtyNam}</if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> AND CMCC_CNTY_NAM=#{cmccCntyNam}</if>
+	 	<if test="brndCd!=null and brndCd!='' "> AND BRND_CD=#{brndCd}</if>	
+	 	<if test="cmBrand!=null and cmBrand!='' "> AND CM_BRAND=#{cmBrand}</if>
+	 	<if test="cmTerType!=null and cmTerType!='' "> AND CM_TER_TYPE=#{cmTerType}</if>	 	
+	 	<if test="jiAgeRak!=null and jiAgeRak!='' "> AND JI_AGE_RAK in ( ${jiAgeRak})</if>	 	
+    <trim prefix="GROUP BY" suffixOverrides=",">
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> CMCC_CTY_NAM, </if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> CMCC_CNTY_NAM, </if>
+	 	<if test="brndCd!=null and brndCd!='' "> BRND_CD, </if>	
+	 	<if test="cmBrand!=null and cmBrand!='' "> CM_BRAND, </if>
+	 	<if test="cmTerType!=null and cmTerType!='' "> CM_TER_TYPE </if>	    
+    </trim>
+  </select>   
+
+  <!-- 消费者总览 -->
+  <select id="getXfzzlBigDataCityScatter" parameterType="XfzzlBigData" resultType="map">
+     SELECT CMCC_CTY_NAM,SUM(COUNT_NUM) COUNT_NUM FROM ${tableName} 
+	 WHERE 1=1 
+	 	<if test="brndCd!=null and brndCd!='' "> AND BRND_CD=#{brndCd}</if>	
+	 	<if test="cmBrand!=null and cmBrand!='' "> AND CM_BRAND=#{cmBrand}</if>
+	 	<if test="cmTerType!=null and cmTerType!='' "> AND CM_TER_TYPE=#{cmTerType}</if>
+	 GROUP BY CMCC_CTY_NAM	     
+  </select>
+  <select id="getXfzzlBigDataBrndCdScatter" parameterType="XfzzlBigData" resultType="map">
+     SELECT BRND_CD,SUM(COUNT_NUM) COUNT_NUM FROM ${tableName} 
+	 WHERE 1=1 
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> AND CMCC_CTY_NAM=#{cmccCtyNam}</if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> AND CMCC_CNTY_NAM=#{cmccCntyNam}</if>
+	 	<if test="cmBrand!=null and cmBrand!='' "> AND CM_BRAND=#{cmBrand}</if>
+	 	<if test="cmTerType!=null and cmTerType!='' "> AND CM_TER_TYPE=#{cmTerType}</if>
+	 GROUP BY BRND_CD	     
+  </select>
+  <select id="getTxyhAndZxtxyh" parameterType="XfzzlBigData" resultType="map">
+     SELECT SUM(TXYH_Y) TXYH,SUM(ZDTXYH_Y) ZDTXYH FROM ${tableName}
+	 WHERE 1=1 
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> AND CMCC_CTY_NAM=#{cmccCtyNam}</if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> AND CMCC_CNTY_NAM=#{cmccCntyNam}</if>
+	 	<if test="brndCd!=null and brndCd!='' "> AND BRND_CD=#{brndCd}</if>	
+	 	<if test="cmBrand!=null and cmBrand!='' "> AND CM_BRAND=#{cmBrand}</if>
+	 	<if test="cmTerType!=null and cmTerType!='' "> AND CM_TER_TYPE=#{cmTerType}</if>	     
+  </select>
+    
+  <!-- 终端特征总览 -->
+  <select id="getZdtzzlBigDataBrandTop10" parameterType="XfzzlBigData" resultType="map">
+     SELECT SUM(COUNT_NUM) COUNT_NUM,SUM(DYXRWYH) NUM,CM_BRAND 
+     FROM ${tableName}  
+	 WHERE CM_TER_TYPE != '未知'
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> AND CMCC_CTY_NAM=#{cmccCtyNam}</if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> AND CMCC_CNTY_NAM=#{cmccCntyNam}</if>
+	 	<if test="brndCd!=null and brndCd!='' "> AND BRND_CD=#{brndCd}</if>	     
+     GROUP BY CM_BRAND      
+     ORDER BY SUM(COUNT_NUM) DESC LIMIT 10
+  </select>  
+  <select id="getZdtzzlBigDataSpecTop20" parameterType="XfzzlBigData" resultType="map">
+     SELECT SUM(COUNT_NUM) COUNT_NUM, SUM(DYXRWYH) NUM, CM_TER_TYPE 
+     FROM ${tableName} 
+     WHERE CM_TER_TYPE != '未知'
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> AND CMCC_CTY_NAM=#{cmccCtyNam}</if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> AND CMCC_CNTY_NAM=#{cmccCntyNam}</if>
+	 	<if test="brndCd!=null and brndCd!='' "> AND BRND_CD=#{brndCd}</if>
+	 	<if test="cmBrand!=null and cmBrand!='' "> AND CM_BRAND=#{cmBrand}</if>	 
+     GROUP BY CM_BRAND,CM_TER_TYPE 
+     ORDER BY SUM(COUNT_NUM) DESC LIMIT 20
+  </select>
+  <select id="getZwzdAndXrwzd" parameterType="XfzzlBigData" resultType="map">
+     SELECT SUM(ZWZD_Y) ZWZD,SUM(XRWZD_Y) XRWZD FROM ${tableName}
+	 WHERE 1=1 
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> AND CMCC_CTY_NAM=#{cmccCtyNam}</if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> AND CMCC_CNTY_NAM=#{cmccCntyNam}</if>
+	 	<if test="brndCd!=null and brndCd!='' "> AND BRND_CD=#{brndCd}</if>	
+	 	<if test="cmBrand!=null and cmBrand!='' "> AND CM_BRAND=#{cmBrand}</if>
+	 	<if test="cmTerType!=null and cmTerType!='' "> AND CM_TER_TYPE=#{cmTerType}</if>	     
+  </select>  
+ <select id="getZwwlwzdAndXrwwlwzd" parameterType="XfzzlBigData" resultType="map">
+     SELECT SUM(INNET_IOT_CNT) ZWWLWZD,SUM(NEW_IOT_CNT) XRWWLWZD FROM ${tableName}
+	 WHERE 1=1 
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> AND CMCC_CTY_NAM=#{cmccCtyNam}</if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> AND CMCC_CNTY_NAM=#{cmccCntyNam}</if>
+<!-- 	 	<if test="brndCd!=null and brndCd!='' "> AND BRND_CD=#{brndCd}</if>	 -->
+	 	<if test="cmBrand!=null and cmBrand!='' "> AND CM_BRAND=#{cmBrand}</if>
+	 	<if test="cmTerType!=null and cmTerType!='' "> AND CM_TER_TYPE=#{cmTerType}</if>	     
+  </select>  
+
+
+  <select id="getJlfxList" parameterType="XfzzlBigData" resultType="map">
+     SELECT SUM(JLFB_3) JLFB_3, SUM(JLFB_3_6) JLFB_3_6, SUM(JLFB_6_12) JLFB_6_12, SUM(JLFB_12_24) JLFB_12_24, SUM(JLFB_24_36) JLFB_24_36,
+      SUM(JLFB_36_60) JLFB_36_60, SUM(JLFB_60_120) JLFB_60_120, SUM(JLFB_120) JLFB_120, SUM(JLFB_WZ) JLFB_WZ  FROM ${tableName}
+	 WHERE 1=1 
+	 	<if test="cmccCtyNam!=null and cmccCtyNam!='' "> AND CMCC_CTY_NAM=#{cmccCtyNam}</if>
+	 	<if test="cmccCntyNam!=null and cmccCntyNam!='' "> AND CMCC_CNTY_NAM=#{cmccCntyNam}</if>
+	 	<if test="brndCd!=null and brndCd!='' "> AND BRND_CD=#{brndCd}</if>	
+	 	<if test="cmBrand!=null and cmBrand!='' "> AND CM_BRAND=#{cmBrand}</if>
+	 	<if test="cmTerType!=null and cmTerType!='' "> AND CM_TER_TYPE=#{cmTerType}</if>	     
+  </select>  
+
+</mapper>
+  

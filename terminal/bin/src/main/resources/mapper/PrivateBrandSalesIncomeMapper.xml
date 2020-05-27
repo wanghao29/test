@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.PrivateBrandSalesIncomeMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.PrivateBrandSalesIncome" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="sr" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="srtz" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="qnwcsr" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="mbz" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="sjwcd" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="qnwcd" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="bysrwcl" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="fz" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sr, srtz, qnwcsr, mbz, sjwcd, qnwcd, bysrwcl, fz, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from PRIVATE_BRAND_SALES_INCOME
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from PRIVATE_BRAND_SALES_INCOME
+    <include refid="dynamicWhere" />
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="selectBrandSalesIncome" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from PRIVATE_BRAND_SALES_INCOME
+    where month = #{month}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from PRIVATE_BRAND_SALES_INCOME
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from PRIVATE_BRAND_SALES_INCOME
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from PRIVATE_BRAND_SALES_INCOME
+    where <![CDATA[ month = #{endMonth}]]>
+    order by month desc LIMIT 0,1
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from PRIVATE_BRAND_SALES_INCOME
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.PrivateBrandSalesIncome" >
+    insert into PRIVATE_BRAND_SALES_INCOME (id, sr, srtz, qnwcsr, 
+      mbz, sjwcd, qnwcd, bysrwcl, 
+      fz, month)
+    values (#{id,jdbcType=INTEGER}, #{sr,jdbcType=REAL}, #{srtz,jdbcType=REAL}, #{qnwcsr,jdbcType=REAL}, 
+      #{mbz,jdbcType=REAL}, #{sjwcd,jdbcType=REAL}, #{qnwcd,jdbcType=REAL}, #{bysrwcl,jdbcType=REAL}, 
+      #{fz,jdbcType=REAL}, #{month,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.PrivateBrandSalesIncome" >
+    insert into PRIVATE_BRAND_SALES_INCOME
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sr != null" >
+        sr,
+      </if>
+      <if test="srtz != null" >
+        srtz,
+      </if>
+      <if test="qnwcsr != null" >
+        qnwcsr,
+      </if>
+      <if test="mbz != null" >
+        mbz,
+      </if>
+      <if test="sjwcd != null" >
+        sjwcd,
+      </if>
+      <if test="qnwcd != null" >
+        qnwcd,
+      </if>
+      <if test="bysrwcl != null" >
+        bysrwcl,
+      </if>
+      <if test="fz != null" >
+        fz,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sr != null" >
+        #{sr,jdbcType=REAL},
+      </if>
+      <if test="srtz != null" >
+        #{srtz,jdbcType=REAL},
+      </if>
+      <if test="qnwcsr != null" >
+        #{qnwcsr,jdbcType=REAL},
+      </if>
+      <if test="mbz != null" >
+        #{mbz,jdbcType=REAL},
+      </if>
+      <if test="sjwcd != null" >
+        #{sjwcd,jdbcType=REAL},
+      </if>
+      <if test="qnwcd != null" >
+        #{qnwcd,jdbcType=REAL},
+      </if>
+      <if test="bysrwcl != null" >
+        #{bysrwcl,jdbcType=REAL},
+      </if>
+      <if test="fz != null" >
+        #{fz,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.PrivateBrandSalesIncome" >
+    update PRIVATE_BRAND_SALES_INCOME
+    <set >
+      <if test="sr != null" >
+        sr = #{sr,jdbcType=REAL},
+      </if>
+      <if test="srtz != null" >
+        srtz = #{srtz,jdbcType=REAL},
+      </if>
+      <if test="qnwcsr != null" >
+        qnwcsr = #{qnwcsr,jdbcType=REAL},
+      </if>
+      <if test="mbz != null" >
+        mbz = #{mbz,jdbcType=REAL},
+      </if>
+      <if test="sjwcd != null" >
+        sjwcd = #{sjwcd,jdbcType=REAL},
+      </if>
+      <if test="qnwcd != null" >
+        qnwcd = #{qnwcd,jdbcType=REAL},
+      </if>
+      <if test="bysrwcl != null" >
+        bysrwcl = #{bysrwcl,jdbcType=REAL},
+      </if>
+      <if test="fz != null" >
+        fz = #{fz,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.PrivateBrandSalesIncome" >
+    update PRIVATE_BRAND_SALES_INCOME
+    set sr = #{sr,jdbcType=REAL},
+      srtz = #{srtz,jdbcType=REAL},
+      qnwcsr = #{qnwcsr,jdbcType=REAL},
+      mbz = #{mbz,jdbcType=REAL},
+      sjwcd = #{sjwcd,jdbcType=REAL},
+      qnwcd = #{qnwcd,jdbcType=REAL},
+      bysrwcl = #{bysrwcl,jdbcType=REAL},
+      fz = #{fz,jdbcType=REAL},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="update" parameterType="Map" >
+    update PRIVATE_BRAND_SALES_INCOME
+    <set>
+    <if test="sr != null" >
+      sr = #{sr,jdbcType=REAL},
+    </if>
+    <if test="srtz != null" >
+      srtz = #{srtz,jdbcType=REAL},
+    </if>
+    <if test="qnwcsr != null" >
+      qnwcsr = #{qnwcsr,jdbcType=REAL},
+    </if>
+    <if test="mbz != null" >
+      mbz = #{mbz,jdbcType=REAL},
+    </if>
+    <if test="sjwcd != null" >
+      sjwcd = #{sjwcd,jdbcType=REAL},
+    </if>
+    <if test="qnwcd != null" >
+      qnwcd = #{qnwcd,jdbcType=REAL},
+    </if>
+    <if test="bysrwcl != null" >
+      bysrwcl = #{bysrwcl,jdbcType=REAL},
+    </if>
+    <if test="fz != null" >
+      fz = #{fz,jdbcType=REAL},
+    </if>
+    <if test="month != null" >
+      month = #{month,jdbcType=VARCHAR},
+    </if>
+    </set>
+    <include refid="dynamicWherePrivateBrand"/>
+  </update>
+
+  <update id="updateByTargetVal">
+    update PRIVATE_BRAND_SALES_INCOME
+    set
+    qnwcd = qnwcsr/${mbz},
+    sjwcd = qnwcsr/${mbz} - (select DAYOFMONTH(LAST_DAY(now())) + 0)/365,
+    bysrwcl = (sr-srtz)/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365*${mbz}),
+    fz = (
+    case
+    WHEN ((sr-srtz)/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365)*${mbz}) &gt; 1 then 10
+    WHEN ((sr-srtz)/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365)*${mbz}) &lt; 0.8 then 0
+    ELSE 10*(((sr-srtz)/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365)*${mbz})-0.8)*5
+    END
+    ),
+    mbz = #{mbz,jdbcType=REAL}
+    <include refid="dynamicWhere" />
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+
+  <!--自有品牌手机收入动态查询条件-->
+  <sql id="dynamicWherePrivateBrand">
+    <where>
+      <if test="id != null and id != ''" >AND ID  = #{id}</if>
+      <if test="sr != null and sr != ''" >AND SR  = #{sr}</if>
+      <if test="srtz != null and srtz != ''" > AND SRTZ  = #{srtz}</if>
+      <if test="qnwcsr != null and qnwcsr != ''" > AND QNWCSR  = #{qnwcsr}</if>
+      <if test="mbz != null and mbz != ''" > AND MBZ  = #{mbz}</if>
+      <if test="sjwcd != null and sjwcd != ''" > AND SJWCD = #{sjwcd}</if>
+      <if test="qnwcd != null and qnwcd != ''" > AND QNWCD  = #{qnwcd}</if>
+      <if test="bysrwcl != null and bysrwcl != ''" > AND BYSRWCL  = #{bysrwcl}</if>
+      <if test="fz != null and fz != ''" > AND FZ  = #{fz}</if>
+    </where>
+  </sql>
+</mapper>

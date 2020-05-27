@@ -1,0 +1,23 @@
+package com.asiainfo.cmc.service;
+
+import java.util.List;
+
+import com.asiainfo.cmc.enties.CityKpi2019;
+
+
+/** 
+* @author 作者 Your-Name:wanghao 
+* @version 创建时间：2019年4月16日 下午3:01:30 
+* 
+*/
+
+public interface CityKpi2019Service {
+    //导入功能的实现
+	int insertSelective(List<CityKpi2019> records);
+	//查询所有数据的呈现
+	List <CityKpi2019> selectAll(String spare);
+	//更新功能的实现
+	int updateSelective(List<CityKpi2019> records);
+	
+	
+}

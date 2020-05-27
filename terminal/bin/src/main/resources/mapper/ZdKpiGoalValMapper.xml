@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.ZdKpiGoalValMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.ZdKpiGoalVal" >
+    	<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="operationCenter" column="operation_center" jdbcType="VARCHAR"/>
+		<result property="city" column="city" jdbcType="VARCHAR"/>
+		<result property="year" column="year" jdbcType="VARCHAR"/>
+		<result property="quarter" column="quarter" jdbcType="VARCHAR"/>
+		<result property="yearCount" column="year_count" jdbcType="NUMERIC"/>
+		<result property="qcBaseGoal" column="qc_base_goal" jdbcType="NUMERIC"/>
+		<result property="qcUrgeGoal" column="qc_urge_goal" jdbcType="NUMERIC"/>
+		<result property="qcSprintGoal" column="qc_sprint_goal" jdbcType="NUMERIC"/>
+		<result property="yearSales" column="year_sales" jdbcType="NUMERIC"/>
+		<result property="qsBaseGoal" column="qs_base_goal" jdbcType="NUMERIC"/>
+		<result property="qsUrgeGoal" column="qs_urge_goal" jdbcType="NUMERIC"/>
+		<result property="qsSprintGoal" column="qs_sprint_goal" jdbcType="NUMERIC"/>
+		<result property="yearHdwSales" column="year_hdw_sales" jdbcType="NUMERIC"/>
+		<result property="qhsBaseGoal" column="qhs_base_goal" jdbcType="NUMERIC"/>
+		<result property="qhsUrgeGoal" column="qhs_urge_goal" jdbcType="NUMERIC"/>
+		<result property="qhsSprintGoal" column="qhs_sprint_goal" jdbcType="NUMERIC"/>
+		<result property="ymbmSales" column="ymbm_sales" jdbcType="NUMERIC"/>
+		<result property="qmbmSales" column="qmbm_sales" jdbcType="NUMERIC"/>
+		<result property="ymbhSales" column="ymbh_sales" jdbcType="NUMERIC"/>
+		<result property="qmbhSales" column="qmbh_sales" jdbcType="NUMERIC"/>
+		<result property="ymbnhSales" column="ymbnh_sales" jdbcType="NUMERIC"/>
+		<result property="qmbnhBaseGoal" column="qmbnh_base_goal" jdbcType="NUMERIC"/>
+		<result property="qmbnhUrgeGoal" column="qmbnh_urge_goal" jdbcType="NUMERIC"/>
+		<result property="qmbnhSprintGoal" column="qmbnh_sprint_goal" jdbcType="NUMERIC"/>
+		<result property="actCustGoal" column="act_cust_goal" jdbcType="NUMERIC"/>
+		<result property="QActCustGoal" column="q_act_cust_goal" jdbcType="NUMERIC"/>
+		<result property="kaCustSales" column="ka_cust_sales" jdbcType="NUMERIC"/>
+		<result property="QKaCustSales" column="q_ka_cust_sales" jdbcType="NUMERIC"/>
+		<result property="msActCustCount" column="ms_act_cust_count" jdbcType="NUMERIC"/>
+		<result property="QMsActCustCount" column="q_ms_act_cust_count" jdbcType="NUMERIC"/>
+		<result property="retailDchnSales" column="retail_dchn_sales" jdbcType="NUMERIC"/>
+		<result property="QRetailDchnSales" column="q_retail_dchn_sales" jdbcType="NUMERIC"/>
+		<result property="retailDchnProfits" column="retail_dchn_profits" jdbcType="NUMERIC"/>
+		<result property="QRetailDchnProfits" column="q_retail_dchn_profits" jdbcType="NUMERIC"/>
+		<result property="aftSaleProfits" column="aft_sale_profits" jdbcType="NUMERIC"/>
+		<result property="QAftSaleProfits" column="q_aft_sale_profits" jdbcType="NUMERIC"/>
+		<result property="efctCustDedtScore" column="efct_cust_dedt_score" jdbcType="NUMERIC"/>
+		<result property="QEfctCustDedtScore" column="q_efct_cust_dedt_score" jdbcType="NUMERIC"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id,operation_center,city,year,quarter,year_count,qc_base_goal,qc_urge_goal,qc_sprint_goal,year_sales,qs_base_goal,qs_urge_goal,qs_sprint_goal,
+    year_hdw_sales,qhs_base_goal,qhs_urge_goal,qhs_sprint_goal,ymbm_sales,qmbm_sales,ymbh_sales,qmbh_sales,ymbnh_sales,qmbnh_base_goal,qmbnh_urge_goal,
+    qmbnh_sprint_goal,act_cust_goal,q_act_cust_goal,ka_cust_sales,q_ka_cust_sales,ms_act_cust_count,q_ms_act_cust_count,retail_dchn_sales,
+    q_retail_dchn_sales,retail_dchn_profits,q_retail_dchn_profits,aft_sale_profits,q_aft_sale_profits,efct_cust_dedt_score,q_efct_cust_dedt_score
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ZD_KPI_GOAL_VAL
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.ZdKpiGoalVal" >
+    INSERT INTO ZD_KPI_GOAL_VAL
+		(operation_center,city,year,quarter,year_count,qc_base_goal,qc_urge_goal,qc_sprint_goal,year_sales,qs_base_goal,qs_urge_goal,qs_sprint_goal,
+		year_hdw_sales,qhs_base_goal,qhs_urge_goal,qhs_sprint_goal,ymbm_sales,qmbm_sales,ymbh_sales,qmbh_sales,ymbnh_sales,qmbnh_base_goal,
+		qmbnh_urge_goal,qmbnh_sprint_goal,act_cust_goal,q_act_cust_goal,ka_cust_sales,q_ka_cust_sales,ms_act_cust_count,q_ms_act_cust_count,
+		retail_dchn_sales,q_retail_dchn_sales,retail_dchn_profits,q_retail_dchn_profits,aft_sale_profits,q_aft_sale_profits,efct_cust_dedt_score,
+		q_efct_cust_dedt_score)
+		VALUES
+		(#{operationCenter,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{year,jdbcType=VARCHAR}, #{quarter,jdbcType=VARCHAR}, 
+		#{yearCount,jdbcType=NUMERIC}, #{qcBaseGoal,jdbcType=NUMERIC}, #{qcUrgeGoal,jdbcType=NUMERIC}, #{qcSprintGoal,jdbcType=NUMERIC}, 
+		#{yearSales,jdbcType=NUMERIC}, #{qsBaseGoal,jdbcType=NUMERIC}, #{qsUrgeGoal,jdbcType=NUMERIC}, #{qsSprintGoal,jdbcType=NUMERIC}, 
+		#{yearHdwSales,jdbcType=NUMERIC}, #{qhsBaseGoal,jdbcType=NUMERIC}, #{qhsUrgeGoal,jdbcType=NUMERIC}, #{qhsSprintGoal,jdbcType=NUMERIC}, 
+		#{ymbmSales,jdbcType=NUMERIC}, #{qmbmSales,jdbcType=NUMERIC}, #{ymbhSales,jdbcType=NUMERIC}, #{qmbhSales,jdbcType=NUMERIC}, 
+		#{ymbnhSales,jdbcType=NUMERIC}, #{qmbnhBaseGoal,jdbcType=NUMERIC}, #{qmbnhUrgeGoal,jdbcType=NUMERIC}, #{qmbnhSprintGoal,jdbcType=NUMERIC}, 
+		#{actCustGoal,jdbcType=NUMERIC}, #{QActCustGoal,jdbcType=NUMERIC}, #{kaCustSales,jdbcType=NUMERIC}, #{QKaCustSales,jdbcType=NUMERIC}, 
+		#{msActCustCount,jdbcType=NUMERIC}, #{QMsActCustCount,jdbcType=NUMERIC}, #{retailDchnSales,jdbcType=NUMERIC}, 
+		#{QRetailDchnSales,jdbcType=NUMERIC}, #{retailDchnProfits,jdbcType=NUMERIC}, #{QRetailDchnProfits,jdbcType=NUMERIC}, 
+		#{aftSaleProfits,jdbcType=NUMERIC}, #{QAftSaleProfits,jdbcType=NUMERIC}, #{efctCustDedtScore,jdbcType=NUMERIC}, 
+		#{QEfctCustDedtScore,jdbcType=NUMERIC})
+  </insert>
+  
+  <select id="findAllByParam" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" />
+		FROM ZD_KPI_GOAL_VAL WHERE 1=1
+		<if test="@Ognl@isNotEmpty(year)"> AND year = #{year}  </if>
+		<if test="@Ognl@isNotEmpty(quarter)"> AND quarter = #{quarter}  </if>
+	</select>
+	
+	
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from ZD_KPI_GOAL_VAL
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.AccountReceivableTurnoverRatio" >
+    update ZD_KPI_GOAL_VAL set  
+		operation_center = #{operationCenter,jdbcType=VARCHAR},
+		city = #{city,jdbcType=VARCHAR},
+		year = #{year,jdbcType=VARCHAR},
+		quarter = #{quarter,jdbcType=VARCHAR},
+		year_count = #{yearCount,jdbcType=VARCHAR},
+		qc_base_goal = #{qcBaseGoal,jdbcType=VARCHAR},
+		qc_urge_goal = #{qcUrgeGoal,jdbcType=VARCHAR},
+		qc_sprint_goal = #{qcSprintGoal,jdbcType=VARCHAR},
+		year_sales = #{yearSales,jdbcType=VARCHAR},
+		qs_base_goal = #{qsBaseGoal,jdbcType=VARCHAR},
+		
+		qs_urge_goal = #{qsUrgeGoal,jdbcType=VARCHAR},
+		qs_sprint_goal = #{qsSprintGoal,jdbcType=VARCHAR},
+		year_hdw_sales = #{yearHdwSales,jdbcType=VARCHAR},
+		qhs_base_goal = #{qhsBaseGoal,jdbcType=VARCHAR},
+		qhs_urge_goal = #{qhsUrgeGoal,jdbcType=VARCHAR},
+		qhs_sprint_goal = #{qhsSprintGoal,jdbcType=VARCHAR},
+		ymbm_sales = #{ymbmSales,jdbcType=VARCHAR},
+		qmbm_sales = #{qmbmSales,jdbcType=VARCHAR},
+		ymbh_sales = #{ymbhSales,jdbcType=VARCHAR},
+		qmbh_sales = #{qmbhSales,jdbcType=VARCHAR},
+		
+		ymbnh_sales = #{ymbnhSales,jdbcType=VARCHAR},
+		qmbnh_base_goal = #{qmbnhBaseGoal,jdbcType=VARCHAR},
+		qmbnh_urge_goal = #{qmbnhUrgeGoal,jdbcType=VARCHAR},
+		qmbnh_sprint_goal = #{qmbnhSprintGoal,jdbcType=VARCHAR},
+		act_cust_goal = #{actCustGoal,jdbcType=VARCHAR},
+		q_act_cust_goal = #{QActCustGoal,jdbcType=VARCHAR},
+		ka_cust_sales = #{kaCustSales,jdbcType=VARCHAR},
+		q_ka_cust_sales = #{QKaCustSales,jdbcType=VARCHAR},
+		ms_act_cust_count = #{msActCustCount,jdbcType=VARCHAR},
+		q_ms_act_cust_count = #{QMsActCustCount,jdbcType=VARCHAR},
+		 
+		retail_dchn_sales = #{retailDchnSales,jdbcType=VARCHAR},
+		q_retail_dchn_sales = #{QRetailDchnSales,jdbcType=VARCHAR},
+		retail_dchn_profits = #{retailDchnProfits,jdbcType=VARCHAR},
+		q_retail_dchn_profits = #{QRetailDchnProfits,jdbcType=VARCHAR},
+		aft_sale_profits = #{aftSaleProfits,jdbcType=VARCHAR},
+		q_aft_sale_profits = #{QAftSaleProfits,jdbcType=VARCHAR},
+		efct_cust_dedt_score = #{efctCustDedtScore,jdbcType=VARCHAR},
+		q_efct_cust_dedt_score = #{QEfctCustDedtScore,jdbcType=VARCHAR}
+
+    where id = #{id,javaType=java.lang.Long,jdbcType=NUMERIC}
+  </update>  
+  	
+	
+</mapper>

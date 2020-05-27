@@ -1,0 +1,3177 @@
+
+var sub_dim_html ="<div class='row'  id='dim_row' style='width: 100%;height: 100%;'>"+
+	"<div class='col-xs' align='left'>"+
+	"			"+
+	"			<input type='text'hidden='hidden' id='parent_dim' style='color:blue;'> <label id='kpi_title1' > </label>"+
+	"			<select class='select_square' sub_num='sub_num_value' id='sub_dim_id'>"+
+	"			</select><input type='text'  id='parent_mdim' style='color:blue;'> "+
+
+"	</div>"+
+ 
+"	<div class='col-xs-12'  align='center'  style='width: 100%;height: 100%;'>"+
+"	 	  <div class='panel panel-default' style='width: 100%;height: 100%;'>"+
+"			  <div class='panel-body' style='width: 100%;height: 100%;' >"+
+
+ 
+"<div id ='sub_char_row' style='height:100%;width: 100%;'>"+
+
+"</div>"+
+ 
+
+"			  </div>"+
+"		</div>"+
+"	</div>"+
+"</div>";
+
+var pie_html ="<div class='col-xs-6' style='height:100%;' >"+
+ " <div  id='pie_char' style='height:100%;width: 100%;'> "+
+  
+"  </div>"+
+"</div>"+
+"<div class='col-xs-6'  style='height:100%;'>"+
+
+"<div class='tabbable' id='tabs-412104' style=' padding-top:-10ox;'  >"+
+"<ul class='nav nav-tabs' style='    padding-left:40%'>"+
+	"<li>"+
+	"	<a href='#panel-346414' data-toggle='tab'>去年同期</a>"+
+	"</li>"+
+	"<li class='active'>"+
+	"	<a href='#panel-905934' data-toggle='tab'>上月</a>"+
+	"</li>"+
+"</ul>"+
+"<div class='tab-content' style='height:550px;width: 770px;'>"+
+	"<div class='tab-pane' id='panel-346414' style='height:560px;width: 770px;'>"+
+	"	 <div  id='pie_char_Year' style='height:560px;width: 770px;'> "+
+
+	"    </div>"+
+	"</div>"+
+	"<div class='tab-pane active' id='panel-905934'style='height:560px;width: 770px;'>"+
+/*	"<div class='col-xs-12'  style='height:100%;'>"+*/
+	"	  <div  id='pie_char_Mom' style='height:560px;width: 770px;'> "+
+
+	"     </div>"
+	"</div>"+
+"</div>"+
+"</div>"+
+
+
+"</div>";
+/*"<div class='col-xs-4'  style='height:100%;'>"+
+"	  <div  id='pie_char_Mom' style='height:100%;width: 100%;'> "+
+
+"   </div>"+
+"</div>";*/
+var bar_html =  " <div  id='bar_char' style='height:100%;width: 100%;'> "+
+  
+"  </div>";
+ 
+var jqGrid_html = "<table id='jqGridlist_char'></table> <div id='jqGridNav_char'></div>"+
+"<div class='col-xs-2' align='left'><button type='button' id='btn_char'style='background-color:#000099;color:#fff;' >开始导出数据</button></div>";
+
+//var jqGridRR_html = "<table id='jqGridlist_char'></table> <div id='jqGridNav_char'></div>"+
+//"<div class='col-xs-2' align='left'>";
+
+$(document).ready(function() {
+
+	//$("#startMonth").val(getPrevMonthValue());
+	//$("#stopMonth").val(getPrevMonthValue());
+	$("#startMonth").val('201910');//临时
+	$("#stopMonth").val('201910');
+	//初始化页面
+	$.ajax({
+		type : 'post',
+		url : basePath+'/amount/getKpis.do',
+		dataType : 'json',
+		data: {"type_8":$("#type_8").text(),"startMonth":$("#startMonth").val(),"stopMonth":$("#stopMonth").val()},
+		async: false,
+		success : function(result, textStatus) {
+			
+			/*blockImg();*/
+			 $("#kpi").empty();
+			/* $("#kpi").append("<option index='-1'  value =''>请选择</option>");*/
+			 var i=0;
+			 
+//			//毛利额 总览的特殊处理  （脱离配置表）
+//			 if($("#type_8").text()=='利'){
+//				 gross_profit_zl();
+//			 }
+			 if($("#type_8").text()=='进'){//进的总览处理 特殊化 【退货率】
+				//前三个非退货率的总览
+				 $.each(result.rows, function(idx, item) {
+					 var infos = result.infos;
+					 var infoPerson =infos[i].infoPerson;
+					 var confirm = infos[i].confirm;
+					var valueUnit =value_unit(result.list[i].value);
+					var remarks=getRemarks(item.kpiKey,item.KpiName).remarks;//备注信息
+					  if(idx<3){
+						  $("#kpi").append("<div class='col-xs-4'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+								  +" <div style='float:right;' onclick='editRemarks();'><button type='button' class='btn btn-default'   title='"+remarks+"'>备注</button> </div>"
+								  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+								    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+								    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+								    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div>");
+						  confirmBtn(item.kpiKey);
+						  i+=1;
+					  }else{
+						//第四个开始退货率的总览
+						  var id =item.kpiKey+"1";
+						  $("#kpi").append("<div class='col-xs-4' style='display:none;' id='"+id+"'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+								  +" <div style='float:right;' onclick='editRemarks();'><button type='button' class='btn btn-default'   title='"+remarks+"'>备注</button> </div>"
+								  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+								    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+								    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+								    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div></div>"); 
+						  confirmBtn(item.kpiKey);
+						  i+=1;  
+					  }
+					 });
+				
+				 $("#kpi").append("<div class='col-xs-4'> " +
+				 		"<select id ='showReturnRate' style='background-color:blue;height:50px;' onchange='showRR()'>" +
+				 		"<option value='return_rate'>各地市退货率</option>" +
+				 		"<option value='retail_return_rate'>零售各地市退货率</option>" +
+				 		"<option value='tt_return_rate'>铁通各地市退货率</option>" +
+				 		"<option value='zgds_return_rate'>直供代售各地市退货率</option>" +
+				 		"<option value='rgs_return_rate'>入柜商各地市退货率</option>" +
+				 		"<option value='zydx_return_rate'>自营代销各地市退货率</option>" +
+				 		"<option value='znyj_return_rate'>智能硬件发货与退货情况</option>" +
+				 		"<option value='cpjl_return_rate'>产品经理退货台数</option>" +
+				 		"</select> </div>");
+				 $("#showRr").val("return_rate");
+				 $("#return_rate_up1")[0].style.display="block";
+				 $("#return_rate_down1")[0].style.display="block";
+				 
+			 }else if($("#type_8").text()=='利'){
+				 
+				 
+				 $('#two_fives_monitor_import').css("display","block") ;
+				 
+				 
+				 
+				 $("#typeName").change(function(){
+					  if($(this).val() == "zd_result_8wugexiaomie_t" ){
+						  $("#title_desc").text("导入五个消灭数据：");
+						  $("#header_desc").text("字段|渠道|销量（万台）|收入（万元）|业务毛利（万元）|单台毛利（元）|毛利率|归属费用|直接利润（万元）|直接利润率|公司未摊分费用（万元）|公司利润总额（万元）");
+						  $("#example_desc").text("例如：北坡计划|社会渠道|15.15|40934.06|109.43|7.22|0.02|127.67|-18.23|-0.04|932.75|704");
+					  }else if($(this).val() == "zd_result_8wuweiyiti_t"){
+						  $("#title_desc").text("导入五位一体数据：");
+						  $("#header_desc").text("渠道|类型|品牌	销量（万台）|收入（万元）|毛利（万元）|业务毛利（万元）|单台毛利（元）|毛利率");
+						  $("#example_desc").text("例如： 其中：市场部|手机|苹果 |7.18|34380.98|337.74|331.74|46.19|0.09");
+					  }else if($(this).val() == "zd_8type_info_profit_cost"){
+						  $("#title_desc").text("导入账上费用数据：");
+						  $("#header_desc").text("月份|科目|总帐科目长文本|监控表科目|本币金额");
+						  $("#example_desc").text("例如： 201905|5501050000|销售费用-办公费|5.5.4 办公费|960.00");
+					  }
+				});
+				 
+				 var remarks = getProfitRemarks();
+				 var ml_remarks = remarks.ml;
+				 var fy_remarks = remarks.fy;
+				 var zjlr_remarks = remarks.zjlr;
+				 $("#kpi").append("<div class='row'><div class='col-xs-6 panel panel-default' id='gross_div' ><h3 class='row'>&nbsp;&nbsp;&nbsp;毛利:<div style='float:right;'><button class='btn btn-default glyphicon glyphicon-pencil' onclick=\"editProfitRemarks('ml');\" style='margin-right:30px;' title='"+ml_remarks+"'>备注:</button></div></h3>" +
+					 		"<h5>&nbsp;&nbsp;&nbsp;<span style='color:#3eb8c5'>"+ml_remarks+"</span></h5> </div>" +
+					 		" <div class='col-xs-6 panel panel-default' id='cost_div' ><h3 class='row'>&nbsp;&nbsp;&nbsp;费用:<div style='float:right;'><button class='btn btn-default glyphicon glyphicon-pencil' onclick=\"editProfitRemarks('fy');\" style='margin-right:30px;' title='"+fy_remarks+"'>备注:</button></div></h3>" +
+					 		" <h5>&nbsp;&nbsp;&nbsp;<span style='color:#3eb8c5'>"+fy_remarks+"</span></h5> </div>" +
+					 		"<div class='col-xs-10 panel panel-default' id='net_div' ><h3 class='row'>&nbsp;&nbsp;&nbsp;利润:<div style='float:right;'><button class='btn btn-default glyphicon glyphicon-pencil' onclick=\"editProfitRemarks('zjlr');\" style='margin-right:30px;' title='"+zjlr_remarks+"'>备注:</button></div></h3>" +
+					 		" <h5>&nbsp;&nbsp;&nbsp;<span style='color:#3eb8c5'>"+zjlr_remarks+"</span></h5> </div></div>");
+
+				 $.each(result.rows, function(idx, item) {
+						 var infos = result.infos;
+						 var infoPerson =infos[i].infoPerson;
+						 var confirm = infos[i].confirm;
+						var valueUnit =value_unit(result.list[i].value);
+						  if(idx<2){//前2个的总览
+							  $("#gross_div").append("<div class='col-xs-6'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+									  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+									    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+									    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+									    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div>");
+							  confirmBtn(item.kpiKey);
+							  i+=1;
+						  }else if(idx<4){
+							//第3个开始的总览
+							  var id =item.kpiKey+"1";
+							  $("#cost_div").append("<div class='col-xs-6'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+									  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+									    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+									    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+									    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div>");
+							  confirmBtn(item.kpiKey);
+							  i+=1;
+						  }else{
+							//第5个开始的总览
+							  var id =item.kpiKey+"1";
+							  $("#net_div").append("<div class='col-xs-4'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+									  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+									    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+									    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+									    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div>");
+							  confirmBtn(item.kpiKey);
+							  i+=1;
+						  }
+						 });
+					
+			 }else{
+				 $.each(result.rows, function(idx, item) {
+					 var infos = result.infos;
+					 var infoPerson =infos[i].infoPerson;
+					 var confirm = infos[i].confirm;
+					var valueUnit =value_unit(result.list[i].value);
+					var remarks=getRemarks(item.kpiKey,item.KpiName).remarks;//备注信息
+				  $("#kpi").append("<div class='col-xs-3'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+						  +" <div style='float:right;' onclick='editRemarks();'><button type='button' class='btn btn-default' title='"+remarks+"'>备注</button> </div>"
+						  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+						    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+						    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+						    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div>");
+				  confirmBtn(item.kpiKey);
+				  i+=1;
+				 });
+			 }
+			 
+			 if($("#type_8").text()=='存'){
+			 
+			//三个月以上存货占比
+			 threeMonth();
+			 //存货周转率
+			 stockTurnoverRatio();
+			 }
+			 if($("#type_8").text()=='回'){
+				//应收帐款周转率
+				 accountReceivableTurnoverRatio();
+				 //三个月以上应收账款占比
+				 accountReceivableRatio();
+				 //回款预测准确度
+				 repaymentAccuracyForecast();
+				 }
+			 //初始化图表    以第一个指标为准
+			 if($("#type_8").text()=='回'){
+				 clickARTR("accountReceivableTurnoverRatio");
+			 }
+//			 else if($("#type_8").text()=='利'){
+//				 clickGrossProfit("gross_profit");
+//			 }
+			 else{
+				 chooseDim(result.rows[0].kpiKey);
+			 }
+			 
+			 setTimeout(function () {$.unblockUI(); }, 500);//细微延迟后关闭进度效果
+		},
+		error : function(data) {
+			console.log("----------------------------------------1、获取后台数据失败：");
+		}
+	});
+
+});
+
+//退货率的总览显示
+function showRR(){
+	var id=$("#showReturnRate").val();
+	var didId=$("#showRr").val();
+	$("#"+id+"_up1")[0].style.display="block";
+	$("#"+id+"_down1")[0].style.display="block";
+	$("#"+didId+"_up1")[0].style.display="none";
+	$("#"+didId+"_down1")[0].style.display="none";
+	$("#showRr").val(id);
+}
+
+////毛利额总览
+//function  gross_profit_zl(){
+//	 var gross_profit='gross_profit';
+//	 $("#hid_kpikey").val(gross_profit);
+//	 var gross_profit_name='毛利额';
+//	 var resultMap= overview(gross_profit);
+//	 $("#kpi").append("<div class='col-xs-5'  onclick=\"clickGrossProfit(\'"+gross_profit+"\')\"> <div class='panel panel-default' id="+gross_profit+" style=' width: 100%;'> <div class='panel-body' >"
+//			    +" <p>"+gross_profit_name+"</p>"
+//			    +" <h1  style='float: left;'>地市:"+resultMap.city+"元</h1>"
+//			    +" <h1  style='float: right;'>品牌:"+resultMap.brand+"元</h1></div> </div></div>");
+//}
+
+//三个月以上存货占比
+function threeMonth(){
+		 var id ='three_month';
+		 var confirmInfo = zlConfirmInfTS(id);//信息来源及确认人
+		 var resultMap=overview(id);
+		// khknld90zb  khknld180zb  khknld360zb
+		 var value=Number($('#overview').val()).toFixed(2);
+		 var remarks=getRemarks(id,"三个月以上存货占比").remarks;//备注信息
+		 $("#kpi").append("<div class='col-xs-3'  onclick=\"clickThreeMonth(\'"+id+"\')\"> <div class='panel panel-default' id="+id+" style=' width: 100%;'> <div class='panel-body' >"
+				 +" <div style='float:right;' onclick='editRemarks();'><button type='button' class='btn btn-default'  title='"+remarks+"'>备注</button> </div>"
+				 +" <h3 class='ww'>三个月以上存货占比</h3>"
+				 +"<h4><span style='color:#3eb8c5'>数据来源:"+confirmInfo.infoPerson+"</span></h4>"
+				 +"<h4><span style='color:#3eb8c5'>确认人:"+confirmInfo.confirm+"</span></h4> "
+				 +"<div  style='width:120px;height:70px;float:left;'> <div class='panel panel-default' style=' width: 100%;height:70px;'> <div class='panel-body'  style='padding:0px;margin:0px;'>"
+				 +" <p>90-180天</p>"
+				 +" <p  style='float: right;'><strong style='font-size:20px;'>"+resultMap.khknld90zb+"%"+"</strong></p>"
+				 +"</div> </div></div>"
+				 +"<div  style='width:120px;height:70px;float:left;'> <div class='panel panel-default' style=' width: 100%;height:70px;'> <div class='panel-body' style='padding:0px;margin:0px;' >"
+				 +" <p>180-360天</p>"
+				 +" <p  style='float: right;x'><strong style='font-size:20px;'>"+resultMap.khknld180zb+"%"+"</strong></p>"
+				 +"</div> </div></div>"
+				 +"<div  style='width:120px;height:70px;float:left;'> <div class='panel panel-default' style=' width: 100%;height:70px;'> <div class='panel-body' style='padding:0px;margin:0px;'>"
+				 +" <p>360天以上</p>"
+				 +" <p  style='float: right;'><strong style='font-size:20px;'>"+resultMap.khknld360zb+"%"+"</strong></p>"
+				 +"</div> </div></div>"
+				 +"</div> </div></div>");
+		 confirmBtn(id);
+}
+//应收帐款周转率
+function accountReceivableTurnoverRatio(){
+	var id ='accountReceivableTurnoverRatio';
+	var mbz = getMbz(id);
+	var confirmInfo = zlConfirmInfTS(id);//信息来源及确认人
+	var result= overview(id);
+	var value=Number(result).toFixed(2);
+	var remarks=getRemarks(id,"应收帐款周转率").remarks;//备注信息
+	$("#kpi").append("<div class='col-xs-3'  onclick=\"clickARTR(\'"+id+"\')\"> <div class='panel panel-default' id="+id+" style=' width: 100%;'> <div class='panel-body' >"
+			+" <div style='float:right;' onclick='editRemarks();'><button type='button' class='btn btn-default'   title='"+remarks+"'>备注</button> </div>"    
+			+" <h3 class='ww'>应收帐款周转率</h3>"
+			    +"<h4><span style='color:#3eb8c5'>数据来源:"+confirmInfo.infoPerson+"</span></h4>"
+			    +"<h4><span style='color:#3eb8c5'>确认人:"+confirmInfo.confirm+"</span></h4> "
+			    +" <h1  style='float: right;'>"+value+""+"<font size='4' color='#fff'>(目标值:"+mbz+")</font></h1></div> </div></div>");
+	confirmBtn(id);
+}
+//三个月以上应收账款占比
+function accountReceivableRatio(){
+	var id ='accountReceivableRatio';
+	var confirmInfo = zlConfirmInfTS(id);//信息来源及确认人
+	//yszkzb90 yszkzb180
+	var resultMap= overview(id);
+	var remarks=getRemarks(id,"三个月以上应收账款占比").remarks;//备注信息
+	 $("#kpi").append("<div class='col-xs-3'  onclick=\"clickARR(\'"+id+"\')\"> <div class='panel panel-default' id="+id+" style=' width: 100%;'> <div class='panel-body' >"
+			 +" <div style='float:right;' onclick='editRemarks();'><button type='button' class='btn btn-default'   title='"+remarks+"'>备注</button> </div>"   
+			 +" <h3>三个月以上应收账款占比</h3>"
+			    +"<h4><span style='color:#3eb8c5'>数据来源:"+confirmInfo.infoPerson+"</span></h4>"
+			    +"<h4><span style='color:#3eb8c5'>确认人:"+confirmInfo.confirm+"</span></h4> "
+			    +"<div  style='width:180px;height:70px;float:left;'> <div class='panel panel-default' style=' width: 100%;height:70px;'> <div class='panel-body' style='padding:0px;margin:0px;'>"
+				 +" <p>90-180天占比</p>"
+				 +" <p  style='float: right;'><strong style='font-size:20px;'>"+resultMap.yszkzb90+"%"+"</strong></h3>"
+				 +"</div> </div></div>"
+				 +"<div  style='width:180px;height:70px;float:left;'> <div class='panel panel-default' style=' width: 100%;height:70px;'> <div class='panel-body' style='padding:0px;margin:0px;'>"
+				 +" <p>180天以上占比</p>"
+				 +" <p  style='float: right;'><strong style='font-size:20px;'>"+resultMap.yszkzb180+"%"+"</strong></h3>"
+				 +"</div> </div></div>"
+			    +"</div> </div></div>");
+	 confirmBtn(id);
+}
+//回款预测准确度
+function repaymentAccuracyForecast(){
+	var id ='repaymentAccuracyForecast';
+	var confirmInfo = zlConfirmInfTS(id);//信息来源及确认人
+	var result= overview(id);
+	var value=Number(result).toFixed(2);
+	var remarks=getRemarks(id,"回款预测准确度").remarks;//备注信息
+	$("#kpi").append("<div class='col-xs-3'  onclick=\"clickRAF(\'"+id+"\')\"> <div class='panel panel-default' id="+id+" style=' width: 100%;'> <div class='panel-body' >"
+			+" <div style='float:right;' onclick='editRemarks();'><button type='button' class='btn btn-default'   title='"+remarks+"'>备注</button> </div>"   
+			+" <h3 class='ww'>回款预测准确度</h3>"
+			    +"<h4><span style='color:#3eb8c5'>数据来源:"+confirmInfo.infoPerson+"</span></h4>"
+			    +"<h4><span style='color:#3eb8c5'>确认人:"+confirmInfo.confirm+"</span></h4> "
+			    +" <h1  style='float: right;'>"+value+"%"+"</h1></div> </div></div>");
+	confirmBtn(id);
+}
+//存货周转率
+function stockTurnoverRatio(){
+	var id ='stockTurnoverRatio';
+	var mbz=getMbz(id);
+	var confirmInfo = zlConfirmInfTS(id);//信息来源及确认人
+	var result =overview(id);//总览值
+	var value=Number(result).toFixed(2);
+	var remarks=getRemarks(id,"存货周转率").remarks;//备注信息
+	 $("#kpi").append("<div class='col-xs-3'  onclick=\"clickRatio(\'"+id+"\')\"> <div class='panel panel-default' id="+id+" style=' width: 100%;'> <div class='panel-body' >"
+			 +" <div style='float:right;' onclick='editRemarks();'><button type='button' class='btn btn-default'   title='"+remarks+"'>备注</button> </div>"  
+			 +" <h3 class='ww'>存货周转率</h3>"
+			    +"<h4><span style='color:#3eb8c5'>数据来源:"+confirmInfo.infoPerson+"</span></h4>"
+			    +"<h4><span style='color:#3eb8c5'>确认人:"+confirmInfo.confirm+"</span></h4> "
+			    +" <h1  style='float: right;'>"+value+"<font size='4' color='#fff'>(目标值:"+mbz+")</font></h1></div> </div></div>");
+	 confirmBtn(id);
+}
+
+//点击三个月以上存货占比 显示列表数据
+function clickThreeMonth(kpi_value){
+	//移除之前选中的css
+	var hid=$("#hid_kpikey").val();
+	if(hid!=null){
+		$("#"+hid).removeClass("changeColor");
+	}
+	$("#hid_kpikey").val(kpi_value);
+	//选中的添加css
+	$("#"+kpi_value).addClass("changeColor");
+	
+	//拼接数据列表
+	$("#dim_one").empty();
+	$("#dim_one").append("<option>三个月以上存货占比</option>");
+	$("#char_row").empty();
+	$("#char_row").append("<table id='grid'></table> <div id='list_id'></div>");
+	//维度2及以下为空
+	$("#sub_dim").empty();
+	
+	var mon=$("#startMonth").val();
+	var year=mon.substr(0,4);
+	if(year=='2019'){
+		loadTable('#grid',
+	            basePath + "/threeStockValueProportion/list.do",
+	            ['billcyc','je180zb','je300zb','je360zb'],
+	            ['月份','90-180天金额占比','180-360天金额占比','360天以上金额占比'],
+	            true);
+	}else{
+		loadTable('#grid',
+	            basePath + "/assetsTurnoverRate/threeMonthStockRatio/list.do",
+	            ['month','khknld90zb','khknld180zb','khknld360zb'],
+	            ['月份','考核库龄段90-180天占比','考核库龄段180-360天占比','考核库龄段360天以上占比'],
+	            true);
+	}
+	
+}
+//存货周转率点击事件
+function clickRatio(kpi_value){
+	//移除之前选中的css
+	var hid=$("#hid_kpikey").val();
+	if(hid!=null){
+		$("#"+hid).removeClass("changeColor");
+	}
+	$("#hid_kpikey").val(kpi_value);
+	//选中的添加css
+	$("#"+kpi_value).addClass("changeColor");
+	
+	//拼接数据列表
+	$("#dim_one").empty();
+	$("#dim_one").append("<option>存货周转率</option>");
+	$("#char_row").empty();
+	$("#char_row").append("<table id='grid'></table> <div id='list_id'></div>");
+	//维度2及以下为空
+	$("#sub_dim").empty();
+	
+	var mon=$("#startMonth").val();
+	var year=mon.substr(0,4);
+	if(year=='2019'){
+		loadTable('#grid',
+	            basePath + "/inventoryTurnover/list.do",
+	            ['billcyc','zjywcb','hlwcb','sjdbcb','hlwsjdbcb','gfkhzjywcb','chjz','hlwchjz','gfkhchjz','chzzl','mbcs'],
+	            ['月份','直接业务成本','互联网成本','省间调拨成本','互联网省间调拨成本','广分考核直接业务成本','存货净值','互联网存货净值','广分考核存货净值','存货周转率','目标次数'],
+	            true);
+	}else{
+		loadTable('#grid',
+	            basePath + "/assetsTurnoverRate/stockTurnoverRatio/list.do",
+	            ['month','yycb','hlwcb','sjdbcb','qnzjywcb','chjz','hlwchjz','chzzl','ljchzzl','mbz'],
+	            ['月份','运营成本','互联网成本','省间调拨成本','全年直接业务成本','存货净值','互联网存货净值','存货周转率','累计存货周转率','目标值'],
+	            true);
+	}
+	
+}
+//应收帐款周转率
+function clickARTR(kpi_value){
+	//移除之前选中的css
+	var hid=$("#hid_kpikey").val();
+	if(hid!=null){
+		$("#"+hid).removeClass("changeColor");
+	}
+	$("#hid_kpikey").val(kpi_value);
+	//选中的添加css
+	$("#"+kpi_value).addClass("changeColor");
+	
+	//拼接数据列表
+	$("#dim_one").empty();
+	$("#dim_one").append("<option>应收帐款周转率</option>");
+	$("#char_row").empty();
+	$("#char_row").append("<table id='grid'></table> <div id='list_id'></div>");
+	//维度2及以下为空
+	$("#sub_dim").empty();
+	
+	var mon=$("#startMonth").val();
+	var year=mon.substr(0,4);
+	if(year=='2019'){
+		loadTable('#grid',
+	            basePath + "/receivableTurnoverRate/list.do",
+	            ['billcyc','yysr','sjdb','yszkjz','byyskzzl','ndyskzzl','mbz'],
+	            ['月份','运营收入','省间调拨','应收帐款净值','本月应收款周转率','年度应收款周转率','目标值'],
+	            true);
+	}else{
+		loadTable('#grid',
+	            basePath + "/assetsTurnoverRate/accountReceivableTurnoverRatio/list.do",
+	            ['month','yysr','sjdb','yszkkhsr','yszkjz','byyskzzl','ndyskzzl','mbz'],
+	            ['月份','运营收入','省间调拨','应收账款考核收入','应收帐款净值','本月应收款周转率','年度应收款周转率','目标值'],
+	            true);
+	}
+	
+}
+//三个月以上应收账款占比
+function clickARR(kpi_value){
+	//移除之前选中的css
+	var hid=$("#hid_kpikey").val();
+	if(hid!=null){
+		$("#"+hid).removeClass("changeColor");
+	}
+	$("#hid_kpikey").val(kpi_value);
+	//选中的添加css
+	$("#"+kpi_value).addClass("changeColor");
+	
+	//拼接数据列表
+	$("#dim_one").empty();
+	$("#dim_one").append("<option>三个月以上应收账款占比</option>");
+	$("#char_row").empty();
+	$("#char_row").append("<table id='grid'></table> <div id='list_id'></div>");
+	//维度2及以下为空
+	$("#sub_dim").empty();
+	
+	var mon=$("#startMonth").val();
+	var year=mon.substr(0,4);
+	if(year=='2019'){
+		loadTable('#grid',
+	            basePath + "/threeReceivableProportion/list.do",
+	            ['billcyc','yszkze','yszk90','yszkzb90','yszk180','yszkzb180'],
+	            ['月份','应收账款总额','90（不含）-180天（含）应收账款','90（不含）-180天（含）应收账款占比(%)','180天（不含）以上应收账款','180天（不含）以上应收账款占比(%)'],
+	            true);
+	}else{
+		loadTable('#grid',
+	            basePath + "/assetsTurnoverRate/accountReceivableRatio/list.do",
+	            ['month','cflhysye','yszk90','yszkzb90','yszk180','yszkzb180'],
+	            ['月份','重分类后应收余额','90（不含）-180天（含）应收账款','90（不含）-180天（含）应收账款占比(%)','180天（不含）以上应收账款','180天（不含）以上应收账款占比(%)'],
+	            true);
+	}
+	
+}
+//回款预测准确度  点击事件
+function clickRAF(kpi_value){
+	//移除之前选中的css
+	var hid=$("#hid_kpikey").val();
+	if(hid!=null){
+		$("#"+hid).removeClass("changeColor");
+	}
+	$("#hid_kpikey").val(kpi_value);
+	//选中的添加css
+	$("#"+kpi_value).addClass("changeColor");
+	
+	//拼接数据列表
+	$("#dim_one").empty();
+	$("#dim_one").append("<option>回款预测准确度</option>");
+	$("#char_row").empty();
+	$("#char_row").append("<table id='grid'></table> <div id='list_id'></div>");
+	//维度2及以下为空
+	$("#sub_dim").empty();
+	
+	var mon=$("#startMonth").val();
+	var year=mon.substr(0,4);
+	if(year=='2019'){
+		loadTable('#grid',
+	            basePath + "/backForecastAccuracy/list.do",
+	            ['billcyc','sjhk','jhhk','hkyczqd','hkyczqddf'],
+	            ['月份','实际回款','计划回款','回款预测准确度','回款预测准确度得分'],
+	            true);
+	}else{
+		loadTable('#grid',
+	            basePath + "/assetsTurnoverRate/repaymentAccuracyForecast/list.do",
+	            ['month','sjhk','jhhk','hkyczqd','hkyczqddf'],
+	            ['月份','实际回款','计划回款','回款预测准确度','回款预测准确度得分'],
+	            true);
+	}
+	
+}
+
+////毛利额点击事件
+//function clickGrossProfit(kpi_value){
+//	//移除之前选中的css
+//	var hid=$("#hid_kpikey").val();
+//	if(hid!=null){
+//		$("#"+hid).removeClass("changeColor");
+//	}
+//	$("#hid_kpikey").val(kpi_value);
+//	//选中的添加css
+//	$("#"+kpi_value).addClass("changeColor");
+//	
+//		 $('#export_CostExcel')[0].style.display='none';
+//		 $('#export_GrossExcel')[0].style.display='block';
+//		 $('#export_GrossExcel_brand')[0].style.display='block';
+//	
+//	//拼接数据列表
+//	$("#dim_one").empty();
+//	$("#dim_one").append("<option value='gross_profit_brand'>品牌</option>");
+//	$("#dim_one").append("<option value='gross_profit_city'>地市</option>");
+//	$("#char_row").empty();
+//	$("#sub_dim").empty();//维度2及以下为空
+//	$("#char_row").append(bar_html);
+//	$("#dim_one").change(function(){
+//		changeGross();
+//		});
+//	grossData("gross_profit_brand");
+//	
+//	
+//}
+
+////选择维度
+//function changeGross(){
+//	var hid=$("#hid_kpikey").val();
+//	if(hid=="gross_profit"){
+//		var dim=$("#dim_one").val();
+//		grossData(dim);
+//	}
+//	
+//}	
+
+//function grossData(dim){
+//	blockImg();
+//	var paramObj=new Object();
+//	paramObj.startMonth=$("#startMonth").val();
+//	paramObj.stopMonth=$("#stopMonth").val();
+//	paramObj.dim_key = dim;
+//	$.ajax({
+//		type : 'post',
+//		url : basePath+'/amount/getCharData.do',
+//		dataType : 'json',
+//		data:paramObj,
+//		async: false,
+//		success : function(result_data, textStatus) {
+//			barChar_grossprofit(result_data);
+//		},
+//		error : function(data) {
+//			//alert(' '+data);
+//			console.log("--------------4、方法error：queryCharData");
+//		}
+//	});
+//	setTimeout(function () {$.unblockUI(); }, 500);//细微延迟后关闭进度效果
+//}
+
+function barChar_grossprofit(result_data){
+	  var paint = initEcharts(echarts,"bar_char");
+	  var option = buildStandardBar(); 
+		  option.xAxis[0].data=result_data.xAxis_data;
+		   option.series[0].data= result_data.data;
+		   option.series[1].data=result_data.data_year;
+		   option.series[2].data= result_data.data_mom;
+	   
+	   paint.setOption(option);
+}
+
+//三个月存货量占比的jqGrid列表
+function loadTable(table,url,params,titles,hasCheckbox) {
+    $(table).bootstrapTable({
+            url: url,                      //请求后台的URL（*）
+            method: 'post',                      //请求方式（*）
+          /*  height : 200,*/
+            toolbar: '#toolbar',              //工具按钮用哪个容器
+            striped: false,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: true,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+            pageSize: 12,                     //每页的记录行数（*）
+            pageList: [5, 10, 12],        //可供选择的每页的行数（*）
+            search: false,                      //是否显示表格搜索
+            strictSearch: true,
+            // showColumns: true,                  //是否显示所有的列（选择显示的列）
+            // showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,             //最少允许的列数
+            clickToSelect: true,                //是否启用点击选中行
+            paginationPreText: "上一页",
+            paginationNextText: "下一页",
+//            height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            uniqueId: "id",                     //每一行的唯一标识，一般为主键列
+            // showToggle: false,                   //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            detailView: false,                  //是否显示父子表
+            //得到查询的参数
+            queryParams : queryParams,
+            columns: createCols(params,titles),
+            onLoadError: function () {
+                console.log('数据加载失败...')
+            },
+            responseHandler: function(res) {
+            console.log(res);
+            return {
+                "total": res.totalCount,//总条数
+                "rows": res.list   //数据
+            };
+        },
+        });
+}
+
+function createCols(params,titles) {
+    if(params.length!=titles.length)
+        return null;
+    var arr = [];
+    for(var i = 0;i<params.length;i++) {
+        var obj = {};
+        if(titles[i] == '免考核机型'){
+            obj.editable={
+            		 type : 'select2',
+            		 title : '免考核机型',
+            		 field : 'mkhjx',
+            		 mode:'inline',
+            		 emptytext : "请选择免考核机型",
+            		 placement : 'top',
+            		 source : function() {
+            			 //动态获取数据 
+            			 var result = [];
+            			 $.ajax({                               
+            				 url : basePath + "/assetsTurnoverRate/threeMonthStockRatio/querySelect2.do",
+            				 async : false,
+            				 type : "get",
+            				 data : {},
+            				 success : function(data, status) {
+            					 $.each(data, function(key, value) {
+            						 result.push({   
+            							 value : value.value, 
+            							 text : value.text 
+            							 });        
+            						 });              
+            					 }             
+            				 });             
+            			 return result;
+            		 },
+	  /*             inputclass:'input-large', */               
+	                 select2:{                    
+	                	allowClear : true,                    
+	                	multiple : true,
+	                	//多选                    
+	                	tokenSeparators : [",", " "],                   
+	                	width : '250px'//设置宽               
+	                }
+            };
+           
+            
+     
+
+        }
+        else if(titles[i] == '手工调整项'){
+            obj.editable={type: 'text', title: '编辑', validate:  function (v) {}}
+        }
+        obj.field = params[i];
+        obj.title = titles[i];
+        obj.align = 'center';
+        arr.push(obj);
+    }
+    // arr.push({field: "candle",title: "编辑",editable:{type: 'text', title: '编辑', validate:  function (v) {}}})
+    return arr;
+}
+
+function queryParams (params) {
+    //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+    var temp = {
+        pageSize: params.limit,                         //页面大小
+        page: (params.offset / params.limit) + 1,   //页码
+        // sort: params.sort,      //排序列名
+        // sortOrder: params.order, //排位命令（desc，asc）
+        startMonth:$("#startMonth").val(),
+        endMonth:$("#stopMonth").val()
+    };
+    return temp;
+}
+
+function chooseDim(kpi_value){
+	/*blockImg();*/
+	//移除之前选中的css
+	var hid=$("#hid_kpikey").val();
+	if(hid!=null){
+		$("#"+hid).removeClass("changeColor");
+	}
+	$("#hid_kpikey").val(kpi_value);
+	//选中的添加css
+	$("#"+kpi_value).addClass("changeColor");
+	if(kpi_value !=""){
+		 if(kpi_value == "per_capita_sales"){//人均销量per_capita_sales      
+			 $('#export_promotersExcel')[0].style.display='block';
+			 clickEditPerson();
+		 }else{
+			 $('#export_promotersExcel')[0].style.display='none';
+		 }
+		 if(kpi_value == "after_sale_team_income"){//售后团队收入after_sale_team_income
+			 $('#export_team_incomeExcel')[0].style.display='block';
+			 clickEditTeam();
+		 }else{
+			 $('#export_team_incomeExcel')[0].style.display='none';
+		 }
+//		 if(kpi_value == "net_profit"){//净利net_profit  
+//			 $('#export_CostExcel')[0].style.display='block';
+//			 clickCost();
+//		 }else{
+//			 $('#export_CostExcel')[0].style.display='none';
+//		 }
+//		 if(kpi_value == "gross_profit"){//毛利额gross_profit
+//			 $('#export_GrossExcel')[0].style.display='block';
+//			 $('#export_GrossExcel_brand')[0].style.display='block';
+//			 clickGross();
+//		 }else{
+//			 $('#export_GrossExcel')[0].style.display='none';
+//			 $('#export_GrossExcel_brand')[0].style.display='none';
+//		 }
+//		 if(kpi_value == "platform_share"){//platform_share	平台份额
+//			 $('#view_details')[0].style.display='block';
+//		 }else{
+//			 $('#view_details')[0].style.display='none';
+//		 }
+		 //退货率 ----【1-9】类都是统一的查询条件
+		 if(kpi_value.indexOf("return_rate")!=-1){		//包含有退货率 
+			 $("#stopMonth").val(getPrevMonthValue());
+			 $('#hiddiv1')[0].style.display='none';
+		 }else{
+			 $('#hiddiv1')[0].style.display='block';
+		 }
+		 //无维度的指标  去除空维度框
+		 hiddenNoDiv(kpi_value);
+		 
+			$.ajax({
+				type : 'post',
+				url : basePath+'/amount/getDimMods.do',
+				dataType : 'json',
+				data: {"kpi_value":kpi_value},
+				async: false,
+				success : function(result, textStatus) {
+					if(result.retFlag==1){
+						var dimData = listToTree(result.rows,'dim','parentDim');
+						writeDim1(dimData);
+					}
+					
+				},
+				error : function(data) {
+					console.log("------------------------------------------2、获取后台数据失败：");
+				}
+			});
+	 }
+	setTimeout(function () {$.unblockUI(); }, 500);//细微延迟后关闭进度效果
+}
+
+//查询按钮   改变时间后，在已经选中指标的前提下，重新查询指标列表和图表数据
+function query(){
+	//账期区间校验
+	var flag=checkTime();
+	if(flag==false){
+		return;
+	}
+	//loading....
+/*	blockImg();*/
+	//被选中的指标的id
+	var kpi_value =$("#hid_kpikey").val();
+	
+	//更新指标列表
+	$.ajax({
+		type : 'post',
+		url : basePath+'/amount/getKpis.do',
+		dataType : 'json',
+		data: {"type_8":$("#type_8").text(),"startMonth":$("#startMonth").val(),"stopMonth":$("#stopMonth").val()},
+		async: false,
+		success : function(result, textStatus) {
+			
+			 $("#kpi").empty();
+			 
+//			//毛利额 总览的特殊处理  （脱离配置表）
+//			 if($("#type_8").text()=='利'){
+//				 gross_profit_zl();
+//			 }
+			 
+			 var i=0;
+			 if($("#type_8").text()=='进'){//进的总览处理 特殊化 【退货率】
+					//前三个非退货率的总览
+					 $.each(result.rows, function(idx, item) {
+						 var infos = result.infos;
+						 var infoPerson =infos[i].infoPerson;
+						 var confirm = infos[i].confirm;
+						var valueUnit =value_unit(result.list[i].value);
+						var remarks=getRemarks(item.kpiKey,item.KpiName).remarks;//备注信息
+						  if(idx<3){
+							  $("#kpi").append("<div class='col-xs-4'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+									  +" <div style='float:right;' onclick='editRemarks();'><button type='button' class='btn btn-default'   title='"+remarks+"'>备注</button> </div>"
+									  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+									    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+									    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+									    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div>");
+							  confirmBtn(item.kpiKey);
+							  i+=1;
+						  }else{
+							//第四个开始退货率的总览
+							  var id =item.kpiKey+"1";
+							  $("#kpi").append("<div class='col-xs-4' style='display:none;' id='"+id+"'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+									  +" <div style='float:right;' onclick='editRemarks();'><button type='button' class='btn btn-default'   title='"+remarks+"'>备注</button> </div>"
+									  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+									    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+									    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+									    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div></div>"); 
+							  confirmBtn(item.kpiKey);
+							  i+=1;  
+						  }
+						 });
+					
+					 $("#kpi").append("<div class='col-xs-4'> " +
+					 		"<select id ='showReturnRate' style='background-color:blue;height:50px;' onchange='showRR()'>" +
+					 		"<option value='return_rate'>各地市退货率</option>" +
+					 		"<option value='retail_return_rate'>零售各地市退货率</option>" +
+					 		"<option value='tt_return_rate'>铁通各地市退货率</option>" +
+					 		"<option value='zgds_return_rate'>直供代售各地市退货率</option>" +
+					 		"<option value='rgs_return_rate'>入柜商各地市退货率</option>" +
+					 		"<option value='zydx_return_rate'>自营代销各地市退货率</option>" +
+					 		"<option value='znyj_return_rate'>智能硬件发货与退货情况</option>" +
+					 		"<option value='cpjl_return_rate'>产品经理退货台数</option>" +
+					 		"</select> </div>");
+					 $("#showRr").val("return_rate");
+					 $("#return_rate_up1")[0].style.display="block";
+					 $("#return_rate_down1")[0].style.display="block";
+					 
+				 }else if($("#type_8").text()=='利'){
+					 var remarks = getProfitRemarks();
+					 var ml_remarks = remarks.ml;
+					 var fy_remarks = remarks.fy;
+					 var zjlr_remarks = remarks.zjlr;
+					 $("#kpi").append("<div class='row'><div class='col-xs-6 panel panel-default' id='gross_div' ><h3 class='row'>&nbsp;&nbsp;&nbsp;毛利:<div style='float:right;'><button class='btn btn-default glyphicon glyphicon-pencil' onclick=\"editProfitRemarks('ml');\" style='margin-right:30px;' title='"+ml_remarks+"'>备注:</button></div></h3>" +
+					 		"<h5>&nbsp;&nbsp;&nbsp;<span style='color:#3eb8c5'>"+ml_remarks+"</span></h5> </div>" +
+					 		" <div class='col-xs-6 panel panel-default' id='cost_div' ><h3 class='row'>&nbsp;&nbsp;&nbsp;费用:<div style='float:right;'><button class='btn btn-default glyphicon glyphicon-pencil' onclick=\"editProfitRemarks('fy');\" style='margin-right:30px;' title='"+fy_remarks+"'>备注:</button></div></h3>" +
+					 		" <h5>&nbsp;&nbsp;&nbsp;<span style='color:#3eb8c5'>"+fy_remarks+"</span></h5> </div>" +
+					 		"<div class='col-xs-10 panel panel-default' id='net_div' ><h3 class='row'>&nbsp;&nbsp;&nbsp;利润:<div style='float:right;'><button class='btn btn-default glyphicon glyphicon-pencil' onclick=\"editProfitRemarks('zjlr');\" style='margin-right:30px;' title='"+zjlr_remarks+"'>备注:</button></div></h3>" +
+					 		" <h5>&nbsp;&nbsp;&nbsp;<span style='color:#3eb8c5'>"+zjlr_remarks+"</span></h5> </div></div>");
+
+					 $.each(result.rows, function(idx, item) {
+							 var infos = result.infos;
+							 var infoPerson =infos[i].infoPerson;
+							 var confirm = infos[i].confirm;
+							var valueUnit =value_unit(result.list[i].value);
+							  if(idx<2){//前2个的总览
+								  $("#gross_div").append("<div class='col-xs-6'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+										  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+										    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+										    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+										    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div>");
+								  confirmBtn(item.kpiKey);
+								  i+=1;
+							  }else if(idx<4){
+								//第3个开始的总览
+								  var id =item.kpiKey+"1";
+								  $("#cost_div").append("<div class='col-xs-6'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+										  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+										    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+										    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+										    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div>");
+								  confirmBtn(item.kpiKey);
+								  i+=1;
+							  }else{
+								//第5个开始的总览
+								  var id =item.kpiKey+"1";
+								  $("#net_div").append("<div class='col-xs-4'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+										  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+										    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+										    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+										    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div>");
+								  confirmBtn(item.kpiKey);
+								  i+=1;
+							  }
+							 });
+						
+				 }else{
+					 $.each(result.rows, function(idx, item) {
+						 var infos = result.infos;
+						 var infoPerson =infos[i].infoPerson;
+						 var confirm = infos[i].confirm;
+						var valueUnit =value_unit(result.list[i].value);
+						var remarks=getRemarks(item.kpiKey,item.KpiName).remarks;//备注信息
+					  $("#kpi").append("<div class='col-xs-3'  onclick=\"chooseDim(\'"+item.kpiKey+"\')\"> <div class='panel panel-default' id="+item.kpiKey+" style=' width: 100%;'> <div class='panel-body' >"
+							  +" <div style='float:right;' onclick='editRemarks();'><button type='button' class='btn btn-default'   title='"+remarks+"'>备注</button> </div>"  
+							  +" <h3 class='ww'>"+item.KpiName+"</h3>"
+							    +"<h4><span style='color:#3eb8c5'>数据来源:"+infoPerson+"</span></h4>"
+							    +"<h4><span style='color:#3eb8c5'>确认人:"+confirm+"</span></h4> "
+							    +" <h1  style='float: right;'>"+valueUnit+result.list[i].unit+"</h1></div> </div></div>");
+					  confirmBtn(item.kpiKey);
+					  i+=1;
+					 });
+				 }
+			 
+			 if($("#type_8").text()=='存'){
+			//三个月以上存货占比
+			 threeMonth();
+			//存货周转率
+			 stockTurnoverRatio();
+			 //直接触发点击事件查询
+			 if(kpi_value=='three_month'){
+				 clickThreeMonth(kpi_value);
+			 }
+			 if(kpi_value=='stockTurnoverRatio'){
+				 clickRatio(kpi_value);
+			 }
+			 if(kpi_value=='inventory_number' || kpi_value=='inventory_money'){
+				 clickInventory(kpi_value);
+			 }
+			 }
+			 if($("#type_8").text()=='回'){
+				//应收帐款周转率
+				 accountReceivableTurnoverRatio();
+				 //三个月以上应收账款占比
+				 accountReceivableRatio();
+				//回款预测准确度
+				 repaymentAccuracyForecast();
+				 //直接触发点击事件查询
+				 if(kpi_value=='accountReceivableTurnoverRatio'){
+					 clickARTR(kpi_value);
+				 }
+				 if(kpi_value=='accountReceivableRatio'){
+					 clickARR(kpi_value);
+				 }
+				 if(kpi_value=='repaymentAccuracyForecast'){
+					 clickRAF(kpi_value);
+				 }
+			 }
+			$("#"+kpi_value).addClass("changeColor");
+			 
+			 //重新查询指标列表和图表数据
+//			 chooseDim(kpi_value);
+			dimOne();
+			
+		},
+		error : function(data) {
+			console.log("----------------------------------------1、获取后台数据失败：");
+		}
+	});
+	setTimeout(function () {$.unblockUI(); }, 500);//细微延迟后关闭进度效果
+}
+
+
+function dimOne(){//查询按钮
+
+	 var date_str = $("#dim_one  option:selected").attr("sub_data");
+	 var char_type = $("#dim_one  option:selected").attr("char_type");
+	 var select_value = $("#dim_one  option:selected").val();
+	 var sub_data ;
+	 if(date_str != "undefined" && date_str != undefined){
+		 sub_data = CircularJSON.parse(date_str);
+	 }else{
+		 sub_data ="undefined";
+	 }
+	 //var sub_data =  JSON.parse(date_str=="undefined"?"undefined":date_str);
+	 switch(char_type){
+	 case "bar":
+		 var  result_data = queryCharData(select_value,1);
+		 $("#char_row").empty();
+		 $("#char_row").append(bar_html);
+		 barCharShow(1,"bar_char",result_data);
+	   break;
+	 case "pie":
+		 var  result_data = queryCharData(select_value,1);
+		 $("#char_row").empty();
+		 $("#char_row").append(pie_html);
+		 pieChartShow(1,"pie_char",result_data);
+	   break;
+	 case "nestPie":
+		 var  result_data = queryCharData(select_value,1);
+		 $("#char_row").empty();
+		 $("#char_row").append(pie_html);
+		 nestPieChartShow(1,"pie_char",result_data);
+		 
+	 break; 
+	 case "jqGrid":
+		 var  result_data = queryCharData(select_value,1);
+		 $("#char_row").empty();
+		 $("#char_row").append(jqGrid_html);	//客户  机型  退货率
+		 jqGridData(select_value,1);
+	   break;
+	 case "barline":
+		 var  result_data = queryCharData(select_value,1);
+		 $("#char_row").empty();
+		 $("#char_row").append(bar_html);
+		 barlineCharShow(1,"bar_char",result_data);
+	 break; 
+	 };
+	 if(sub_data !="undefined" && sub_data != undefined){
+		 $("#sub_dim").empty();
+		 $("#sub_dim").append(sub_dim_html.replace("sub_dim_id","dim_2")
+										  .replace("dim_row","dim_row_2")
+										  .replace("sub_num_value","2")
+										  .replace("parent_dim","parent_dim_1")
+										  .replace("parent_mdim","parent_mdim_1")
+										  .replace("维度2:","维度2:")
+										  .replace("sub_char_row","sub_char_row2")
+										  .replace("kpi_title1","kpi_title2")
+		 );
+		 writeSubDim(sub_data,"dim_",1);
+	 }else{
+		 $("#dim_row_2").remove();
+	 	 $("#sub_dim").empty();
+	 }
+	 
+	
+}
+
+function writeDim1(dimData){
+	 var dim_one = $("#dim_one");
+	 dim_one.empty();
+	 $("#char_row").empty();
+	 $.each(dimData, function(idx, item) {
+		 $("#kpi_one_title").text(item.parentDimDesc+">>");
+		// alert(CircularJSON.stringify(item.children));
+		 dim_one.append("<option index='"+idx+"' char_type='"+item.charType+"' sub_data='"+CircularJSON.stringify(item.children)+"' value ='"+item.dim+"'>"+item.dimDesc+"</option>");
+	 });
+	 dim_one.change(function(){
+		// var select_idx = $("#dim_one  option:selected").attr("index");
+		 var date_str = $("#dim_one  option:selected").attr("sub_data");
+		 var char_type = $("#dim_one  option:selected").attr("char_type");
+		 var select_value = $("#dim_one  option:selected").val();
+		 var sub_data ;
+		 if(date_str != "undefined" && date_str != undefined){
+			 sub_data = CircularJSON.parse(date_str);
+		 }else{
+			 sub_data ="undefined";
+		 }
+		
+		 //切换维度选项，改变指标总览值
+		 dimOneToKpiVal(select_value);
+		 //var sub_data =  JSON.parse(date_str=="undefined"?"undefined":date_str);
+		 switch(char_type){
+		 case "bar":
+			 var  result_data = queryCharData(select_value,1);
+			 $("#char_row").empty();
+			 $("#char_row").append(bar_html);
+			 barCharShow(1,"bar_char",result_data);
+		   break;
+		 case "pie":
+			 var  result_data = queryCharData(select_value,1);
+			 $("#char_row").empty();
+			 $("#char_row").append(pie_html);
+			 pieChartShow(1,"pie_char",result_data);
+		   break;
+		 case "nestPie":
+			 var  result_data = queryCharData(select_value,1);
+			 $("#char_row").empty();
+			 $("#char_row").append(pie_html);
+			 nestPieChartShow(1,"pie_char",result_data);
+			 
+		 break; 
+		 case "jqGrid":
+			 var  result_data = queryCharData(select_value,1);
+			 $("#char_row").empty();
+			 $("#char_row").append(jqGrid_html);	//客户  机型
+			 jqGridData(select_value,1);
+		   break;
+		 case "barline":
+			 var  result_data = queryCharData(select_value,1);
+			 $("#char_row").empty();
+			 $("#char_row").append(bar_html);
+			 barlineCharShow(1,"bar_char",result_data);
+		 break; 
+		 };
+		 if(sub_data !="undefined" && sub_data != undefined){
+			 $("#sub_dim").empty();
+			 $("#sub_dim").append(sub_dim_html.replace("sub_dim_id","dim_2")
+											  .replace("dim_row","dim_row_2")
+											  .replace("sub_num_value","2")
+											  .replace("parent_dim","parent_dim_1")
+											  .replace("parent_mdim","parent_mdim_1")
+											  /*.replace("维度2:","维度2:")*/
+											  .replace("sub_char_row","sub_char_row2")
+											  .replace("kpi_title1","kpi_title2")
+					 
+			 );
+			 writeSubDim(sub_data,"dim_",1);
+		 }else{
+			 $("#dim_row_2").remove();
+		 	 $("#sub_dim").empty();
+		 }
+		 
+		
+		 
+		 
+	 });
+	 
+	 dim_one.trigger('change');
+}
+function writeSubDim(subDimData,dim_select,sub_num){
+	   sub_num = Number(sub_num)+1;
+	   var dim_select_id = dim_select +sub_num;
+	   var dim_select = $("#"+dim_select_id);
+	   dim_select.empty();
+	 /*  dim_select.append("<option index='' value =''>请选择</option>")*/
+	   $.each(subDimData, function(idx, item) {
+		  // alert(CircularJSON.stringify(item.children));
+		   $("#kpi_title"+sub_num).text(item.parentDimDesc+">>");
+		   dim_select.append("<option index='"+idx+"' char_type='"+item.charType+"' sub_num='"+sub_num+"' sub_data='"+CircularJSON.stringify(item.children)+"'  value ='"+item.dim+"'>"+item.dimDesc+"</option>");
+	   });
+	   
+	   dim_select.change(function(){
+		   //切换维度选项，改变指标总览值
+			
+			// var sub_num = $("#dim_one  option:selected").attr("sub_num");
+		   var current_sub_num = $(this).attr("sub_num");
+		   var char_type = $("#dim_"+current_sub_num+"  option:selected").attr("char_type");
+		   var select_value =  $("#dim_"+current_sub_num+"  option:selected").val();
+			 //var sub_data =  JSON.parse($("#dim_one  option:selected").attr("sub_data"));
+		    var date_str = $("#dim_"+current_sub_num+"  option:selected").attr("sub_data");
+		    dimOneToKpiVal(select_value);
+			 var sub_data ;
+			 if(date_str != undefined && date_str != "undefined" ){
+				 sub_data = CircularJSON.parse(date_str);
+			 }else{
+				 sub_data =undefined;
+			 }
+			 if(sub_data !=undefined && sub_data != "undefined" ){
+				// var  sub_dim_select = 
+				 $("#dim_row_"+(current_sub_num)).nextAll().remove();
+				 $("#sub_dim").append(sub_dim_html.replace("sub_dim_id","dim_"+(Number(current_sub_num)+1))
+												  .replace("dim_row","dim_row_"+(Number(current_sub_num)+1))
+												  .replace("sub_num_value",(Number(current_sub_num)+1))
+												   .replace("parent_dim","parent_dim_"+(Number(current_sub_num)))
+												   .replace("parent_mdim","parent_mdim_"+(Number(current_sub_num)))
+												 /* .replace("维度2:","维度"+(Number(current_sub_num)+1)+":")*/
+												  .replace("sub_char_row","sub_char_row"+(Number(current_sub_num)+1))
+												   .replace("kpi_title1","kpi_title"+(Number(current_sub_num)+1))
+												 
+									);
+				 writeSubDim(sub_data,"dim_",current_sub_num);
+				 
+			 }else{
+				 $("#dim_row_"+(current_sub_num)).nextAll().remove();
+			 }
+			 writeChar(char_type,current_sub_num,select_value);
+			
+	  });
+	   dim_select.trigger("change");
+}
+
+
+
+
+function LineCharShow(divId){
+	  var sexPaint = initEcharts(echarts,divId);
+	  var sexOption = buildLineAreaChart2(); 
+	  var xdata = ['201801','201802','201803','201804','201805'];
+	   var  series=[
+	         {
+	             name:'邮件营销',
+	             type:'bar',
+	             stack: '总量',
+	             data:[120, 132, 101, 134, 90, 230, 210]
+	         },
+	         {
+	             name:'联盟广告',
+	             type:'line',
+	             stack: '总量',
+	             data:[220, 182, 191, 234, 290, 330, 310]
+	         },
+	         {
+	             name:'视频广告',
+	             type:'line',
+	             stack: '总量',
+	             data:[150, 232, 201, 154, 190, 330, 410]
+	         } 
+	     ];
+	   sexOption.xAxis.data=xdata;
+	   sexOption.series= series;
+	   sexPaint.setOption(sexOption);
+	
+}
+function barCharShow(curr_dim,divId,result_data){
+	mutilDim(curr_dim);//维度信息
+	
+	//合计
+	var d=result_data.data;
+	var d_year=result_data.data_year;
+	var d_mom=result_data.data_mom;
+	var d_sum=0;
+	var d_year_sum=0;
+	var d_mom_sum=0;
+	if(d != null){
+		for (var i = 0; i < d.length; i++) {
+			d_sum+=Number(d[i]);
+		}
+	}
+	if(d_year != null){
+		for (var i = 0; i < d_year.length; i++) {
+			d_year_sum+=Number(d_year[i]);
+		}
+	}
+	if(d_mom != null){
+		for (var i = 0; i < d_mom.length; i++) {
+			d_mom_sum+=Number(d_mom[i]);
+		}
+	}
+	
+	
+	//图表初始化
+	  var paint = initEcharts(echarts,divId);
+	  var option = buildStandardBar(); 
+	  if($("#type_8").text()=='份'){//为份时，数据为百分数
+		  option.title.text = "单位:"+result_data.unit;
+		  option= buildStandardBarShare();
+		  option.xAxis[0].data=result_data.xAxis_data;
+		   option.series[0].data= result_data.data;
+		   option.series[1].data=result_data.data_year;
+		   option.series[2].data= result_data.data_mom;
+	  }
+	  else if($("#hid_kpikey").val()=='bra_loyalty' || $("#hid_kpikey").val()=='maintenance_rate' || $("#hid_kpikey").val()=='pro_machine' ){//品牌忠诚度
+		  option.title.text = "单位:"+result_data.unit;
+		  option=buildStandardBarLoyalty();
+		  option.xAxis[0].data=result_data.xAxis_data;
+		   option.series[0].data= result_data.data;
+		   option.series[1].data=result_data.data_year;
+		   option.series[2].data= result_data.data_mom;
+	  }else if($("#hid_kpikey").val()=='coverage_dot_number' || $("#hid_kpikey").val()=='per_capita_sales' || $("#hid_kpikey").val()=='average_sales_volume' || $("#hid_kpikey").val()=='business_acceptance' || $("#hid_kpikey").val()=='mobile_quick_repair'
+		  || $("#hid_kpikey").val()=='phone_average_price'|| $("#hid_kpikey").val()=='term_average_price' || $("#hid_kpikey").val()=='much_average_price'
+			  || $("#hid_kpikey").val()=='single_gross_profit' ){
+		  option.title.text = "单位:"+result_data.unit;//+"    上月："+(d_mom_sum)+"         去年同期："+(d_year_sum)
+		  option.xAxis[0].data=result_data.xAxis_data;
+		  option.series[0].data=result_data.data;
+		  option.series[1].data=result_data.data_year;
+		  option.series[2].data=result_data.data_mom;
+	  }else{
+		  
+		  option= buildStandardBarIncome();
+		  option.title.text = "单位："+result_data.unit;//+"当前："+(d_sum/10000).toFixed(2)+"万"+"   上月："+(d_mom_sum/10000).toFixed(2)+"万          去年同期："+(d_year_sum/10000).toFixed(2)+"万"
+		  option.xAxis[0].data=result_data.xAxis_data;
+		  var data=result_data.data;
+		  var data_year=result_data.data_year;
+		  var data_mom=result_data.data_mom;
+		  var data0=new Array();
+		  var data1=new Array();
+		  var data2=new Array();
+		  for (var i = 0; i < data.length; i++) {
+			  var data_d=data[i]/10000;
+			  if(data_d<0.1){
+				  data0[i]=(data_d).toFixed(2);
+			  }else{
+				  data0[i]=(data_d).toFixed(2);
+			  }
+			
+		}
+		  for (var i = 0; i < data_year.length; i++) {
+			  var data_y=data_year[i]/10000;
+			  if(data_y<0.1){
+				  data1[i]=(data_y).toFixed(2);
+			  }else{
+				  data1[i]=(data_y).toFixed(2);
+			  }
+//				data1[i]=(data_year[i]/10000).toFixed(1);
+			}
+		  for (var i = 0; i < data_mom.length; i++) {
+			  var data_m=data_mom[i]/10000;
+			  if(data_m<0.1){
+				  data2[i]=(data_m).toFixed(2);
+			  }else{
+				  data2[i]=(data_m).toFixed(2);
+			  }
+//				data2[i]=(data_mom[i]/10000).toFixed(1);
+			}
+		   option.series[0].data= data0;
+		   option.series[1].data= data1;
+		   option.series[2].data= data2;
+		  
+//		  option.xAxis[0].data=result_data.xAxis_data;
+//		   option.series[0].data= result_data.data;
+//		   option.series[1].data=result_data.data_year;
+//		   option.series[2].data= result_data.data_mom;
+	  }
+	   
+	   paint.setOption(option);
+	   var select_dim_id = "dim_"+(Number(curr_dim)+1);
+	   paint.on('click', function (params) {
+		   option.series[0].itemStyle.normal.color=function (param){//params.seriesIndex
+			   if(params.dataIndex == param.dataIndex &&$("#parent_dim_"+curr_dim).val()!=params.name){
+              	 return '#FF3333';
+               }else{
+              	 return '#00FFCC';
+               } 
+			   
+		   };
+		   option.series[1].itemStyle.normal.color=function (param){
+			   if(params.dataIndex == param.dataIndex &&$("#parent_dim_"+curr_dim).val()!=params.name){
+              	 return '#FF3333';
+               }else{
+              	 return '#999933';
+               } 
+			   
+		   };
+		   option.series[2].itemStyle.normal.color=function (param){
+			   if(params.dataIndex == param.dataIndex &&$("#parent_dim_"+curr_dim).val()!=params.name){
+              	 return '#FF3333';
+               }else{
+              	 return '#66FF00';
+               } 
+			   
+		   };
+		   paint.setOption(option);
+ 
+		  	//alert(params);
+			  //$("#"+select_dim_id).val(params.data.key);
+		   
+		      
+		      if($("#parent_dim_"+curr_dim).val()==params.name){
+		    	//取消维度选择
+		    	  $("#parent_dim_"+curr_dim).val(null);
+		      }else{
+		    	//维度选择
+		    	  $("#parent_dim_"+curr_dim).val(params.name);
+		      }
+		      
+		      //获取全部维度-拼维度
+			   var str="";
+			   for (var i = 1; i <=curr_dim; i++) {
+				if($("#parent_dim_"+i).val()!=""&&$("#parent_dim_"+i).val()!=null){
+					if(i>1){
+						str+="-";
+					}
+					str+=$("#parent_dim_"+i).val();
+				}
+			}
+			   $("#parent_mdim_"+curr_dim).val(str);
+			   
+		      
+			  $("#"+select_dim_id).trigger("change");
+			 
+			//  
+			 
+		  });
+ 
+}
+
+//柱状图与折线图的混搭
+function barlineCharShow(curr_dim,divId,result_data){
+	mutilDim(curr_dim);//维度信息
+	  var paint = initEcharts(echarts,divId);
+	  var option = buildStandardBarLine(); 
+		  option.xAxis[0].data=result_data.xAxis_data;
+		  //柱状图
+		  option.series[0].data= result_data.data;
+		  //折线图
+		  option.series[1].data= result_data.nest_data;
+	   
+	   paint.setOption(option);
+	   var select_dim_id = "dim_"+(Number(curr_dim)+1);
+	   paint.on('click', function (params) {
+		   option.series[0].itemStyle.normal.color=function (param){//params.seriesIndex
+			   if(params.dataIndex == param.dataIndex &&$("#parent_dim_"+curr_dim).val()!=params.name){
+            	 return '#FF3333';
+             }else{
+            	 return '#00FFCC';
+             } 
+			   
+		   };
+		   option.series[1].lineStyle.normal.color=function (param){
+			   if(params.dataIndex == param.dataIndex &&$("#parent_dim_"+curr_dim).val()!=params.name){
+            	 return '#996600';
+             }else{
+            	 return '#996600';
+             } 
+			   
+		   };
+		   paint.setOption(option);
+		      
+		      if($("#parent_dim_"+curr_dim).val()==params.name){
+		    	//取消维度选择
+		    	  $("#parent_dim_"+curr_dim).val(null);
+		      }else{
+		    	//维度选择
+		    	  $("#parent_dim_"+curr_dim).val(params.name);
+		      }
+		      
+		      //获取全部维度-拼维度
+			   var str="";
+			   for (var i = 1; i <=curr_dim; i++) {
+				if($("#parent_dim_"+i).val()!=""&&$("#parent_dim_"+i).val()!=null){
+					if(i>1){
+						str+="-";
+					}
+					str+=$("#parent_dim_"+i).val();
+				}
+			}
+			   $("#parent_mdim_"+curr_dim).val(str);
+			   
+		      
+			  $("#"+select_dim_id).trigger("change");
+			 
+			//  
+			 
+		  });
+}
+
+
+//拼多维度
+function mutilDim(curr_dim){
+	 //获取全部维度-拼维度
+	   var str="";
+	   for (var i = 1; i <=curr_dim; i++) {
+		if($("#parent_dim_"+i).val()!=""&&$("#parent_dim_"+i).val()!=null){
+			if(i>1){
+				str+="-";
+			}
+			str+=$("#parent_dim_"+i).val();
+		}
+	}
+	   $("#parent_mdim_"+curr_dim).val(str);
+	   
+}
+
+
+function pieChartShow(curr_dim,divId,result_data){
+	mutilDim(curr_dim);//维度信息
+	  var piePaint = initEcharts(echarts,divId);
+	  var pieOption = buildChartOption();
+	  if($("#type_8").text()=='份'){//为份时，数据为百分数
+		  pieOption= buildChartOptionShare();
+		  pieOption.title.text="单位："+result_data.unit;//我司销量
+		  pieOption.series[0].name="";//我司销量
+		  pieOption.series[0].data = result_data.data;
+		  pieOption.legend.data=result_data.legend_data;
+
+		  piePaint.setOption(pieOption);
+	  }else{
+		  if($("#type_8").text()=='存'){//为存时，库龄库存
+			  pieOption= buildInventoryOption();
+		  }
+		  var data=result_data.data;
+		  
+		  if($("#hid_kpikey").val()=='single_gross_profit'){//单台毛利
+			  pieOption.title.text="单位："+result_data.unit;//我司销量
+			  pieOption.series[0].name="";//我司销量
+		  }else{
+			  if($("#type_8").text()=='收' || $("#type_8").text()=='利'){
+				  pieOption.title.text="(单位："+result_data.unit+")";//我司销量
+			  }else{
+				  pieOption.title.text="(单位："+result_data.unit+")"//我司销量
+			  }
+			  
+			  pieOption.series[0].name="";//我司销量
+			  
+			 
+			  for (var i = 0; i < data.length; i++) {
+				  var data_d=Number(data[i].value)/10000;
+				  if(data_d<0.1){
+					  data[i].value=(data_d).toFixed(2);
+				  }else{
+					  data[i].value=(data_d).toFixed(2);
+				  }
+				
+			}
+		  }
+		  
+		  pieOption.series[0].data = data;
+		  pieOption.legend.data=result_data.legend_data;
+
+		  piePaint.setOption(pieOption);
+	  }
+	  
+	  var select_dim_id = "dim_"+(Number(curr_dim)+1);
+	// 处理点击事件并且跳转到相应的百度搜索页面
+	  piePaint.on('click', function (params) {
+	  	//alert(params);
+		  //$("#"+select_dim_id).val(params.data.key);
+	      
+	      if($("#parent_dim_"+curr_dim).val()==params.name){
+	    	//取消维度选择
+	    	  $("#parent_dim_"+curr_dim).val(null);
+	      }else{
+	    	//维度选择
+	    	  $("#parent_dim_"+curr_dim).val(params.name);
+	      }
+	      
+		  //获取全部维度
+		   var str="";
+		   for (var i = 1; i <=curr_dim; i++) {
+			if($("#parent_dim_"+i).val()!=""&&$("#parent_dim_"+i).val()!=null){
+				if(i>1){
+					str+="-";
+				}
+				str+=$("#parent_dim_"+i).val();
+			}
+		}
+		   $("#parent_mdim_"+curr_dim).val(str);
+		   
+		  
+		  $("#"+select_dim_id).trigger("change");
+		
+		//  
+		 
+	  });
+	  
+	  
+	  
+	  
+	  // 同比
+	  var piePaint_Year = initEcharts(echarts,divId+"_Year");
+	  var pieOption_Year = buildChartOption(); 
+	  if($("#type_8").text()=='份'){//为份时，数据为百分数
+		  pieOption_Year= buildChartOptionShare();
+		  pieOption_Year.title.text="去年同期";
+		  pieOption_Year.series[0].name="我司销量";
+		  pieOption_Year.series[0].data =result_data.data_year;
+		  pieOption.legend.data=result_data.legend_data;
+		  piePaint_Year.setOption(pieOption_Year);
+		  
+	  }else{
+		  if($("#type_8").text()=='存'){//为存时，库龄库存
+			  pieOption_Year= buildInventoryOption();
+		  }
+		  
+		  var data=result_data.data_year;
+		  if($("#hid_kpikey").val()=='single_gross_profit'){//单台毛利
+			  pieOption.title.text="单位："+result_data.unit;//我司销量
+			  pieOption.series[0].name="";//我司销量
+		  }else{
+			  if($("#type_8").text()=='收' || $("#type_8").text()=='利'){
+				  pieOption_Year.title.text="(单位："+result_data.unit+")";//我司销量
+			  }else{
+				  pieOption_Year.title.text="(单位："+result_data.unit+")"//我司销量
+			  }
+			  pieOption_Year.series[0].name="我司销量";
+			  
+			  for (var i = 0; i < data.length; i++) {
+				  var data_d=Number(data[i].value)/10000;
+				  if(data_d<0.1){
+					  data[i].value=(data_d).toFixed(2);
+				  }else{
+					  data[i].value=(data_d).toFixed(2);
+				  }
+				
+			}
+		  }
+		  
+		  pieOption_Year.series[0].data = data;
+		  pieOption.legend.data=result_data.legend_data;
+		  piePaint_Year.setOption(pieOption_Year);
+	  }
+	  
+	  
+	  //环比
+	  var piePaint_Mon = initEcharts(echarts,divId+"_Mom");
+	  var pieOption_Mon = buildChartOption(); 
+	  if($("#type_8").text()=='份'){//为份时，数据为百分数
+		  pieOption_Mon= buildChartOptionShare();
+		  pieOption_Mon.title.text="上月";
+		  pieOption_Mon.series[0].name="我司销量";
+		  pieOption_Mon.series[0].data =result_data.data_mom;
+		  pieOption.legend.data=result_data.legend_data;
+		  piePaint_Mon.setOption(pieOption_Mon);
+	  }else{
+		  if($("#type_8").text()=='存'){//为存时，库龄库存
+			  pieOption_Mon= buildInventoryOption();
+		  }
+		  
+		  var data=result_data.data_mom;
+		  if($("#hid_kpikey").val()=='single_gross_profit'){//单台毛利
+			  pieOption_Mon.title.text="上月";
+			  pieOption_Mon.series[0].name="我司销量";
+		  }else{
+			  if($("#type_8").text()=='收' || $("#type_8").text()=='利'){
+				  pieOption_Mon.title.text="(单位："+result_data.unit+")"//我司销量
+			  }else{
+				  pieOption_Mon.title.text="(单位："+result_data.unit+")";//我司销量
+			  }
+			  pieOption_Mon.series[0].name="我司销量";
+			  
+			  for (var i = 0; i < data.length; i++) {
+				  var data_d=Number(data[i].value)/10000;
+				  if(data_d<0.1){
+					  data[i].value=(data_d).toFixed(2);
+				  }else{
+					  data[i].value=(data_d).toFixed(2);
+				  }
+				
+			}
+		  }
+		  
+		  pieOption_Mon.series[0].data =data;
+		  pieOption.legend.data=result_data.legend_data;
+		  piePaint_Mon.setOption(pieOption_Mon);
+	  }
+	 
+	  
+	  
+	  
+	  
+}
+function nestPieChartShow(curr_dim,divId,result_data){
+	mutilDim(curr_dim);//维度信息
+	 var nestPiePaint = initEcharts(echarts,divId);
+	 var nestPieOption = nestPieChart();
+	 nestPieOption.legend.data=result_data.legend_data;
+	 if($("#type_8").text()=='收' || $("#type_8").text()=='利'){
+		 nestPieOption.title.text="(单位："+result_data.unit+")";
+	  }else{
+		  nestPieOption.title.text="(单位："+result_data.unit+")";
+	  }
+	 
+	 
+	 var data= result_data.data;
+	 var nest_data= result_data.nest_data;
+	 
+	 for (var i = 0; i < data.length; i++) {
+		  var data_d=Number(data[i].value)/10000;
+		  if(data_d<0.1){
+			  data[i].value=(data_d).toFixed(2);
+		  }else{
+			  data[i].value=(data_d).toFixed(2);
+		  }
+	 }
+	for (var i = 0; i < nest_data.length; i++) {
+		var data_d=Number(nest_data[i].value)/10000;
+			if(data_d<0.1){
+				nest_data[i].value=(data_d).toFixed(2);
+			}else{
+				nest_data[i].value=(data_d).toFixed(2);
+			}	  
+	}
+	 nestPieOption.series[0].data= nest_data;
+	 nestPieOption.series[1].data= data;
+	 nestPiePaint.setOption(nestPieOption);
+	 var select_dim_id = "dim_"+(Number(curr_dim)+1);
+	 nestPiePaint.on('click', function (params) {
+		  	//alert(params);
+			  //$("#"+select_dim_id).val(params.data.key);
+	      
+	      if($("#parent_dim_"+curr_dim).val()==params.name){
+	    	//取消维度选择
+	    	  $("#parent_dim_"+curr_dim).val(null);
+	      }else{
+	    	//维度选择
+	    	  $("#parent_dim_"+curr_dim).val(params.name);
+	      }
+	      
+			  //获取全部维度
+			   var str="";
+			   for (var i = 1; i <=curr_dim; i++) {
+				if($("#parent_dim_"+i).val()!=""&&$("#parent_dim_"+i).val()!=null){
+					if(i>1){
+						str+="-";
+					}
+					str+=$("#parent_dim_"+i).val();
+				}
+			}
+			   $("#parent_mdim_"+curr_dim).val(str);
+			   
+			  
+			  $("#"+select_dim_id).trigger("change");
+			
+			//  
+			 
+	 });
+	 
+	 
+	 
+	 
+	  //同比
+	  var piePaint_Year = initEcharts(echarts,divId+"_Year");
+	  var pieOption_Year = nestPieChart(); 
+	  if($("#type_8").text()=='收' || $("#type_8").text()=='利'){
+		  	   pieOption_Year.title.text="去年同期(单位："+result_data.unit+")";
+		  }else{
+			  pieOption_Year.title.text="去年同期(单位："+result_data.unit+")";
+		  }
+	 // piePaint_Year.legend.data=result_data.legend_data;
+		 
+	  var data_year= result_data.data_year;
+		 var nest_data_year= result_data.nest_data_year;
+		 
+		 for (var i = 0; i < data_year.length; i++) {
+			  var data_d=Number(data_year[i].value)/10000;
+			  if(data_d<0.1){
+				  data_year[i].value=(data_d).toFixed(2);
+			  }else{
+				  data_year[i].value=(data_d).toFixed(2);
+			  }
+		 }
+		for (var i = 0; i < nest_data_year.length; i++) {
+			var data_d=Number(nest_data_year[i].value)/10000;
+				if(data_d<0.1){
+					nest_data_year[i].value=(data_d).toFixed(2);
+				}else{
+					nest_data_year[i].value=(data_d).toFixed(2);
+				}	  
+		}
+	  
+	  pieOption_Year.series[0].data= nest_data_year;
+	  pieOption_Year.series[1].data= data_year;
+	  /*pieOption_Year.series[0].data = [
+	                               {value:135, name:'四大梯队', selected:true},
+	                               {value:410, name:'无线七口'},
+	                               {value:204, name:'四大尖刀排'},
+	                               {value:105, name:'五大战区'},
+	                               {value:1048, name:'品牌'}];*/
+	  piePaint_Year.setOption(pieOption_Year);
+	  
+	  // 环比
+	  var piePaint_Mon = initEcharts(echarts,divId+"_Mom");
+	  var pieOption_Mon = nestPieChart(); 
+	  if($("#type_8").text()=='收' || $("#type_8").text()=='利'){
+		  pieOption_Mon.title.text="上月(单位："+result_data.unit+")";
+		  }else{
+			  pieOption_Mon.title.text="上月(单位："+result_data.unit+")";
+		  }
+	  
+	  //pieOption_Mon.legend.data=result_data.legend_data;
+		 
+	  var data_mom= result_data.data_mom;
+		 var nest_data_mom= result_data.nest_data_mom;
+		 
+		 for (var i = 0; i < data_mom.length; i++) {
+			  var data_d=Number(data_mom[i].value)/10000;
+			  if(data_d<0.1){
+				  data_mom[i].value=(data_d).toFixed(2);
+			  }else{
+				  data_mom[i].value=(data_d).toFixed(2);
+			  }
+		 }
+		for (var i = 0; i < nest_data_mom.length; i++) {
+			var data_d=Number(nest_data_mom[i].value)/10000;
+				if(data_d<0.1){
+					nest_data_mom[i].value=(data_d).toFixed(2);
+				}else{
+					nest_data_mom[i].value=(data_d).toFixed(2);
+				}	  
+		}
+	  
+	  pieOption_Mon.series[0].data= nest_data_mom;
+	  pieOption_Mon.series[1].data= data_mom;
+	  /*pieOption_Mon.series[0].data = [
+	                               {value:1335, name:'四大梯队', selected:true},
+	                               {value:610, name:'无线七口'},
+	                               {value:234, name:'四大尖刀排'},
+	                               {value:135, name:'五大战区'},
+	                               {value:1548, name:'品牌'}];*/
+	  piePaint_Mon.setOption(pieOption_Mon);
+	 
+	 
+	 
+	 
+
+}
+
+function querySubDim(parentDim){
+	$.ajax({
+		type : 'post',
+		url : basePath+'/amount/getDimMods.do',
+		dataType : 'json',
+		 data: {"parentDim":parentDim},
+		async: false,
+		success : function(result, textStatus) {
+			if(result.retFlag==1){
+				//var dimData = listToTree(result.rows,'dim','parentDim');
+				writeDim1(dimData);
+			}
+		},
+		error : function(data) {
+			alert('加载发生错误'+data);
+		}
+	});
+	
+	
+}
+
+function  writeChar(char_type,current_sub_num,select_value){
+//	alert(char_type);
+	 switch(char_type){
+	 case "bar":
+		 var  result_data = queryCharData(select_value,current_sub_num);
+		 $("#sub_char_row"+(Number(current_sub_num))).empty();
+		 $("#sub_char_row"+(Number(current_sub_num))).append(bar_html.replace("bar_char","bar_char"+(Number(current_sub_num))));
+		 barCharShow((Number(current_sub_num)),"bar_char"+(Number(current_sub_num)),result_data);
+	   break;
+	 case "pie":
+		 var  result_data = queryCharData(select_value,current_sub_num);
+		 $("#sub_char_row"+(Number(current_sub_num))).empty();
+		 $("#sub_char_row"+(Number(current_sub_num))).append(pie_html.replace("pie_char", (Number(current_sub_num))+"pie_char") 
+									   .replace("pie_char_Year",(Number(current_sub_num))+"pie_char_Year") 
+									   .replace("pie_char_Mom", (Number(current_sub_num))+"pie_char_Mom")
+								);
+		 pieChartShow((Number(current_sub_num)),(Number(current_sub_num))+"pie_char",result_data);
+	   break;
+	 case "nestPie":
+		 var  result_data = queryCharData(select_value,current_sub_num);
+		 $("#sub_char_row"+(Number(current_sub_num))).empty();
+		 $("#sub_char_row"+(Number(current_sub_num))).append(pie_html.replace("pie_char", (Number(current_sub_num))+"pie_char") 
+									   .replace("pie_char_Year",(Number(current_sub_num))+"pie_char_Year") 
+									   .replace("pie_char_Mom", (Number(current_sub_num))+"pie_char_Mom")
+								);
+		 nestPieChartShow((Number(current_sub_num)),(Number(current_sub_num))+"pie_char",result_data);
+	   break;
+	 case "jqGrid":
+		 var  result_data = queryCharData(select_value,current_sub_num);
+		 $("#sub_char_row"+(Number(current_sub_num))).empty();
+		 $("#sub_char_row"+(Number(current_sub_num))).append(jqGrid_html.replace("jqGridlist_char", ("jqGridlist_char"+Number(current_sub_num))) 
+					   .replace("jqGridNav_char",("jqGridNav_char"+Number(current_sub_num)))
+					   .replace("btn_char",("btn_char"+Number(current_sub_num))) 
+			 		);	//客户  机型
+		jqGridData(select_value,(Number(current_sub_num)));
+			 break;
+	 case "barline":
+		 var  result_data = queryCharData(select_value,current_sub_num);
+		 $("#sub_char_row"+(Number(current_sub_num))).empty();
+		 $("#sub_char_row"+(Number(current_sub_num))).append(bar_html.replace("bar_char","bar_char"+(Number(current_sub_num))));
+		 barlineCharShow((Number(current_sub_num)),"bar_char"+(Number(current_sub_num)),result_data);
+	   break;
+	 };
+	
+}
+
+function queryCharData(sub_key,current_sub_num){
+	var paramObj=new Object();
+	var result_Data ={};
+	paramObj.startMonth=$("#startMonth").val();
+	paramObj.stopMonth=$("#stopMonth").val();
+	paramObj.dim_key = sub_key;
+	paramObj.type = "量";
+	for(var i=(Number(current_sub_num)-1) ;i>0;i--){
+		var parent_key = "parent_dim_"+(i);
+		paramObj[parent_key]=$("#"+parent_key).val();
+	}
+	
+	$.ajax({
+		type : 'post',
+		url : basePath+'/amount/getCharData.do',
+		dataType : 'json',
+		data:paramObj,
+		async: false,
+		success : function(result, textStatus) {
+			result_Data =result;
+		},
+		error : function(data) {
+			//alert(' '+data);
+			console.log("--------------4、方法error：queryCharData");
+		}
+	});
+
+	
+	return result_Data;
+	
+}
+
+
+function listToTree(list,idField,pidField){
+	if(list == null)
+		return [];
+	listData = list;
+	var m = new Map();
+	for(var n=0;n<list.length;n++){
+		var key = list[n][pidField];
+		if(m[key]==null)
+			m[key] = [];
+		m[key].push(list[n]);	
+	}
+	var root = [];
+	for(var i=0;i<list.length;i++){
+		var item = list[i];
+		item.children = m[item[idField]];
+		if(list[i][pidField]==0||list[i][pidField]==-1||list[i][pidField]==null){
+			root.push(item);
+		};
+	}
+	return root;
+}
+
+
+
+//导入Excel文件
+function importTwoFivesMonitorExcel(){
+	
+	$('#twoFivesMonitorForm').validate({
+		rules : {
+			startMonth : {
+				required : true
+			},
+			typeName : {
+				required : true
+		  
+			},
+			uploadTwoFivesMonitor : {
+				required : true
+		 
+			} 
+		},
+		messages : {
+			startMonth :{
+				required : "账期不能为空！"
+			},
+			typeName : {
+				required : "请选择导入维度数据！",
+			},
+			uploadTwoFivesMonitor : {
+				required : "请选择文件！",
+			} 
+		},
+        invalidHandler : function(){
+            return false;
+        },
+        submitHandler : function(){
+            return false;//阻止表单提交
+        },
+        //**设置验证触发事件 *//*
+	    focusInvalid : false,
+	    onkeyup : false,
+	    onclick : false,
+	    onfocusout : false
+	});
+	var validOK = $('#twoFivesMonitorForm').valid();
+	if(!validOK){
+		return;
+	}else{	
+	
+	
+	
+	 var epath = $('#uploadTwoFivesMonitor').val();  
+     
+     if(epath==""){  
+         alert( '导入文件不能为空!');  
+         return;  
+     }  
+       
+//     if(epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()=="xlsx"){  
+//         alert( '03以上版本Excel导入暂不支持!');  
+//         return;  
+//     }  
+     if (epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xls" && epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xlsx") {  
+         alert( '导入文件类型必须为excel!');  
+         return;  
+     } 
+     var formData = new FormData($( "#twoFivesMonitorForm" )[0]); 
+     $.ajax({
+        //几个参数需要注意一下
+            type: 'post',//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: basePath+'/amount/inportTwoFivesMonitorExcel.do' ,//url
+            data: formData,
+            async: false,
+            contentType: false,  
+            processData: false, 
+            success: function (result) {
+                console.log(result);//打印服务端返回的数据(调试用)
+                if (result.code == 200) {
+                //	$("#myModal").Modal("hide");
+                    alert("导入成功!");
+                }else{
+                //	$("#myModal").Modal("hide");
+                	alert(result.code);
+                }
+            },
+            error : function() {
+                alert(result.code);
+            }
+        })
+	}
+}
+
+
+
+function exportExcel(){
+	
+	 var epath = $('#uploadFile').val();  
+     
+     if(epath==""){  
+         alert( '导入文件不能为空!');  
+         return;  
+     }  
+       
+//     if(epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()=="xlsx"){  
+//         alert( '03以上版本Excel导入暂不支持!');  
+//         return;  
+//     }  
+     if (epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xls" && epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xlsx") {  
+         alert( '导入文件类型必须为excel!');  
+         return;  
+     } 
+     var formData = new FormData($( "#form1" )[0]); 
+     $.ajax({
+        //几个参数需要注意一下
+            type: 'post',//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: basePath+'/amount/exportExcel.do' ,//url
+            data: formData,
+            async: false,
+            contentType: false,  
+            processData: false, 
+            success: function (result) {
+                console.log(result);//打印服务端返回的数据(调试用)
+                if (result.code == 200) {
+                //	$("#myModal").Modal("hide");
+                    alert("SUCCESS");
+                }else{
+                //	$("#myModal").Modal("hide");
+                	alert(result.code);
+                }
+            },
+            error : function() {
+                alert(result.code);
+            }
+        })
+}
+
+function exportTeamExcel(){
+	var epath = $('#uploadTeam').val();  
+    
+    if(epath==""){  
+        alert( '导入文件不能为空!');  
+        return;  
+    }  
+      
+    if (epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xls" && epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xlsx") {  
+        alert( '导入文件类型必须为excel!');  
+        return;  
+    } 
+    var formData = new FormData($( "#form2" )[0]); 
+    $.ajax({
+       //几个参数需要注意一下
+           type: 'post',//方法类型
+           dataType: "json",//预期服务器返回的数据类型
+           url: basePath+'/amount/exportTeamExcel.do' ,//url
+           data: formData,
+           async: false,
+           contentType: false,  
+           processData: false, 
+           success: function (result) {
+               console.log(result);//打印服务端返回的数据(调试用)
+               if (result.code == 200) {
+               //	$("#myModal").Modal("hide");
+                   alert("SUCCESS");
+               }else{
+               //	$("#myModal").Modal("hide");
+               	alert(result.code);
+               }
+           },
+           error : function() {
+               alert(result.code);
+           }
+       })
+}
+
+function exportCost(){
+	var epath = $('#uploadCost').val();  
+    
+    if(epath==""){  
+        alert( '导入文件不能为空!');  
+        return;  
+    }  
+      
+    if (epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xls" && epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xlsx") {  
+        alert( '导入文件类型必须为excel!');  
+        return;  
+    } 
+    var formData = new FormData($( "#form3" )[0]); 
+    $.ajax({
+       //几个参数需要注意一下
+           type: 'post',//方法类型
+           dataType: "json",//预期服务器返回的数据类型
+           url: basePath+'/amount/exportCost.do' ,//url
+           data: formData,
+           async: false,
+           contentType: false,  
+           processData: false, 
+           success: function (result) {
+               console.log(result);//打印服务端返回的数据(调试用)
+               if (result.code == 200) {
+               //	$("#myModal").Modal("hide");
+                   alert("SUCCESS");
+               }else{
+               //	$("#myModal").Modal("hide");
+               	alert(result.code);
+               }
+           },
+           error : function() {
+               alert(result.code);
+           }
+       })
+}
+
+//毛利额-地市  手工导入
+function exportGross(){
+	var epath = $('#uploadGross').val();  
+    
+    if(epath==""){  
+        alert( '导入文件不能为空!');  
+        return;  
+    }  
+      
+    if (epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xls" && epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xlsx") {  
+        alert( '导入文件类型必须为excel!');  
+        return;  
+    } 
+    var formData = new FormData($( "#form4" )[0]); 
+    $.ajax({
+       //几个参数需要注意一下
+           type: 'post',//方法类型
+           dataType: "json",//预期服务器返回的数据类型
+           url: basePath+'/amount/exportGross.do' ,//url
+           data: formData,
+           async: false,
+           contentType: false,  
+           processData: false, 
+           success: function (result) {
+//               console.log(result);//打印服务端返回的数据(调试用)
+               if (result.code == 200) {
+               //	$("#myModal").Modal("hide");
+                   alert("SUCCESS");
+               }else{
+               //	$("#myModal").Modal("hide");
+               	alert(result.code);
+               }
+           },
+           error : function() {
+               alert(result.code);
+           }
+       })
+}
+
+//毛利额-品牌  手工导入
+function exportGross_brand(){
+	var epath = $('#uploadGross_brand').val();  
+    
+    if(epath==""){  
+        alert( '导入文件不能为空!');  
+        return;  
+    }  
+      
+    if (epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xls" && epath.substring(epath.lastIndexOf(".") + 1).toLowerCase()!="xlsx") {  
+        alert( '导入文件类型必须为excel!');  
+        return;  
+    } 
+    var formData = new FormData($( "#form5" )[0]); 
+    $.ajax({
+       //几个参数需要注意一下
+           type: 'post',//方法类型
+           dataType: "json",//预期服务器返回的数据类型
+           url: basePath+'/amount/exportGross_brand.do' ,//url
+           data: formData,
+           async: false,
+           contentType: false,  
+           processData: false, 
+           success: function (result) {
+//               console.log(result);//打印服务端返回的数据(调试用)
+               if (result.code == 200) {
+               //	$("#myModal").Modal("hide");
+                   alert("SUCCESS");
+               }else{
+               //	$("#myModal").Modal("hide");
+               	alert(result.code);
+               }
+           },
+           error : function() {
+               alert(result.code);
+           }
+       })
+}
+
+
+//客户明细表
+function jqGridData(sub_key,current_sub_num){
+//	查询条件
+	var paramObj=new Object();
+	var dimOne = $("#dim_one").val();
+	var result_Data ={};
+	paramObj.startMonth=$("#startMonth").val();
+	paramObj.stopMonth=$("#stopMonth").val();
+	paramObj.dim_key = sub_key;
+	paramObj.type = "量";
+	paramObj.dimOne =dimOne;
+	for (var i = 1; i <=Number(current_sub_num); i++) {
+		var parent_key = "parent_dim_"+(i);
+		paramObj[parent_key]=$("#"+parent_key).val();
+	}
+	var JqGridUrl=basePath+'/amount/initJqGrid.do';
+	//初始化明细表----有多种标得数据详细  字段不同，所以jqgrid对应的方法不同。
+	if($('#hid_kpikey').val().indexOf('return_rate')!=-1){
+		//退货率
+		var names=new Array();
+		var model=new Array();
+		var rownum=15;
+		if($('#hid_kpikey').val().indexOf('cpjl_return_rate')!=-1){
+			$("#sub_dim").css({"height":650});
+			rownum=21;
+			names=['月份', '所在线条','产品经理','已发量（台）','退货量（台）-普通机', '退货量（台）-体验机','退货量（台）','退货率'];
+			model=[  {name : 'month',index : 'month',width : 100, search:false}, 
+		             {name : 'pmBelone',index : 'pmBelone',width : 150, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'pmName',index : 'pmName',width : 100, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'sendAmount',index : 'sendAmount',width : 250, search:false}, 
+		             {name : 'normalReturnAmount',index : 'normalReturnAmount',width : 250, search:false}, 
+		             {name : 'experienceReturnAmount',index : 'experienceReturnAmount',width : 250, search:false}, 
+		             {name : 'returnAmount',index : 'returnAmount',width : 150,align : "right", search:false}, 
+		             {name : 'returnRatio',index : 'returnRatio',width : 250,align : "right", search:false,formatter:function(cellvalue, options, rowObject){return cellvalue+'%';}}
+		           ];
+			//initJqGridRR_pm(JqGridUrl,paramObj,current_sub_num);	//	产品经理退货台数	8
+		}else if($('#hid_kpikey').val().indexOf('hsfs_return_rate')!=-1){	
+			names=['月份', '全省退货量','非自主回收','非自主回收占总退货率','非自主回收环比', '自主回收','自主回收占总退货率','自主回收环比'];
+			model=[  {name : 'month',index : 'month',width : 100, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'provinceReturnAmount',index : 'province_Return_Amount',width : 150, search:false}, 
+		             {name : 'involuntaryReturnAmount',index : 'involuntary_Return_Amount',width : 100, search:false}, 
+		             {name : 'involuntary_Return_Ratio',index : 'involuntaryReturnRatio',width : 250, search:false}, 
+		             {name : 'involuntaryReturnRinkRatio',index : 'involuntaryReturnRinkRatio',width : 250, search:false}, 
+		             {name : 'autonomousReturnAmount',index : 'autonomousReturnAmount',width : 250, search:false}, 
+		             {name : 'autonomousReturnRatio',index : 'autonomousReturnRatio',width : 150,align : "right", search:false}, 
+		             {name : 'autonomousReturnRinkRatio',index : 'autonomousReturnRinkRatio',width : 250,align : "right", search:false}
+		           ];
+			//initJqGridRR_method(JqGridUrl,paramObj,current_sub_num);		//回收方式
+		}else if($('#hid_kpikey').val().indexOf('znyj_return_rate')!=-1){
+			$("#sub_dim").css({"height":400});
+			rownum=20;
+			names = ['月份','行业名称', '发货量','退货量', '退货率'];//jqGrid的列显示名字
+			model = [	 {name : 'month',index : 'month',width : 100, search:false}, 
+			             {name : 'pmName',index : 'pmName',width : 100, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+			             {name : 'sendAmount',index : 'sendAmount',width : 250, search:false}, 
+			             {name : 'returnAmount',index : 'returnAmount',width : 150,align : "right", search:false}, 
+			             {name : 'returnRatio',index : 'returnRatio',width : 250,align : "right", search:false,formatter:function(cellvalue, options, rowObject){return cellvalue+'%';}}
+			           ];
+			//initJqGridRR2(JqGridUrl,paramObj,current_sub_num);	//	退货率  智能硬件发货与退货情况    7
+		}else{
+			$("#sub_dim").css({"height":650});
+			rownum=22;
+			names = ['月份', '地市', '发货量','退货量', '退货率'];//jqGrid的列显示名字
+			model = [ 	 {name : 'month',index : 'month',width : 100, search:false}, 
+			             {name : 'city',index : 'city',width : 80, search:true, searchoptions: { sopt:['eq', 'cn']}},
+			             {name : 'sendAmount',index : 'sendAmount',width : 250, search:false}, 
+			             {name : 'returnAmount',index : 'returnAmount',width : 150,align : "right", search:false}, 
+			             {name : 'returnRatio',index : 'returnRatio',width : 250,align : "right", search:false,formatter:function(cellvalue, options, rowObject){return cellvalue+'%';}}
+			           ];
+			//initJqGridRR1(JqGridUrl,paramObj,current_sub_num);	//	退货率  一类的详情表格1-6张表
+		}
+		
+		initJqGridRR(JqGridUrl,paramObj,current_sub_num,names,model,rownum);
+	 }else if($('#hid_kpikey').val().indexOf('retail_company')!=-1){//我司零售量的厅店详情表
+			$("#sub_dim").css({"height":650});
+			names = ['月份','地市','厅店类型', '厅店名称', '销量（台）'];//jqGrid的列显示名字
+			model = [ 	 {name : 'month',index : 'month',width : 100, search:false}, 
+			             {name : 'areaname',index : 'areaname',width : 80, search:true, searchoptions: { sopt:['eq', 'cn']}},
+			             {name : 'subname',index : 'subname',width : 80, search:true, searchoptions: { sopt:['eq', 'cn']}},
+			             {name : 'tfullname',index : 'tfullname',width : 250, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+			             {name : 'value',index : 'value',width : 150,align : "right", search:false}
+			           ];
+			initJqGrid_inventory(JqGridUrl,paramObj,current_sub_num,names,model);
+	}else if($('#hid_kpikey').val().indexOf('inventory')!=-1){//库龄库存的详情表
+		if($('#hid_kpikey').val().indexOf('inventory_amount')!=-1){
+			$("#sub_dim").css({"height":650});
+			names = ['月份','品牌','机型', '库龄', '库存量'];//jqGrid的列显示名字
+			model = [ 	 {name : 'month',index : 'month',width : 100, search:false}, 
+			             {name : 'brandName',index : 'brandname',width : 100, search:true, searchoptions: { sopt:['eq', 'cn']}},
+			             {name : 'category',index : 'category',width : 100, search:true, searchoptions: { sopt:['eq', 'cn']}},
+			             {name : 'subtype',index : 'subtype',width : 250, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+			             {name : 'value',index : 'value',width : 150,align : "right", search:false}
+			           ];
+		}else if($('#hid_kpikey').val().indexOf('inventory_money')!=-1){
+			$("#sub_dim").css({"height":650});
+			names = ['月份','品牌','机型', '库龄', '库存金额'];//jqGrid的列显示名字
+			model = [ 	 {name : 'month',index : 'month',width : 100, search:false}, 
+			             {name : 'brandName',index : 'brandname',width : 100, search:true, searchoptions: { sopt:['eq', 'cn']}},
+			             {name : 'category',index : 'category',width : 100, search:true, searchoptions: { sopt:['eq', 'cn']}},
+			             {name : 'subtype',index : 'subtype',width : 250, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+			             {name : 'value',index : 'value',width : 150,align : "right", search:false}
+			           ];
+		}
+		initJqGrid_inventory(JqGridUrl,paramObj,current_sub_num,names,model);	
+		
+	}else{
+		if(dimOne == 'customer_number_purchases'){
+			if($("#type_8").text()=='量'){//
+				var names = ['月份', '地市', '品牌','机型', '价格段', '客户','客户分类', '子类','销量（台）'];//jqGrid的列显示名字
+			}else if($("#type_8").text()=='收'){
+				var names = ['月份', '地市', '品牌','机型', '价格段', '客户','客户分类', '子类','收入（元）'];//jqGrid的列显示名字
+			}else{
+				var names = ['月份', '地市', '品牌','机型', '价格段', '客户','客户分类', '子类','销量（台）'];//jqGrid的列显示名字
+			}
+			
+		
+			var model = [ //jqGrid每一列的配置信息。包括名字，索引，宽度,对齐方式.....
+				             {name : 'statDay',index : 'stat_day',width : 150, search:false}, 
+				             {name : 'areaName',index : 'areaname',width : 80,hidden:true, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+				             {name : 'brandName',index : 'brandname',width : 150,hidden:true, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+				             {name : 'spec',index : 'spec',width : 300,hidden:true, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+				             {name : 'priceRange',index : 'price_range',hidden:true,width : 150,align : "right", search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+				             {name : 'custName',index : 'custname',width : 300,align : "right", search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+				             {name : 'custStage',index : 'custstage',width : 150,align : "right", search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+				             {name : 'subType',index : 'subtype',width : 150,sortable : false,hidden:true, search:false} ,
+				             {name : 'value',index : 'value',width : 150,sortable : false, search:false} 
+				           ];
+			
+			initJqGrid(JqGridUrl,paramObj,current_sub_num,names,model);			//	客户 或  机型    一类的详情表格
+		}else{//明细
+			//var names = ['月份', '地市', '品牌','机型', '价格段', '客户','客户分类', '子类','销量（台）'];//jqGrid的列显示名字
+			if($("#type_8").text()=='量'){//
+				var names = ['月份', '地市', '品牌','机型', '价格段', '客户','客户分类', '子类','销量（台）'];//jqGrid的列显示名字
+			}else if($("#type_8").text()=='收'){
+				var names = ['月份', '地市', '品牌','机型', '价格段', '客户','客户分类', '子类','收入（元）'];//jqGrid的列显示名字
+			}else{
+				var names = ['月份', '地市', '品牌','机型', '价格段', '客户','客户分类', '子类','销量（台）'];//jqGrid的列显示名字
+			}
+			if("cust_model_price_section_customer_city_brand_sales_company" == paramObj.dim_key){
+				var model = [ //jqGrid每一列的配置信息。包括名字，索引，宽度,对齐方式.....
+		             {name : 'statDay',index : 'stat_day',width : 100, search:false}, 
+		             {name : 'areaName',index : 'areaname',width : 80, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'brandName',index : 'brandname',width : 150, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'spec',index : 'spec',width : 300, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'priceRange',index : 'price_range',width : 150,align : "right", search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'custName',index : 'custname',width : 250,align : "right", search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'custStage',index : 'custstage',width : 200,align : "right", search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'subType',index : 'subtype',width : 150,sortable : false,hidden:true, search:false} ,
+		             {name : 'value',index : 'value',width : 150,sortable : false, search:false} 
+		           ];
+				
+			}else{
+				var model = [ //jqGrid每一列的配置信息。包括名字，索引，宽度,对齐方式.....
+		             {name : 'statDay',index : 'stat_day',width : 100, search:false}, 
+		             {name : 'areaName',index : 'areaname',width : 80, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'brandName',index : 'brandname',width : 150, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'spec',index : 'spec',width : 300, search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'priceRange',index : 'price_range',width : 150,align : "right", search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'custName',index : 'custname',width : 250,hidden:true,align : "right", search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'custStage',index : 'custstage',width : 200,align : "right", search:true, searchoptions: { sopt:['eq', 'cn']}}, 
+		             {name : 'subType',index : 'subtype',width : 150,sortable : false,hidden:true, search:false} ,
+		             {name : 'value',index : 'value',width : 150,sortable : false, search:false} 
+		           ];
+			}
+			
+			
+			
+			
+			
+			initJqGrid(JqGridUrl,paramObj,current_sub_num,names,model);			//	客户 或  机型    一类的详情表格
+		}
+		
+	}
+	//初始化 批量导出Excel按钮
+	initBatchExport(sub_key,current_sub_num);
+}
+
+//客户   机型 的详情表格
+function initJqGrid(url,paramObj,current_sub_num,names,model){
+	mutilDim(current_sub_num);//维度信息
+	var table_id="#jqGridlist_char"+current_sub_num;
+	var list_id="#jqGridNav_char"+current_sub_num;
+//	alert(table_id+"---"+list_id);
+	if(Number(current_sub_num)==1){
+		table_id="#jqGridlist_char";
+		list_id="#jqGridNav_char";
+	}
+	//创建jqGrid组件
+	jQuery(table_id).jqGrid({
+				url : url,//组件创建完成之后请求数据的url
+				datatype : "json",//请求数据返回的类型。可选json,xml,txt
+				postData:paramObj,
+				rownumbers: true,
+				rowNum : 15,//一页显示多少条
+//				rowList : [ 10, 20,30 ],//可供用户选择一页显示多少条
+				pager : list_id,//表格页脚的占位符(一般是div)的id
+				height:'auto',
+				jsonReader:{
+					sidx:"sidx",
+					root:"list",
+					total:"totalPage",
+					page:"currentPage",
+					records:"rowNumber",
+					userdata:"values",
+					repeatitems:false
+				},
+				footerrow:true,
+				gridComplete: function () {
+	                var rowNum = $(this).jqGrid('getGridParam', 'records');
+	                var values =  $(this).jqGrid('getGridParam', 'userData');
+	                if (rowNum > 0) {
+	                	jQuery(table_id).footerData('set', {areaName: '合计',value:values});
+	                }
+	            } ,   
+//				sortname : 'id',//初始化的时候排序的字段
+//				sortorder : "desc",//排序方式,可选desc,asc
+				mtype : "post",//向后台请求数据的ajax的类型。可选post,get
+				viewrecords : true,//定义是否要显示总记录数
+				caption :'',//表格的标题名字
+				colNames :names,//jqGrid的列显示名字
+				colModel : model,
+				onSelectRow:function(rowid, status){
+					var rowData = $(table_id).jqGrid('getRowData',rowid);
+					var select_dim_id = "dim_"+(Number(current_sub_num)+1);
+						  //$("#"+select_dim_id).val(params.data.key);
+//					alert($("#dim_"+current_sub_num+" option:selected").text());
+					
+					if($("#dim_"+current_sub_num+" option:selected").text()=='机型'){
+						$("#parent_dim_"+current_sub_num).val(rowData.spec);
+					}else{
+						$("#parent_dim_"+current_sub_num).val(rowData.custName);
+					}
+					 //获取全部维度
+					   var str="";
+					   for (var i = 1; i <=current_sub_num; i++) {
+						if($("#parent_dim_"+i).val()!=""&&$("#parent_dim_"+i).val()!=null){
+							if(i>1){
+								str+="-";
+							}
+							str+=$("#parent_dim_"+i).val();
+						}
+					}
+					   $("#parent_mdim_"+current_sub_num).val(str);
+					   
+						  $("#"+select_dim_id).trigger("change");
+				},
+			}).trigger('reloadGrid');
+	/*创建jqGrid的操作按钮容器*/
+	/*可以控制界面上增删改查的按钮是否显示*/
+	jQuery(table_id).jqGrid('navGrid', list_id, {edit : false,add : false,del : false});
+}
+
+
+//退货率  的详情表格	1-9
+function initJqGridRR(url,paramObj,current_sub_num,names,model,rownum){
+	mutilDim(current_sub_num);//维度信息
+	var table_id="#jqGridlist_char"+current_sub_num;
+	var list_id="#jqGridNav_char"+current_sub_num;
+//	alert(table_id+"---"+list_id);
+	if(Number(current_sub_num)==1){
+		table_id="#jqGridlist_char";
+		list_id="#jqGridNav_char";
+	}
+	//创建jqGrid组件
+	jQuery(table_id).jqGrid({
+				url : url,//组件创建完成之后请求数据的url
+				datatype : "json",//请求数据返回的类型。可选json,xml,txt
+				postData:paramObj,
+				rownumbers: true,
+				rowNum : rownum,//一页显示多少条
+//				rowList : [ 10, 20,30 ],//可供用户选择一页显示多少条
+				pager : list_id,//表格页脚的占位符(一般是div)的id
+				height:'auto',
+				jsonReader:{
+					sidx:"sidx",
+					root:"list",
+					total:"totalPage",
+					page:"currentPage",
+					records:"rowNumber",
+					repeatitems:false
+				},
+//				sortname : 'id',//初始化的时候排序的字段
+//				sortorder : "desc",//排序方式,可选desc,asc
+				footerrow:true,
+        		gridComplete:function(){
+        			if(rownum!=15){
+        				 var sum_sent=$(table_id).getCol('sendAmount',false,'sum');
+            			 var sum_return=$(table_id).getCol('returnAmount',false,'sum');
+            			 
+            			 var sum_ratio =0;
+            			 if(Number(sum_sent)!=0){
+            				 sum_ratio =(Number(sum_return)/Number(sum_sent))*100;
+            			 }
+            			 var ratio=sum_ratio.toFixed(2);
+            			 
+            			 if(rownum==22){
+                			 $(table_id).footerData('set', {city: '总计',sendAmount:sum_sent,returnAmount:sum_return,returnRatio:ratio});
+            			 }else if(rownum==20){
+                			 $(table_id).footerData('set', {pmName: '总计',sendAmount:sum_sent,returnAmount:sum_return,returnRatio:ratio});
+            			 }else if(rownum==21){
+            				 var normal_return_amount=$(table_id).getCol('normalReturnAmount',false,'sum');
+                			 var experience_return_amount=$(table_id).getCol('experienceReturnAmount',false,'sum');
+                			 $(table_id).footerData('set', {pmName: '总计',sendAmount:sum_sent,normalReturnAmount:normal_return_amount,experienceReturnAmount:experience_return_amount,returnAmount:sum_return,returnRatio:ratio});
+            			 }
+        			}
+        			 
+        		},
+				mtype : "post",//向后台请求数据的ajax的类型。可选post,get
+				viewrecords : true,//定义是否要显示总记录数
+				caption :'',//表格的标题名字
+				colNames :names,//jqGrid的列显示名字
+				colModel : model
+			}).trigger('reloadGrid');
+	/*创建jqGrid的操作按钮容器*/
+	/*可以控制界面上增删改查的按钮是否显示*/
+	jQuery(table_id).jqGrid('navGrid', list_id, {edit : false,add : false,del : false});
+}
+
+
+//库龄库存的详情表
+function initJqGrid_inventory(url,paramObj,current_sub_num,names,model){
+	mutilDim(current_sub_num);//维度信息
+	var table_id="#jqGridlist_char"+current_sub_num;
+	var list_id="#jqGridNav_char"+current_sub_num;
+//	alert(table_id+"---"+list_id);
+	if(Number(current_sub_num)==1){
+		table_id="#jqGridlist_char";
+		list_id="#jqGridNav_char";
+	}
+	//创建jqGrid组件
+	jQuery(table_id).jqGrid({
+				url : url,//组件创建完成之后请求数据的url
+				datatype : "json",//请求数据返回的类型。可选json,xml,txt
+				postData:paramObj,
+				rownumbers: true,
+				rowNum : 15,//一页显示多少条
+//				rowList : [ 10, 20,30 ],//可供用户选择一页显示多少条
+				pager : list_id,//表格页脚的占位符(一般是div)的id
+				height:'auto',
+				jsonReader:{
+					sidx:"sidx",
+					root:"list",
+					total:"totalPage",
+					page:"currentPage",
+					records:"rowNumber",
+					userdata:"values",
+					repeatitems:false
+				},
+//				sortname : 'id',//初始化的时候排序的字段
+//				sortorder : "desc",//排序方式,可选desc,asc
+				footerrow:true,
+        		gridComplete:function(){
+        			 var rowNum = $(this).jqGrid('getGridParam', 'records');
+ 	                var values =  $(this).jqGrid('getGridParam', 'userData');
+ 	                if (rowNum > 0) {
+ 	                	jQuery(table_id).footerData('set', {month: '合计',value:values});
+ 	                }
+        		},
+				mtype : "post",//向后台请求数据的ajax的类型。可选post,get
+				viewrecords : true,//定义是否要显示总记录数
+				caption :'',//表格的标题名字
+				colNames :names,//jqGrid的列显示名字
+				colModel : model
+			}).trigger('reloadGrid');
+	/*创建jqGrid的操作按钮容器*/
+	/*可以控制界面上增删改查的按钮是否显示*/
+	jQuery(table_id).jqGrid('navGrid', list_id, {edit : false,add : false,del : false});
+}
+
+//初始化 批量导出Excel按钮
+function initBatchExport(sub_key,current_sub_num){
+	var btn_id="#btn_char"+current_sub_num;
+	if(Number(current_sub_num)==1){
+		btn_id="#btn_char";
+	}
+//	查询条件
+	//var paramObj=new Object();
+	//var result_Data ={};
+	startMonth=$("#startMonth").val();
+	stopMonth=$("#stopMonth").val();
+	dim_key = sub_key;
+	type = "量";
+	var exportUrl=basePath+'/amount/initBatchExport.do';//?startMonth='+startMonth+'&stopMonth='+stopMonth+'&dim_key='+dim_key+'&type='+type+'&current_sub_num='+current_sub_num;
+	var postData ={'startMonth':startMonth,'stopMonth':stopMonth,'dim_key':dim_key,'type':type,'current_sub_num':current_sub_num};
+	for (var i = 1; i <=Number(current_sub_num); i++) {
+		var parent_key = "parent_dim_"+(i);
+		postData[parent_key] = $("#"+parent_key).val();
+		//exportUrl+='&'+parent_key+'='+$("#"+parent_key).val();
+	}
+	$(btn_id).on("click",function(){
+		
+		var columnArray = $("#jqGridlist_char"+current_sub_num).jqGrid("getGridParam","colModel"); 
+		var colNames  = $("#jqGridlist_char"+current_sub_num).jqGrid("getGridParam","colNames"); 
+		var map = {};
+		for(j = 1; j < columnArray.length; j++) {
+			map[columnArray[j].index]=colNames[j];
+		}
+	/*	alert(JSON.stringify(map));*/
+		postData["colNames"]=encodeURIComponent(JSON.stringify(map));
+	//	var excelurl ="<%=basePath%>/hfx/unwantExport.action?impId="+impId;
+/*		alert(JSON.stringify(columnArray[1].name));
+		alert(JSON.stringify(colNames));*/
+		
+		DownLoadFile({
+		    url:exportUrl, //请求的url
+		    data:postData//要发送的数据
+		});
+		
+		//location.href=exportUrl+'&colNames='+JSON.stringify(map);
+	});
+}
+var DownLoadFile = function (options) {
+    var config = $.extend(true, { method: 'post' }, options);
+    var $iframe = $('<iframe id="down-file-iframe" />');
+    var $form = $('<form target="down-file-iframe" method="' + config.method + '" />');
+    $form.attr('action', config.url);
+    for (var key in config.data) {
+        $form.append('<input type="hidden" name="' + key + '" value="' + config.data[key] + '" />');
+    }
+    $iframe.append($form);
+    $(document.body).append($iframe);
+    $form[0].submit();
+    $iframe.remove();
+}
+//给导入Excel  文件添加 导入数据的再编辑功能   （做弹窗）
+//1、导入促销人员的编辑
+function clickEditPerson(){
+	$("#editPerson").click(function(){
+		 BootstrapDialog.show({
+	            title: '促销人员数',
+	            size :BootstrapDialog.SIZE_WIDE,
+	            message: $('<div></div>').load(basePath + '/amount/dialog/editPersonDialog.do',{limit: 25}, 
+	           function(data){
+	            }),
+	            buttons: [{
+	                label: '关闭',
+	                action: function(dialog) {
+	                    dialog.close();
+	                }
+	            }]
+	        });
+	});
+}
+//售后团队收入  的信息 编辑功能
+function clickEditTeam(){
+	$("#editTeam").click(function(){
+		 BootstrapDialog.show({
+	            title: '售后团队收入',
+	            size :BootstrapDialog.SIZE_WIDE,
+	            message: $('<div></div>').load(basePath + '/amount/dialog/editTeamIncome_dialog.do',{limit: 25}, 
+	           function(data){
+	            }),
+	            buttons: [{
+	                label: '关闭',
+	                action: function(dialog) {
+	                    dialog.close();
+	                }
+	            }]
+	        });
+	});
+}
+//净利 费用  的信息 编辑功能
+function clickCost(){
+	$("#editCost").click(function(){
+		 BootstrapDialog.show({
+	            title: '酬金和费用',
+	            size :BootstrapDialog.SIZE_WIDE,
+	            message: $('<div></div>').load(basePath + '/amount/dialog/editCost_dialog.do',{limit: 25}, 
+	           function(data){
+	            }),
+	            buttons: [{
+	                label: '关闭',
+	                action: function(dialog) {
+	                    dialog.close();
+	                }
+	            }]
+	        });
+	});
+}
+
+//毛利额  的信息 编辑功能
+function clickGross(){
+	$("#editGross").click(function(){
+		 BootstrapDialog.show({
+	            title: '毛利额',
+	            size :BootstrapDialog.SIZE_WIDE,
+	            message: $('<div></div>').load(basePath + '/amount/dialog/editGross_dialog.do',{limit: 25}, 
+	           function(data){
+	            }),
+	            buttons: [{
+	                label: '关闭',
+	                action: function(dialog) {
+	                    dialog.close();
+	                }
+	            }]
+	        });
+	});
+}
+
+//值数据改  万   亿单位
+function value_unit(value){
+	if(Math.abs(value/100000000)>=1){
+		return (value/100000000).toFixed(2)+'亿';
+	}else if(Math.abs(value/10000)>=1){
+		return (value/10000).toFixed(2)+'万';
+	}else{
+		return Number(value).toFixed(2);
+	}
+}
+
+
+function overview(kpi_value){
+	var  url;
+	var month=$('#startMonth').val();
+	var year = month.substr(0,4);
+	if(year=='2018'){
+		//三月以上存货占比
+		if(kpi_value=='three_month'){//三个月以上存货占比
+			url=basePath + "/assetsTurnoverRate/threeMonthStockRatio/overview.do";
+		}else if(kpi_value=='stockTurnoverRatio'){//存货周转率
+			url=basePath + "/assetsTurnoverRate/stockTurnoverRatio/overview.do";
+		}else if(kpi_value=='accountReceivableTurnoverRatio'){//应收帐款周转率
+			url=basePath + "/assetsTurnoverRate/accountReceivableTurnoverRatio/overview.do";
+		}else if(kpi_value=='accountReceivableRatio'){//三个月以上应收账款占比
+			url=basePath + "/assetsTurnoverRate/accountReceivableRatio/overview.do";
+		}else if(kpi_value=='gross_profit'){//毛利额
+			url=basePath + "/amount/gross_profit_zl.do";
+		}else if(kpi_value=='repaymentAccuracyForecast'){//回款预测准确度
+			url=basePath + "/assetsTurnoverRate/repaymentAccuracyForecast/overview.do";
+		}
+	}else if(year=='2019'){
+		if(kpi_value=='three_month'){//三个月以上存货占比
+			url=basePath + "/threeStockValueProportion/overview.do";
+		}else if(kpi_value=='stockTurnoverRatio'){//存货周转率
+			url=basePath + "/inventoryTurnover/overview.do";
+		}else if(kpi_value=='accountReceivableTurnoverRatio'){//应收帐款周转率
+			url=basePath + "/receivableTurnoverRate/overview.do";
+		}else if(kpi_value=='accountReceivableRatio'){//三个月以上应收账款占比
+			url=basePath + "/threeReceivableProportion/overview.do";
+		}else if(kpi_value=='repaymentAccuracyForecast'){//回款预测准确度
+			url=basePath + "/backForecastAccuracy/overview.do";
+		}
+	}
+	
+	
+	var resultMap;
+	$.ajax({
+        //几个参数需要注意一下
+            type: 'post',//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: url,//url
+            data: JSON.stringify({'startMonth':$('#startMonth').val(),'stopMonth':$('#stopMonth').val()}),
+            async: false,
+            contentType: 'application/json',  
+            processData: false, 
+            success: function (result) {
+//            	$('#overview').val(result);
+            	resultMap=result;
+            },
+            error : function() {
+            	alert('false');
+            	return;
+            }
+        })
+        
+        return resultMap;
+}
+
+//不在配置表中的总览 的信息来源和信息确认人
+function zlConfirmInfTS(id){
+	var confirmInfo;
+	$.ajax({
+        //几个参数需要注意一下
+            type: 'post',//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: basePath + "/amount/zlConfirmInfTS.do",//url
+            data: JSON.stringify({'id':id}),
+            async: false,
+            contentType: 'application/json',  
+            processData: false, 
+            success: function (result) {
+//            	$('#overview').val(result);
+            	confirmInfo=result;
+            },
+            error : function() {
+            	alert('false');
+            	return;
+            }
+        });
+	return confirmInfo;
+}
+
+//校验 开始时间   不能晚于  结束时间 
+function checkTime(){
+	var kpi_value =$("#hid_kpikey").val(); 
+	if(kpi_value.indexOf("return_rate")!=-1){		//包含有退货率   没有时间区间
+		return true;
+	}
+	var star = $('#startMonth').val();
+	var stop = $('#stopMonth').val();
+	
+	var star_y=star.substring(0,4);
+	var star_m=star.substring(4,6);
+	var stop_y=stop.substring(0,4);
+	var stop_m=stop.substring(4,6);
+	//先比较  年份
+	if(Number(star_y)>Number(stop_y)){//开始年份  >  结束年份
+		alert('结束时间不能早于开始时间，请确认账期区间');
+		return false;
+	}else if(Number(star_y)==Number(stop_y)){//开始年份  ==  结束年份  再判断月份
+		if(Number(star_m)>Number(stop_m)){//开始月份  >  结束月份  
+			alert('结束时间不能早于开始时间，请确认账期区间');
+			return false;
+		}
+	}
+}
+
+//数据确认按钮 点击事件  触发弹窗
+function confirmInfo_dialog(kpiKey){
+		 BootstrapDialog.show({
+	            title: '数据确认',
+	            size :BootstrapDialog.SIZE_WIDE,
+	            message: $('<div></div>').load(basePath + '/amount/dialog/confirmInfo_dialog.do',{limit: kpiKey}, 
+	           function(data){
+	            }),
+	            buttons: [{
+	                label: '确认',
+	                action: function(dialog) {
+	                	if($("#error_dialog").val()){
+	                		var month =$("input[name='month1']").val();
+		                	var hid_kpikey = $("#hid_kpikey").val();
+		                	var remarks=$("#remarks").val();
+		                	var state= $("#state").val();
+		                	//提交确认的信息
+		                	$.ajax({
+		            	        //几个参数需要注意一下
+		            	            type: 'post',//方法类型
+		            	            dataType: "json",//预期服务器返回的数据类型
+		            	            url: basePath + "/amount/insertInfo.do",//url
+		            	            data: JSON.stringify({'month':month,'kpiKey':hid_kpikey,'state':state,'remarks':remarks}),
+		            	            async: false,
+		            	            contentType: 'application/json',  
+		            	            processData: false, 
+		            	            success: function (result) {
+		            	            		alert("数据确认  提交成功");
+		            	            		query();
+		            	            },
+		            	            error : function() {
+		            	            	alert('false');
+		            	            	return;
+		            	            }
+		            	        });
+	                	}
+	                    dialog.close();
+	                }
+	            },
+	            {
+	                label: '关闭',
+	                action: function(dialog) {
+	                    dialog.close();
+	                }
+	            }]
+	        });
+}
+
+//确认状态及确认按钮的动态呈现
+function confirmBtn(kpiKey){
+	//1、选择的时间区间是同月 才会呈现确认功能
+	var startMonth = $("#startMonth").val();
+	var stopMonth = $("#stopMonth").val();
+	if(startMonth==stopMonth){
+		
+		//2、对应的月份确认的状态 从数据库查询
+		var confirmInfo;
+		$.ajax({
+	        //几个参数需要注意一下
+	            type: 'post',//方法类型
+	            dataType: "json",//预期服务器返回的数据类型
+	            url: basePath + "/amount/confirm_log.do",//url
+	            data: JSON.stringify({'month':startMonth,'kpiKey':kpiKey}),
+	            async: false,
+	            contentType: 'application/json',  
+	            processData: false, 
+	            success: function (result) {
+	            	confirmInfo=result;
+	            },
+	            error : function() {
+	            	alert('确认功能失败');
+	            	return;
+	            }
+	        });
+		if(confirmInfo==null){//如果没有记录  则是待确认    
+			$("#"+kpiKey).append("<div style='background-color:#CCFF99;width：100%;' ><span style='color:green;'>待确认</span><input type='button' onclick='confirmInfo_dialog(\""+kpiKey+"\");' style='color:green;float:right;width:25%;' value='数据确认'/></div>");
+		}else{//有记录  则判断什么状态
+			var state = confirmInfo.state;
+			if(state=='0'){
+				 $("#"+kpiKey).append("<div style='background-color:#CCFF99;width：100%;' ><span style='color:green;'>请核查</span><input type='button' onclick='confirmInfo_dialog(\""+kpiKey+"\");' style='color:green;float:right;width:25%;' value='数据确认'/></div>");
+			 }
+			if(state=='1'){
+				 $("#"+kpiKey).append("<div style='color:#fff;background-color:green;width：100%;' >已确认</div>");
+			 }
+		}
+		
+		
+	}
+}
+
+//平台份额的详情
+function platform_share_details(){
+	BootstrapDialog.show({
+        title: '',
+        size :BootstrapDialog.SIZE_WIDE,
+        message: $('<div></div>').load(basePath + '/amount/dialog/platform_share_dialog.do',{limit: 25}, 
+       function(data){
+        }),
+        buttons: [{
+            label: '确认',
+            action: function(dialog) {
+                dialog.close();
+            }
+        },
+        {
+            label: '关闭',
+            action: function(dialog) {
+                dialog.close();
+            }
+        }]
+    });
+}
+//获取  存货周转率  和  应收账款周转率  的目标值  用于显示在总览
+function getMbz(id){
+	var startMonth=$("#startMonth").val();
+	var mbz;
+	$.ajax({
+        //几个参数需要注意一下
+            type: 'post',//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: basePath + "/amount/getMbz.do",//url
+            data: JSON.stringify({'month':startMonth,'kpiKey':id}),
+            async: false,
+            contentType: 'application/json',
+            processData: false, 
+            success: function (result){
+            	mbz=result;
+            },
+            error : function() {
+            	alert('获取目标值失败');
+            	return;
+            }
+        });
+	return mbz;
+}
+
+//隐藏 指标没有任何维度的  维度框  即多余的DIV
+function hiddenNoDiv(kpi_value){
+	if(kpi_value=='busi_incom' || kpi_value=='house_incom' || kpi_value=='other_income'|| kpi_value=='net_profit_zs' || kpi_value=='kpi_assess_profit' ){
+		$("#dim_div")[0].style.display='none';
+		$("#sub_dim")[0].style.display='none';
+	}else{
+		$("#dim_div")[0].style.display='block';
+		$("#sub_dim")[0].style.display='block';
+	}
+}
+
+//通过指标id获取备注信息
+function getRemarks(kpiId,kpiName){
+	var startMonth=$("#startMonth").val();
+	var stopMonth=$("#stopMonth").val();
+	
+	var remarks=new Object();;
+	if(startMonth!=stopMonth){
+		remarks.remarks="无";
+	}else{
+	$.ajax({
+        //几个参数需要注意一下
+            type: 'post',//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: basePath + "/amount/getRemarks.do",//url
+            data: JSON.stringify({'month':startMonth,'kpiId':kpiId,'kpiName':kpiName}),
+            async: false,
+            contentType: 'application/json',
+            processData: false, 
+            success: function (result){
+            	remarks=result;
+            },
+            error : function() {
+            	alert('获取目标值失败');
+            	return;
+            }
+        });
+
+	}
+	return remarks;
+}
+//获取利的备注信息
+function getProfitRemarks(){
+	var startMonth=$("#startMonth").val();
+	var remarks;
+	$.ajax({
+        //几个参数需要注意一下
+            type: 'post',//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: basePath + "/amount/getProfitRemarks.do",//url
+            data: JSON.stringify({'month':startMonth}),
+            async: false,
+            contentType: 'application/json',
+            processData: false, 
+            success: function (result){
+            	remarks=result;
+            },
+            error : function() {
+            	alert('获取目标值失败');
+            	return;
+            }
+        });
+	return remarks;
+}
+//编辑利的备注信息
+function editProfitRemarks(id){
+	$("#ml_zjlr").val(id);
+	BootstrapDialog.show({
+        title: '信息表单',
+        size :BootstrapDialog.SIZE_WIDE,
+        message: $('<div></div>').load(basePath + '/amount/dialog/ml_zjlr_dialog.do',{limit: 25}, 
+       function(data){
+        }),
+        buttons: [{
+            label: '提交',
+            action: function(dialog) {
+            	var month =$("#month_lr").val();
+            	var kpiId =$("#ml_zjlr").val();
+            	var remarks =$("#remarks_lr").val();
+            	
+            	$.ajax({
+                    //几个参数需要注意一下
+                        type: 'post',//方法类型
+                        dataType: "json",//预期服务器返回的数据类型
+                        url: basePath + "/amount/saveProfitR.do",//url
+                        data: JSON.stringify({'month':month,'kpiId':kpiId,'remarks':remarks}),
+                        async: false,
+                        contentType: 'application/json',
+                        processData: false, 
+                        success: function (result){
+                        	alert('SUCCESS!!!');
+                        },
+                        error : function() {
+                        	alert('FAIL!!!');
+                        	return;
+                        }
+                    });
+                dialog.close();
+                query();
+            }
+        },
+        {
+            label: '关闭',
+            action: function(dialog) {
+                dialog.close();
+            }
+        }]
+    });
+}
+
+//编辑八字备注信息
+function editRemarks(){
+	BootstrapDialog.show({
+        title: '信息表单',
+        size :BootstrapDialog.SIZE_WIDE,
+        message: $('<div></div>').load(basePath + '/amount/dialog/remarks_dialog.do',{limit: 25}, 
+       function(data){
+        }),
+        buttons: [{
+            label: '提交',
+            action: function(dialog) {
+            	var month =$("#month_remarks").val();
+            	var kpiId =$("#hid_kpikey").val();
+            	var kpiName =$("#kpiName_remarks").val();
+            	var remarks =$("#remarks_all").val();
+            	
+            	$.ajax({
+                    //几个参数需要注意一下
+                        type: 'post',//方法类型
+                        dataType: "json",//预期服务器返回的数据类型
+                        url: basePath + "/amount/saveProfitR.do",//url
+                        data: JSON.stringify({'month':month,'kpiId':kpiId,'kpiName':kpiName,'remarks':remarks}),
+                        async: false,
+                        contentType: 'application/json',
+                        processData: false, 
+                        success: function (result){
+                        	alert('SUCCESS!!!');
+                        },
+                        error : function() {
+                        	alert('FAIL!!!');
+                        	return;
+                        }
+                    });
+                dialog.close();
+                query();
+            }
+        },
+        {
+            label: '关闭',
+            action: function(dialog) {
+                dialog.close();
+            }
+        }]
+    });
+}
+
+//在利中选择维度一   改变相应指标总览值。（因为两大计划  和 五大野战区 的统计值有差异）
+function  dimOneToKpiVal(domOne){
+	var  kpiKey =$("#hid_kpikey").val();
+	//暂时  只有【直接利润】   和  【归属费用】   有该功能
+	if(kpiKey=="net_profit" || kpiKey=="belong_cost"){
+		//获取该维度的总和
+		var startMonth=$("#startMonth").val();
+		var stopMonth=$("#stopMonth").val();
+		$.ajax({
+            //几个参数需要注意一下
+                type: 'post',//方法类型
+                dataType: "json",//预期服务器返回的数据类型
+                url: basePath + "/amount/dimOneToKpiVal.do",//url
+                data: JSON.stringify({'startMonth':startMonth,'stopMonth':stopMonth,'dim_key':domOne}),
+                async: false,
+                contentType: 'application/json',
+                processData: false, 
+                success: function (result){ 
+                	$("#"+kpiKey+" h1").text(Number(result.value).toFixed(2)+result.unit);
+                },
+                error : function() {
+                	alert('FAIL!!!');
+                	return;
+                }
+            });
+	}
+}

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.brandmodel.FiveLineMapper" >
+ <resultMap id="BrandMap" type="com.asiainfo.cmc.enties.brandmodel.FiveLine" >
+    <constructor >
+      <arg column="BRANDNAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SPEC" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="LINECODE" jdbcType="VARCHAR" javaType="java.lang.String" />
+     <arg column="LINENAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="PORTCODE" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="PORTNAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SALEAMOUNT" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="INCOME" jdbcType="REAL" javaType="java.lang.Float" />
+       <arg column="MAORI" jdbcType="REAL" javaType="java.lang.Float" />
+    </constructor>
+  </resultMap>
+ 
+  <sql id="Brand_Column_List" >
+    BRANDNAME, SPEC, LINECODE, LINENAME, PORTCODE, PORTNAME,SALEAMOUNT,INCOME,MAORI
+  </sql>
+ <!--根据品牌和型号查询五线七口数据  -->
+ <select id="selectFiveLine" resultType="FiveLineS" >  
+SELECT  BRANDNAME, SPEC, LINECODE, LINENAME, PORTCODE, PORTNAME,SALEAMOUNT,
+INCOME,MAORI FROM ZD_RESULT_OPER_PRODUCT_LINE_INFO
+WHERE BRANDNAME = #{BRANDNAME} AND SPEC =#{SPEC}	
+</select>
+ 
+ 
+  <insert id="insertFiveLine" parameterType="FiveLine" >
+    insert into ZD_RESULT_OPER_PRODUCT_LINE_INFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANDNAME != null" >
+        BRANDNAME,
+      </if>
+      <if test="SPEC != null" >
+        SPEC,
+      </if>
+      <if test="LINECODE != null" > 
+        LINECODE,
+      </if>
+      <if test="LINENAME != null" >
+        LINENAME,
+      </if>  
+      <if test="PORTCODE != null" >
+        PORTCODE,
+      </if>
+      <if test="PORTNAME != null" >
+        PORTNAME,
+      </if>
+      <!-- <if test="SALEAMOUNT != 0.0" > -->
+        SALEAMOUNT,
+     <!--  </if> -->
+     <!--  <if test="INCOME != 0.0" > -->
+        INCOME,
+      <!-- </if> -->
+      <!-- <if test="MAORI != 0.0" > -->
+        MAORI,
+      <!-- </if> -->
+     
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANDNAME != null" >
+        #{BRANDNAME},
+      </if>
+      <if test="SPEC != null" >
+        #{SPEC},
+      </if>
+      <if test="LINECODE != null" > 
+        #{LINECODE},
+      </if>
+      <if test="LINENAME != null" >
+        #{LINENAME},
+      </if>
+      <if test="PORTCODE != null" >
+        #{PORTCODE},
+      </if>
+      <if test="PORTNAME != null" >
+        #{PORTNAME},
+      </if>
+      <!-- <if test="SALEAMOUNT != 0.0" > -->
+        #{SALEAMOUNT},
+     <!--  </if>
+      <if test="INCOME != 0.0" > -->
+        #{INCOME},
+     <!--  </if>
+      <if test="MAORI != 0.0" > -->
+        #{MAORI},
+     <!--  </if> -->
+
+
+</trim>
+  </insert>
+ 
+ <update id="updateFiveLine" parameterType="FiveLine">
+ update ZD_RESULT_OPER_PRODUCT_LINE_INFO
+ 
+ <set >
+      <if test="BRANDNAME != null" >
+        BRANDNAME = #{BRANDNAME},
+      </if>
+      <if test="SPEC != null" >
+        SPEC = #{SPEC},
+      </if>
+      <if test="LINECODE != null" >
+        LINECODE = #{LINECODE},
+      </if>
+      <if test="LINENAME != null" >
+        LINENAME = #{LINENAME},
+      </if>
+      <if test="PORTCODE != null" >
+        PORTCODE = #{PORTCODE},
+      </if>
+       <if test="PORTNAME != null" >
+        PORTNAME = #{PORTNAME},
+      </if>
+       <if test="SALEAMOUNT != 0" >
+        SALEAMOUNT = #{SALEAMOUNT},
+      </if>
+       <if test="INCOME != 0" >
+        INCOME = #{INCOME},
+     </if>
+       <if test="MAORI != 0" >
+        MAORI = #{MAORI},
+     </if>
+    </set>
+ where BRANDNAME = #{BRANDNAME} and  SPEC = #{SPEC} and LINENAME=#{LINENAME} and PORTNAME=#{PORTNAME}
+ 
+ 
+ </update>
+ 
+ <!-- 根据品牌和型号查询数据 -->
+ 
+ <select id="selectFiveandLine" resultType="FiveLine">
+ 
+ select LINECODE, LINENAME, PORTCODE, PORTNAME,SALEAMOUNT,INCOME,MAORI from 
+ ZD_RESULT_OPER_PRODUCT_LINE_INFO where BRANDNAME = #{BRANDNAME} and  SPEC = #{SPEC}
+ 
+ </select>
+ 
+ <!--根据五线七口名称查询数据  -->
+ 
+ <select id="selectFine" resultType="FiveLine">
+ 
+ select LINECODE, LINENAME, PORTCODE, PORTNAME,SALEAMOUNT,INCOME,MAORI from 
+ ZD_RESULT_OPER_PRODUCT_LINE_INFO where BRANDNAME = #{BRANDNAME} and  
+ SPEC = #{SPEC} and LINENAME=#{LINENAME} and PORTNAME=#{PORTNAME}
+ 
+ </select>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+</mapper>

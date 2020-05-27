@@ -1,0 +1,50 @@
+package com.asiainfo.cmc.qudao.service.impl;
+
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+
+import com.asiainfo.cmc.qudao.mapper.CustomerChangeWHMapper;
+import com.asiainfo.cmc.qudao.service.CustomerChangeWHService;
+import com.asiainfo.cmc.qudao.vo.StoreBattleVo;
+
+/** 
+* @author 作者 Your-Name:wanghao 
+* @version 创建时间：2019年7月17日 下午5:03:14 
+* 
+*/
+@Service
+@Transactional
+public class CustomerChangeWHServiceImpl implements CustomerChangeWHService {
+	@Resource
+    private CustomerChangeWHMapper customerChangeWHMapper;
+	
+	@Override
+	public Map<String, Object> customerChangeAll(StoreBattleVo vo) {
+		// TODO Auto-generated method stub
+		return customerChangeWHMapper.customerChangeAll(vo);
+	}
+
+	@Override
+	public Map<String, Object> customerChangeAll11(StoreBattleVo vo) {
+		// TODO Auto-generated method stub
+		return customerChangeWHMapper.customerChangeAll11(vo);
+	}
+
+	@Override
+	public Map<String, Object> HallChangeAll(StoreBattleVo vo) {
+		// TODO Auto-generated method stub
+		return customerChangeWHMapper.HallChangeAll(vo);
+	}
+
+	@Override
+	public Map<String, Object> hallChangeAll11(StoreBattleVo vo) {
+		// TODO Auto-generated method stub
+		return customerChangeWHMapper.hallChangeAll11(vo);
+	}
+
+}

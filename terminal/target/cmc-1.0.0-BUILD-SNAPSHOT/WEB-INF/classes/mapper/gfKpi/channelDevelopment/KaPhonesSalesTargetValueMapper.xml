@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.gfKpi.channelDevelopment.KaPhonesSalesTargetValueMapper" >
+ 
+	 <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.gfKpi.channelDevelopment.KaPhonesSalesTargetValue" >
+	    <constructor >
+	      <arg column="MONTH" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="kakhxl" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="qnwcsr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="mbz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="sjwcd" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="qnwcd" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="fz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	    </constructor>
+	 </resultMap>
+	 <sql id="Base_Column_List" >
+	   MONTH  billcyc , kakhxl kakhxl, qnwcsr qnwcsr,mbz mbz, sjwcd sjwcd,qnwcd qnwcd ,fz fz
+	 </sql>
+	 <select id="queryData" resultType="com.asiainfo.cmc.enties.gfKpi.channelDevelopment.KaPhonesSalesTargetValue"  parameterType="Map" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from KPI_KACUSTOMER_SALE_TARGET_VALUE   where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]>
+	   
+	</select>
+	<update id="calculatedScore">
+      call ka_phones_sales_target_value(${startMonth},#{endMonth})
+   </update>
+</mapper>

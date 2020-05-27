@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.brandmodel.CityDateMapper" >
+<!--  <resultMap id="BrandMap" type="com.asiainfo.cmc.enties.brandmodel.CityDate" >
+    <constructor >
+      <arg column="BRANDNAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SPEC" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="AREANAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SALEAMOUNT" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="INCOME" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="OVERAMOUNT" jdbcType="INTEGER" javaType="java.lang.Integer" />
+     
+    </constructor>
+  </resultMap> -->
+ 
+  <sql id="Brand_Column_List" >
+    BRANDNAME, SPEC, AREANAME, SALEAMOUNTS, INCOMES, OVERAMOUNTS
+  </sql>
+ 
+ 
+ <!--根据品牌和型号查询出数据  -->
+ <select id="selectCityDate" resultType="CityDate" >
+    select  BRANDNAME, SPEC, AREANAME, SALEAMOUNT SALEAMOUNTS, INCOME INCOMES, OVERAMOUNT OVERAMOUNTS
+   
+    from ZD_RESULT_OPER_PRODUCT_AREA_INFO
+    where BRANDNAME =#{BRANDNAME} and SPEC =#{SPEC}
+		
+		
+  </select>
+ 
+ <!--根据对象添加数据  -->
+  <insert id="insertCityDate" parameterType="com.asiainfo.cmc.enties.brandmodel.CityDate" >
+    insert into ZD_RESULT_OPER_PRODUCT_AREA_INFO (BRANDNAME, SPEC, AREANAME, SALEAMOUNT , INCOME , OVERAMOUNT)
+    VALUES (#{BRANDNAME},#{SPEC},#{AREANAME},#{SALEAMOUNTS},#{INCOMES},#{OVERAMOUNTS})
+    
+  </insert>
+ <!--根据品牌型号和城市更新数据  -->
+<update id="updateCityDate" parameterType="com.asiainfo.cmc.enties.brandmodel.CityDate">
+
+ update ZD_RESULT_OPER_PRODUCT_AREA_INFO 
+ <set >
+ <!--  <if test="BRANDNAME != null" >
+        BRANDNAME= #{BRANDNAME},
+      </if>
+      <if test="SPEC != null" >
+        SPEC= #{BRANDNAME},
+      </if>  
+       <if test="AREANAME != null" >
+        AREANAME= #{AREANAME},
+      </if> -->
+     <!--  <if test="SALEAMOUNTS != 0" > -->
+        SALEAMOUNT= #{SALEAMOUNTS},
+      <!-- </if> -->
+      <!-- <if test="INCOMES != 0" > -->
+        INCOME= #{INCOMES},
+     <!--  </if> -->
+      <!-- <if test="OVERAMOUNTS != null" > -->
+        OVERAMOUNT= #{OVERAMOUNTS},
+     <!--  </if> -->
+  </set>
+   
+ where BRANDNAME = #{BRANDNAME} and  SPEC = #{SPEC} and AREANAME = #{AREANAME}
+
+</update> 
+ 
+<!--根据品牌和型号查询出信息  --> 
+ <select id="selectCiteDate" resultType="CityDate">
+ 
+  select  BRANDNAME, SPEC, AREANAME, SALEAMOUNT SALEAMOUNTS, INCOME INCOMES, OVERAMOUNT OVERAMOUNTS from ZD_RESULT_OPER_PRODUCT_AREA_INFO
+ 
+ where BRANDNAME = #{BRANDNAME} and  SPEC = #{SPEC} and AREANAME = #{AREANAME}
+ 
+ </select>
+ 
+ <!--根据对象添加数据  -->
+  <insert id="insertCityDateNew" parameterType="com.asiainfo.cmc.enties.brandmodel.CityDate" >
+    insert into ZD_RESULT_OPER_PRODUCT_AREA_INFO 
+     <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="BRANDNAME != null" >
+        BRANDNAME,
+      </if>
+      <if test="SPEC != null" >
+        SPEC,
+      </if>  
+       <if test="AREANAME != null" >
+        AREANAME,
+      </if>
+      <!-- <if test="SALEAMOUNTS != 0" > -->
+        SALEAMOUNT,
+      <!-- </if> -->
+     <!--  <if test="INCOMES != 0" > -->
+        INCOME,
+     <!--  </if> -->
+      <!-- <if test="OVERAMOUNTS != 0" > -->
+        OVERAMOUNT,
+     <!--  </if> -->
+
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANDNAME != null" >
+        #{BRANDNAME},
+      </if>
+      <if test="SPEC != null" >
+        #{SPEC},
+      </if>
+      <if test="AREANAME != null" >
+        #{AREANAME},
+      </if>
+      <if test="SALEAMOUNTS != 0" >
+        #{SALEAMOUNTS},
+      </if>
+       <if test="INCOMES != 0" >
+        #{INCOMES},
+      </if>
+       <if test="OVERAMOUNTS != 0" >
+        #{OVERAMOUNTS},
+      </if>
+
+
+</trim>
+ 
+    
+
+    
+  </insert> 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+</mapper>

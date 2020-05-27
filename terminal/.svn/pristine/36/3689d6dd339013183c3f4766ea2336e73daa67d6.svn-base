@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.asiainfo.cmc.qudao.mapper.CellBrndFfffMapper">
+    <select id="getCellBrndFfff" parameterType="com.asiainfo.cmc.qudao.vo.BrndCoverVo" resultType="CellBrndFfff">
+        SELECT * FROM ZD_RESULT_CELL_BRND_FFFF WHERE TERM_BRND_NAM=#{termBrndNam} <if test="cityNam!=null and cityNam!=''">AND  CITY_NAM=#{cityNam}</if>  <if test="startMonth!=null and startMonth!=''">and MONTH <![CDATA[>=]]> #{startMonth} and MONTH <![CDATA[<=]]> #{endMonth}</if>
+        AND TYPE=#{type}
+        <if test="ttttTyp!=null and ttttTyp!='' and ttttTyp!='choose'"> AND  TTTT_TYP=#{ttttTyp}</if> 
+    </select>
+    <select id="getMapCellBrndFfff" parameterType="com.asiainfo.cmc.qudao.vo.BrndCoverVo" resultType="map">
+        SELECT * FROM ZD_RESULT_CELL_BRND_FFFF WHERE TERM_BRND_NAM=#{termBrndNam} <if test="cityNam!=null and cityNam!=''">AND  CITY_NAM=#{cityNam}</if>  AND MONTH=#{month} 
+        AND TYPE=#{type}
+    </select>    
+    
+    <select id="listCntANdNumByMons" parameterType="com.asiainfo.cmc.qudao.vo.BrndCoverVo" resultType="map">
+        SELECT CELL_CNT cnt, NUM num,MONTH month FROM ZD_RESULT_CELL_BRND_FFFF WHERE TERM_BRND_NAM=#{termBrndNam} <if test="cityNam!=null and cityNam!=''">AND CITY_NAM=#{cityNam}</if> AND TYPE=#{type} AND TTTT_TYP=#{ttttTyp} 
+        AND MONTH IN
+	        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+	               #{item}   
+	        </foreach>
+	   ORDER BY MONTH
+    </select> 
+       
+</mapper>

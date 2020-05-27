@@ -1,0 +1,105 @@
+input{
+border: 1px solid #CCCCCC;
+border-radius: 3px 3px 3px 3px;
+padding: 4px;}
+/*指标分析*/
+#indicators-DataAnalysis-page{ height: 100%;overflow: auto;}
+.indicators-DataAnalysis-bg{ background: #ecf2fb;position: relative;zoom: 1;border-bottom: 1px solid #c2c2c2;;}
+.indicators-DataAnalysis-bg-b{border-bottom: 1px solid #f6f9fd;height:102px;}
+.formTable-p{ padding-top: 12px; padding-bottom: 12px;min-width: 890px;_width:expression((document.documentElement.clientWidth||document.body.clientWidth) < 890? "890px": "100%" );}
+.formTable  label{ width:100px; display:inline-block; text-align:right;}
+.formTable-p .btn-position{ margin: 0 auto;text-align: center;}
+.formTable-p .query{background:url(../../resources/images/idx/cube/btn-search-w71-h26.png) 0 0px;width:71px; height: 26px;isplay:inline-block; margin-left:40px; vertical-align: bottom;zoom: 1;border: 0;text-align: center;color: #ffffff;}
+
+.blue-btn{background:url(../../resources/images/idx/cube/btn-search-w71-h26.png) 0 0px;width:71px; height: 26px;isplay:inline-block; margin-left:40px; vertical-align: bottom;zoom: 1;border: 0;text-align: center;color: #ffffff;}
+
+.edit-confirm{background:url(../../images/single-formTable-btn.png) 0 0px;width:110px;border: 0;font-weight: bold;
+    height: 30px; display:inline-block; margin-left:10px; vertical-align: bottom;text-align: center;letter-spacing: 5px; color: #ffffff; }
+.edit-confirm:hover{ background-position: 0px -30px;}
+.edit-confirm:active{ background-position: 0px -60px;}
+
+
+.edit-cancel{ background:url(../../images/single-formTable-btn.png) 0 -90px; width:110px; border: 0;
+    height: 30px; display:inline-block; margin-left:10px; vertical-align: bottom;text-align: center;letter-spacing: 5px;font-weight: bold;color: #707070;}
+.edit-cancel:hover{
+background-position: 0 -120px;
+}
+/*纬度选择*/
+.indicators-DataAnalysis-list{ padding:15px 0 0 0;}
+.latitude-check-list-c{ *display: inline;zoom: 1;white-space: nowrap;padding: 15px 0 10px;height: 35px; }
+.indicators-DataAnalysis-list-title{white-space: nowrap; position: relative; }
+.latitude-title{ display: inline-block;  float: left; padding-top:10px; padding-left: 20px;}
+.latitude-title-unhover{color:#0065af;font-weight:500;cursor:default}
+.latitude-title-hover{color:red;cursor:pointer}
+.latitude-check-list-c-scroll{position: absolute;left: 130px;right: 5px;top:-10px;height: 60px;z-index: 99;}
+.latitude-check-list-c-scroll-p{position: absolute;left: 90px;right: 5px;top:-10px;height: 60px;z-index: 88;}
+.latitude-check{line-height: 25px;white-space:nowrap;float: left;}
+.latitude-check ul{ display: inline\9;} 
+.latitude-check li{float: left;/* background: url(../../resources/images/idx/cube/arrow-right-blue.png) 10px center no-repeat; */padding-left:25px;position: relative;z-index: 999; cursor: pointer;}
+.latitude-check li span.text-c{display:inline-block;zoom:1;padding: 0px 10px 0px 10px;border-radius:3px; color: #ffffff;background:#1a6cb6;}
+.latitude-check li span.text-s{display: inline;zoom: 1;padding: 0 5px;}
+.latitude-check li .arrow-right{background: url(../../resources/images/idx/cube/arrow-right.png) no-repeat;display: inline;zoom: 1; cursor: pointer; width: 10px;height: 6px;position:absolute;top:10px;right:5px;_background: url(../../resources/images/idx/cube/arrow-right-p8.png) no-repeat;}
+.latitude-check li .error-organe{background: url(../../resources/images/idx/cube/error-organe.png) no-repeat;width: 18px;height: 18px;z-index: 1000;_background: url(../../resources/images/idx/cube/error-organe-p8.png) no-repeat;position: absolute;right: 10px;top:-14px; cursor: pointer;}
+.latitude-nocheck{white-space:nowrap;float: left;}
+.latitude-nocheck ul{ display: inline\9;}
+.latitude-nocheck li{ padding-left: 15px; line-height:25px;height: 25px; text-align: center; float: left;}
+.latitude-nocheck li span{padding: 0px 10px 0px 10px; color: #ffffff;border-radius:3px;background:#7fadf0; cursor: pointer;display: inline-block;zoom: 1;}
+.latitude-nocheck li span.text-s{display: inline;zoom: 1;padding: 0 5px;}
+.type-content{ position: absolute; top:190px;left: -45px; z-index: 999;}
+.type-content-bg{background: #f5f9fc;  width:157px;-webkit-box-shadow: 2px 3px 3px rgba(6,0,1,.32), inset 0 0 1px rgba(255,255,255,.75);-moz-box-shadow: 2px 3px 3px rgba(6,0,1,.32), inset 0 0 1px rgba(255,255,255,.75);border: solid 1px #bbb; border-radius: 10px; }
+.type-content-arrow-top{ background: url(../../resources/images/idx/cube/type-content-arrow-top-24.png) no-repeat;_background: url(../../resources/images/idx/cube/type-content-arrow-top-8.png) no-repeat; position: absolute;top: -8px;left: 75px;width: 13px;height: 9px;}
+.type-content-i{ padding: 10px 0px 0 5px;border-radius: 10px 10px 0 0;}
+.type-content-list-p{padding-top: 5px; padding-bottom: 5px;}
+
+.type-content-listUl li{ line-height:25px; height:25px;cursor: pointer;}
+.type-content-listUl li a{ display: block;width:142px;padding-left:5px;overflow: auto;white-space: nowrap;text-overflow: ellipsis;color: #333;}
+.type-content-listUl li a:hover{ background: #7fadf0;color: #ffffff;line-height:25px; height:25px; }
+
+.type-content-btncont{text-align:right;padding:0px 5px 0px 0px;}
+.type-content-btncont button{border:1px solid #bbb;padding:2px;font-family: "宋体";font-size: 12px;}
+.indicators-DataAnalysis-chart-panel{padding: 16px;margin:0 auto;}
+#indicators-DataAnalysis-page .iss-panel { margin:0 auto 15px;}
+
+.contrast-Cycle label{ vertical-align: middle;cursor: pointer;font-size: 12px;}
+.contrast-Cycle-checkbox{ position: absolute;left: -25px; top: 10px;*top: -3px;}
+.contrast-Cycle-check-text{position:relative }
+.contrast-Cycle-check-text .text-yellow{ color:#fffd5a;  font-weight: bold;vertical-align: middle;font-size: 14px; line-height: 33px;}
+.gray-content{ display: none; position: absolute; left:65px; top:-12px; width: 270px;border-radius: 10px; height: 225px;background-color: #f5f5f5;-webkit-box-shadow: 2px 3px 3px rgba(4,0,0,.13); -moz-box-shadow: 2px 3px 3px rgba(4,0,0,.13);box-shadow: 2px 3px 3px rgba(4,0,0,.13);border: solid 1px #a2a2a2;z-index: 1; }
+.gray-content-arrow{ background: url(../../resources/images/idx/cube/data-arrow-gray-l.png) no-repeat;width: 9px;height: 14px; position: absolute;left: -9px; top:20px;}
+.gray-content-l-t{ color: #333; font-weight: normal;}
+.gray-content-p{ padding: 20px 20px;}
+.gray-content-list-text{padding-bottom: 15px;}
+.date-tabs{ margin-left: 60px;}
+.date-tabs li{float: left; font-size: 14px;height: 32px;margin-left: 10px; text-align: center; width:53px;_margin-left: 10px; }
+.date-tabs li.green{ background: url(../../resources/images/idx/cube/date-tabs-li-green-bg.png) no-repeat;text-align:center;height: 32px; display: inline-block;  }
+.date-tabs li.green a{ color: #ffffff;}
+.date-tabs li a{  width: 53px; color: #7a7a7a; display: inline-block;}
+
+
+.date-content{ padding-left: 70px; color: #333;font-weight: normal; padding-top: 10px;}
+.date-content-p{ width: 88px; height: 28px;position: relative; display: inline-block;*display:inline;zoom: 1; }
+.date-content input{ width: 85px; height: 30px;line-height: 30px; background: #ffffff;border: 1px solid #b2b2b2; color: #999999;text-align: center;}
+.date-arrow-top,
+.date-arrow-bottom,
+.date-arrow-top-active,
+.date-arrow-bottom-active{ background: url(../../resources/images/idx/cube/date-arrow.png) 0 0 no-repeat;width: 15px;height: 15px; position: absolute;overflow: hidden;}
+.date-arrow-top{ top:1px; *top:2px;right:2px;}
+.date-arrow-top-active{background-position: 0 -30px;top:1px; right: 2px;}
+.date-arrow-bottom{ background-position: 0 -15px;top:15px; right: 2px;}
+.date-arrow-bottom-active{ background-position: 0 -45px;top:15px; right: 2px;}
+.date-confirm-line{ padding-top: 10px; border-top:1px solid #d4d4d4; }
+.date-confirm,
+.date-confirm:hover,
+.date-confirm:active{ background: url(../../resources/images/idx/cube/date-confirm.png) no-repeat;width:131px;height: 35px; display:block; margin:0 auto; vertical-align: bottom;text-indent: -9999px;}
+.date-confirm:hover{ background-position: 0 -35px;}
+.date-confirm:active{background-position: 0 -70px;}
+
+
+.i-d-panel-header{ background: url(../../resources/images/idx/cube/bg-light-blue.png) repeat-x; height:38px;border-radius:4px; position: relative; }
+.i-d-panel-header .h-l {float:left; height:38px;padding-left:36px;line-height:38px;color:#0065af;font-weight:700;cursor:default;}
+.i-d-panel-header .h-r {position:absolute;right:0; float: right;height:100%; }
+.i-d-panel-header .legend { float:right;height:100%;cursor:default;overflow:hidden;_display:inline;}
+.i-d-panel-header .legend .item { float:left;position:relative;padding-right:45px;padding-left:14px;height:100%;line-height:38px;}
+.i-d-panel-header .legend a{display: block;}
+
+.i-cfgcol{position: absolute; background: url(../../resources/images/idx/cube/cog.png) no-repeat;width:16px;height:16px;top:10px}

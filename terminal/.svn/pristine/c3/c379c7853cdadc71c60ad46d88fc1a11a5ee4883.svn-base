@@ -1,0 +1,18 @@
+#mysql
+jdbc.driverClass= com.mysql.jdbc.Driver
+jdbc.url=jdbc:mysql://172.16.1.181:3306/terminal?characterEncoding=UTF-8
+jdbc.user=hive
+jdbc.password=mysql
+#jdbc.url=jdbc:mysql://127.0.0.1:3306/terminal
+#jdbc.user=root
+#jdbc.password=root
+jdbc.acquireIncrement=5
+jdbc.initialPoolSize=10
+jdbc.minPoolSize=5
+jdbc.maxPoolSize=20
+validationQuery=SELECT 1
+
+bdMapUrl = http://172.16.1.226:8080/offlinemap
+
+
+ 

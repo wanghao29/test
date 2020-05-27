@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.ThreeMonthStockRatioMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.ThreeMonthStockRatio" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="tsl90" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="tsl180" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="tsl360" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kc90tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="kc180tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="kc360tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="czk90tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="czk180tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="czk360tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="mkhjx90tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="mkhjx180tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="mkhjx360tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="mkhjx" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="mkhjx_desc" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="khknld90tsl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="khknld180tsl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="khknld360tsl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="tsl0" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="kc0tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="czk0tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="mkhjx0tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="khknld0tsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="fgschyz" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="khknld90zb" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="khknld180zb" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="khknld360zb" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="df" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, tsl90, tsl180, tsl360, kc90tsl, kc180tsl, kc360tsl, czk90tsl, czk180tsl, czk360tsl, 
+    mkhjx90tsl, mkhjx180tsl, mkhjx360tsl, mkhjx,mkhjx_desc, khknld90tsl, khknld180tsl, khknld360tsl, 
+    tsl0, kc0tsl, czk0tsl, mkhjx0tsl, khknld0tsl, fgschyz, khknld90zb, khknld180zb, khknld360zb, 
+    df,month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from THREE_MONTH_STOCK_RATIO
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <update id="updateByTargetVal">
+    update THREE_MONTH_STOCK_RATIO
+    set mkhjx =#{mkhjx} where id=#{id}
+  </update>
+
+  <update id="callTHREE_MONTH_STOCK_RATIO">
+ 
+      call THREE_MONTH_STOCK_RATIO(#{endMonth},#{mkhjx_in})
+  </update>
+
+
+
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from THREE_MONTH_STOCK_RATIO
+    <include refid="dynamicWhere" />
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from THREE_MONTH_STOCK_RATIO
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from THREE_MONTH_STOCK_RATIO
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+ <select id="selectThreeMonthStockRatio" resultMap="BaseResultMap">
+ 	select
+    <include refid="Base_Column_List" />
+    from THREE_MONTH_STOCK_RATIO
+    where month= #{month}
+ </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from THREE_MONTH_STOCK_RATIO
+    where <![CDATA[ month = #{endMonth}]]> order by month desc LIMIT 0,1
+  </select>
+
+  <select id="getKeyData" resultType="Map">
+    select
+    sum(hyyhsl) hyyhsls,sum(wqqkzb) wqqkzbs,sum(df) dfs,sum(sjjd) sjjds
+    from THREE_MONTH_STOCK_RATIO
+  </select>
+
+  <select id="getLastMonthWcqkzb" resultType="java.lang.Integer">
+    select ifnull(khknld90zb,0) from THREE_MONTH_STOCK_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastMonthWcqkzb2" resultType="java.lang.Integer">
+    select ifnull(khknld180zb,0) from THREE_MONTH_STOCK_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastMonthWcqkzb3" resultType="java.lang.Integer">
+    select ifnull(khknld360zb,0) from THREE_MONTH_STOCK_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="java.lang.Integer">
+    select ifnull(khknld90zb,0) from THREE_MONTH_STOCK_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb2" resultType="java.lang.Integer">
+    select ifnull(khknld180zb,0) from THREE_MONTH_STOCK_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb3" resultType="java.lang.Integer">
+    select ifnull(khknld360zb,0) from THREE_MONTH_STOCK_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+  <select id="queryBrandMdlDesc" resultType="Map">
+	select BRAND_ID id,BRAND_DESC text  from  SCM_MATERIAL_GD where BRAND_DESC!='' group by BRAND_DESC <!-- limit 1,20 -->
+  </select>
+    <select id="queryModelDesc" resultType="Map">
+	select MOBILE_ID id,MOBILE_NAME text  from  SCM_MATERIAL_GD where BRAND_DESC!='' and BRAND_ID
+	in
+	<foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+                 #{item}       
+    </foreach>  
+	
+	<!--=#{brand_id} group by MOBILE_ID  limit 1,20 -->
+  </select>
+    <select id="queryConfigureDesc" resultType="Map">
+	select CONFIG_ID id,MATERIAL_DESC text  from  SCM_MATERIAL_GD where BRAND_DESC!='' 
+	
+	and BRAND_ID  in <!-- =#{brand_id}   -->
+	<foreach collection="brandIdArray" index="index" item="item" open="(" separator="," close=")">
+                 #{item}       
+    </foreach>  
+	and MOBILE_ID in <!-- =#{mobile_type} group by CONFIG_ID limit 1,20 -->
+	<foreach collection="mobileTypeArray" index="index" item="item" open="(" separator="," close=")">
+                 #{item}       
+    </foreach>  
+  </select>
+  
+ 
+    <select id="queryMaterialIdAndDesc" resultType="Map">
+		select MATERIAL_ID id,MATERIAL_DESC material_desc  from  SCM_MATERIAL_GD where BRAND_DESC!='' 
+		 <if test="brandIdArray !=null" >
+		and BRAND_ID  in <!-- =#{brand_id}   -->
+		<foreach collection="brandIdArray" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    </foreach>  
+	    </if>
+	     <if test="mobileTypeArray !=null" >
+		and MOBILE_ID in <!-- =#{mobile_type} group by CONFIG_ID limit 1,20 -->
+		<foreach collection="mobileTypeArray" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    </foreach>  
+	    </if>
+	     <if test="configureIdArray !=null " >
+	     	and CONFIG_ID in <!-- =#{mobile_type} group by CONFIG_ID limit 1,20 -->
+			<foreach collection="configureIdArray" index="index" item="item" open="(" separator="," close=")">
+		                 #{item}       
+		    </foreach>  
+	     </if>
+  </select>
+    <update id="updateMaterialIdAndDesc" parameterType="Map" >
+    update THREE_MONTH_STOCK_RATIO
+        set mkhjx =#{params.materialId},mkhjx_desc=#{params.materialDesc}
+          where month = #{params.month} 
+    </update>
+  
+  
+  <select id="overview" resultType="ThreeMonthStockRatio">
+	select ROUND(IFNULL(AVG(khknld90zb),0),2) khknld90zb , ROUND(IFNULL(AVG(khknld180zb),0),2) khknld180zb , ROUND(IFNULL(AVG(khknld360zb),0),2) khknld360zb   from THREE_MONTH_STOCK_RATIO  where <![CDATA[ month >= #{startMonth} and month <=  #{stopMonth}]]>	
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from THREE_MONTH_STOCK_RATIO
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.ThreeMonthStockRatio" >
+    insert into THREE_MONTH_STOCK_RATIO (id, tsl90, tsl180, 
+      tsl360, kc90tsl, kc180tsl, 
+      kc360tsl, czk90tsl, czk180tsl, 
+      czk360tsl, mkhjx90tsl, mkhjx180tsl, 
+      mkhjx360tsl, mkhjx, khknld90tsl, 
+      khknld180tsl, khknld360tsl, tsl0, 
+      kc0tsl, czk0tsl, mkhjx0tsl, 
+      khknld0tsl, fgschyz, khknld90zb, 
+      khknld180zb, khknld360zb, df
+      )
+    values (#{id,jdbcType=INTEGER}, #{tsl90,jdbcType=INTEGER}, #{tsl180,jdbcType=INTEGER}, 
+      #{tsl360,jdbcType=INTEGER}, #{kc90tsl,jdbcType=INTEGER}, #{kc180tsl,jdbcType=INTEGER}, 
+      #{kc360tsl,jdbcType=INTEGER}, #{czk90tsl,jdbcType=INTEGER}, #{czk180tsl,jdbcType=INTEGER}, 
+      #{czk360tsl,jdbcType=INTEGER}, #{mkhjx90tsl,jdbcType=INTEGER}, #{mkhjx180tsl,jdbcType=INTEGER}, 
+      #{mkhjx360tsl,jdbcType=INTEGER}, #{mkhjx,jdbcType=VARCHAR}, #{khknld90tsl,jdbcType=VARCHAR}, 
+      #{khknld180tsl,jdbcType=VARCHAR}, #{khknld360tsl,jdbcType=VARCHAR}, #{tsl0,jdbcType=INTEGER}, 
+      #{kc0tsl,jdbcType=INTEGER}, #{czk0tsl,jdbcType=INTEGER}, #{mkhjx0tsl,jdbcType=INTEGER}, 
+      #{khknld0tsl,jdbcType=INTEGER}, #{fgschyz,jdbcType=INTEGER}, #{khknld90zb,jdbcType=INTEGER}, 
+      #{khknld180zb,jdbcType=INTEGER}, #{khknld360zb,jdbcType=INTEGER}, #{df,jdbcType=REAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.ThreeMonthStockRatio" >
+    insert into THREE_MONTH_STOCK_RATIO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tsl90 != null" >
+        tsl90,
+      </if>
+      <if test="tsl180 != null" >
+        tsl180,
+      </if>
+      <if test="tsl360 != null" >
+        tsl360,
+      </if>
+      <if test="kc90tsl != null" >
+        kc90tsl,
+      </if>
+      <if test="kc180tsl != null" >
+        kc180tsl,
+      </if>
+      <if test="kc360tsl != null" >
+        kc360tsl,
+      </if>
+      <if test="czk90tsl != null" >
+        czk90tsl,
+      </if>
+      <if test="czk180tsl != null" >
+        czk180tsl,
+      </if>
+      <if test="czk360tsl != null" >
+        czk360tsl,
+      </if>
+      <if test="mkhjx90tsl != null" >
+        mkhjx90tsl,
+      </if>
+      <if test="mkhjx180tsl != null" >
+        mkhjx180tsl,
+      </if>
+      <if test="mkhjx360tsl != null" >
+        mkhjx360tsl,
+      </if>
+      <if test="mkhjx != null" >
+        mkhjx,
+      </if>
+      <if test="khknld90tsl != null" >
+        khknld90tsl,
+      </if>
+      <if test="khknld180tsl != null" >
+        khknld180tsl,
+      </if>
+      <if test="khknld360tsl != null" >
+        khknld360tsl,
+      </if>
+      <if test="tsl0 != null" >
+        tsl0,
+      </if>
+      <if test="kc0tsl != null" >
+        kc0tsl,
+      </if>
+      <if test="czk0tsl != null" >
+        czk0tsl,
+      </if>
+      <if test="mkhjx0tsl != null" >
+        mkhjx0tsl,
+      </if>
+      <if test="khknld0tsl != null" >
+        khknld0tsl,
+      </if>
+      <if test="fgschyz != null" >
+        fgschyz,
+      </if>
+      <if test="khknld90zb != null" >
+        khknld90zb,
+      </if>
+      <if test="khknld180zb != null" >
+        khknld180zb,
+      </if>
+      <if test="khknld360zb != null" >
+        khknld360zb,
+      </if>
+      <if test="df != null" >
+        df,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tsl90 != null" >
+        #{tsl90,jdbcType=INTEGER},
+      </if>
+      <if test="tsl180 != null" >
+        #{tsl180,jdbcType=INTEGER},
+      </if>
+      <if test="tsl360 != null" >
+        #{tsl360,jdbcType=INTEGER},
+      </if>
+      <if test="kc90tsl != null" >
+        #{kc90tsl,jdbcType=INTEGER},
+      </if>
+      <if test="kc180tsl != null" >
+        #{kc180tsl,jdbcType=INTEGER},
+      </if>
+      <if test="kc360tsl != null" >
+        #{kc360tsl,jdbcType=INTEGER},
+      </if>
+      <if test="czk90tsl != null" >
+        #{czk90tsl,jdbcType=INTEGER},
+      </if>
+      <if test="czk180tsl != null" >
+        #{czk180tsl,jdbcType=INTEGER},
+      </if>
+      <if test="czk360tsl != null" >
+        #{czk360tsl,jdbcType=INTEGER},
+      </if>
+      <if test="mkhjx90tsl != null" >
+        #{mkhjx90tsl,jdbcType=INTEGER},
+      </if>
+      <if test="mkhjx180tsl != null" >
+        #{mkhjx180tsl,jdbcType=INTEGER},
+      </if>
+      <if test="mkhjx360tsl != null" >
+        #{mkhjx360tsl,jdbcType=INTEGER},
+      </if>
+      <if test="mkhjx != null" >
+        #{mkhjx,jdbcType=VARCHAR},
+      </if>
+      <if test="khknld90tsl != null" >
+        #{khknld90tsl,jdbcType=VARCHAR},
+      </if>
+      <if test="khknld180tsl != null" >
+        #{khknld180tsl,jdbcType=VARCHAR},
+      </if>
+      <if test="khknld360tsl != null" >
+        #{khknld360tsl,jdbcType=VARCHAR},
+      </if>
+      <if test="tsl0 != null" >
+        #{tsl0,jdbcType=INTEGER},
+      </if>
+      <if test="kc0tsl != null" >
+        #{kc0tsl,jdbcType=INTEGER},
+      </if>
+      <if test="czk0tsl != null" >
+        #{czk0tsl,jdbcType=INTEGER},
+      </if>
+      <if test="mkhjx0tsl != null" >
+        #{mkhjx0tsl,jdbcType=INTEGER},
+      </if>
+      <if test="khknld0tsl != null" >
+        #{khknld0tsl,jdbcType=INTEGER},
+      </if>
+      <if test="fgschyz != null" >
+        #{fgschyz,jdbcType=INTEGER},
+      </if>
+      <if test="khknld90zb != null" >
+        #{khknld90zb,jdbcType=INTEGER},
+      </if>
+      <if test="khknld180zb != null" >
+        #{khknld180zb,jdbcType=INTEGER},
+      </if>
+      <if test="khknld360zb != null" >
+        #{khknld360zb,jdbcType=INTEGER},
+      </if>
+      <if test="df != null" >
+        #{df,jdbcType=REAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.ThreeMonthStockRatio" >
+    update THREE_MONTH_STOCK_RATIO
+    <set >
+      <if test="tsl90 != null" >
+        tsl90 = #{tsl90,jdbcType=INTEGER},
+      </if>
+      <if test="tsl180 != null" >
+        tsl180 = #{tsl180,jdbcType=INTEGER},
+      </if>
+      <if test="tsl360 != null" >
+        tsl360 = #{tsl360,jdbcType=INTEGER},
+      </if>
+      <if test="kc90tsl != null" >
+        kc90tsl = #{kc90tsl,jdbcType=INTEGER},
+      </if>
+      <if test="kc180tsl != null" >
+        kc180tsl = #{kc180tsl,jdbcType=INTEGER},
+      </if>
+      <if test="kc360tsl != null" >
+        kc360tsl = #{kc360tsl,jdbcType=INTEGER},
+      </if>
+      <if test="czk90tsl != null" >
+        czk90tsl = #{czk90tsl,jdbcType=INTEGER},
+      </if>
+      <if test="czk180tsl != null" >
+        czk180tsl = #{czk180tsl,jdbcType=INTEGER},
+      </if>
+      <if test="czk360tsl != null" >
+        czk360tsl = #{czk360tsl,jdbcType=INTEGER},
+      </if>
+      <if test="mkhjx90tsl != null" >
+        mkhjx90tsl = #{mkhjx90tsl,jdbcType=INTEGER},
+      </if>
+      <if test="mkhjx180tsl != null" >
+        mkhjx180tsl = #{mkhjx180tsl,jdbcType=INTEGER},
+      </if>
+      <if test="mkhjx360tsl != null" >
+        mkhjx360tsl = #{mkhjx360tsl,jdbcType=INTEGER},
+      </if>
+      <if test="mkhjx != null" >
+        mkhjx = #{mkhjx,jdbcType=VARCHAR},
+      </if>
+      <if test="khknld90tsl != null" >
+        khknld90tsl = #{khknld90tsl,jdbcType=VARCHAR},
+      </if>
+      <if test="khknld180tsl != null" >
+        khknld180tsl = #{khknld180tsl,jdbcType=VARCHAR},
+      </if>
+      <if test="khknld360tsl != null" >
+        khknld360tsl = #{khknld360tsl,jdbcType=VARCHAR},
+      </if>
+      <if test="tsl0 != null" >
+        tsl0 = #{tsl0,jdbcType=INTEGER},
+      </if>
+      <if test="kc0tsl != null" >
+        kc0tsl = #{kc0tsl,jdbcType=INTEGER},
+      </if>
+      <if test="czk0tsl != null" >
+        czk0tsl = #{czk0tsl,jdbcType=INTEGER},
+      </if>
+      <if test="mkhjx0tsl != null" >
+        mkhjx0tsl = #{mkhjx0tsl,jdbcType=INTEGER},
+      </if>
+      <if test="khknld0tsl != null" >
+        khknld0tsl = #{khknld0tsl,jdbcType=INTEGER},
+      </if>
+      <if test="fgschyz != null" >
+        fgschyz = #{fgschyz,jdbcType=INTEGER},
+      </if>
+      <if test="khknld90zb != null" >
+        khknld90zb = #{khknld90zb,jdbcType=INTEGER},
+      </if>
+      <if test="khknld180zb != null" >
+        khknld180zb = #{khknld180zb,jdbcType=INTEGER},
+      </if>
+      <if test="khknld360zb != null" >
+        khknld360zb = #{khknld360zb,jdbcType=INTEGER},
+      </if>
+      <if test="df != null" >
+        df = #{df,jdbcType=REAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.ThreeMonthStockRatio" >
+    update THREE_MONTH_STOCK_RATIO
+    set tsl90 = #{tsl90,jdbcType=INTEGER},
+      tsl180 = #{tsl180,jdbcType=INTEGER},
+      tsl360 = #{tsl360,jdbcType=INTEGER},
+      kc90tsl = #{kc90tsl,jdbcType=INTEGER},
+      kc180tsl = #{kc180tsl,jdbcType=INTEGER},
+      kc360tsl = #{kc360tsl,jdbcType=INTEGER},
+      czk90tsl = #{czk90tsl,jdbcType=INTEGER},
+      czk180tsl = #{czk180tsl,jdbcType=INTEGER},
+      czk360tsl = #{czk360tsl,jdbcType=INTEGER},
+      mkhjx90tsl = #{mkhjx90tsl,jdbcType=INTEGER},
+      mkhjx180tsl = #{mkhjx180tsl,jdbcType=INTEGER},
+      mkhjx360tsl = #{mkhjx360tsl,jdbcType=INTEGER},
+      mkhjx = #{mkhjx,jdbcType=VARCHAR},
+      khknld90tsl = #{khknld90tsl,jdbcType=VARCHAR},
+      khknld180tsl = #{khknld180tsl,jdbcType=VARCHAR},
+      khknld360tsl = #{khknld360tsl,jdbcType=VARCHAR},
+      tsl0 = #{tsl0,jdbcType=INTEGER},
+      kc0tsl = #{kc0tsl,jdbcType=INTEGER},
+      czk0tsl = #{czk0tsl,jdbcType=INTEGER},
+      mkhjx0tsl = #{mkhjx0tsl,jdbcType=INTEGER},
+      khknld0tsl = #{khknld0tsl,jdbcType=INTEGER},
+      fgschyz = #{fgschyz,jdbcType=INTEGER},
+      khknld90zb = #{khknld90zb,jdbcType=INTEGER},
+      khknld180zb = #{khknld180zb,jdbcType=INTEGER},
+      khknld360zb = #{khknld360zb,jdbcType=INTEGER},
+      df = #{df,jdbcType=REAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

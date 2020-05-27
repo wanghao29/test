@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.GrossProfitRatioMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.GrossProfitRatio" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="zzc" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="hlwzc" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sgtzxm" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="khzc" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="cwbbyysr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="hlwsr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sjdbsr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="hlwsjdbsr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="yycb" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="hlwcb" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sjdbcb" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="hlwsjdbcb" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="yyml" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="hlwml" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sjdbml" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="hlwsjdbml" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="khml" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zzczzhmlb" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zhmlb12" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zhmlb3" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zhmlbkhfs" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, zzc, hlwzc, sgtzxm, khzc, cwbbyysr, hlwsr, sjdbsr, hlwsjdbsr, yycb, hlwcb, sjdbcb, 
+    hlwsjdbcb, yyml, hlwml, sjdbml, hlwsjdbml, khml, zzczzhmlb, zhmlb12, zhmlb3, zhmlbkhfs, 
+    month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from GROSS_PROFIT_RATIO
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from GROSS_PROFIT_RATIO
+    <include refid="dynamicWhere" />
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="selectGrossRatio" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from GROSS_PROFIT_RATIO
+    where month = #{month}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from GROSS_PROFIT_RATIO
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from GROSS_PROFIT_RATIO
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from GROSS_PROFIT_RATIO 
+    where  <![CDATA[ month <= #{endMonth}]]> 
+    order by month desc LIMIT 0,1
+  </select>
+
+  <select id="getKeyData" resultType="Map">
+    select
+    sum(hyyhsl) hyyhsls,sum(wqqkzb) wqqkzbs,sum(df) dfs,sum(sjjd) sjjds
+    from GROSS_PROFIT_RATIO
+  </select>
+
+  <select id="getLastMonthWcqkzb" resultType="String">
+    select ifnull(zzczzhmlb,0) from GROSS_PROFIT_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastMonthWcqkzb2" resultType="String">
+    select ifnull(zhmlb12,0) from GROSS_PROFIT_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="String">
+    select ifnull(zzczzhmlb,0) from GROSS_PROFIT_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb2" resultType="String">
+    select ifnull(zhmlb12,0) from GROSS_PROFIT_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from GROSS_PROFIT_RATIO
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.GrossProfitRatio" >
+    insert into GROSS_PROFIT_RATIO (id, zzc, hlwzc, sgtzxm, 
+      khzc, cwbbyysr, hlwsr, sjdbsr, 
+      hlwsjdbsr, yycb, hlwcb, sjdbcb, 
+      hlwsjdbcb, yyml, hlwml, sjdbml, 
+      hlwsjdbml, khml, zzczzhmlb, 
+      zhmlb12, zhmlb3, zhmlbkhfs, 
+      month)
+    values (#{id,jdbcType=INTEGER}, #{zzc,jdbcType=VARCHAR}, #{hlwzc,jdbcType=VARCHAR}, #{sgtzxm,jdbcType=VARCHAR}, 
+      #{khzc,jdbcType=VARCHAR}, #{cwbbyysr,jdbcType=VARCHAR}, #{hlwsr,jdbcType=VARCHAR}, #{sjdbsr,jdbcType=VARCHAR}, 
+      #{hlwsjdbsr,jdbcType=VARCHAR}, #{yycb,jdbcType=VARCHAR}, #{hlwcb,jdbcType=VARCHAR}, #{sjdbcb,jdbcType=VARCHAR}, 
+      #{hlwsjdbcb,jdbcType=VARCHAR}, #{yyml,jdbcType=VARCHAR}, #{hlwml,jdbcType=VARCHAR}, #{sjdbml,jdbcType=VARCHAR}, 
+      #{hlwsjdbml,jdbcType=VARCHAR}, #{khml,jdbcType=VARCHAR}, #{zzczzhmlb,jdbcType=VARCHAR}, 
+      #{zhmlb12,jdbcType=VARCHAR}, #{zhmlb3,jdbcType=VARCHAR}, #{zhmlbkhfs,jdbcType=VARCHAR}, 
+      #{month,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.GrossProfitRatio" >
+    insert into GROSS_PROFIT_RATIO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="zzc != null" >
+        zzc,
+      </if>
+      <if test="hlwzc != null" >
+        hlwzc,
+      </if>
+      <if test="sgtzxm != null" >
+        sgtzxm,
+      </if>
+      <if test="khzc != null" >
+        khzc,
+      </if>
+      <if test="cwbbyysr != null" >
+        cwbbyysr,
+      </if>
+      <if test="hlwsr != null" >
+        hlwsr,
+      </if>
+      <if test="sjdbsr != null" >
+        sjdbsr,
+      </if>
+      <if test="hlwsjdbsr != null" >
+        hlwsjdbsr,
+      </if>
+      <if test="yycb != null" >
+        yycb,
+      </if>
+      <if test="hlwcb != null" >
+        hlwcb,
+      </if>
+      <if test="sjdbcb != null" >
+        sjdbcb,
+      </if>
+      <if test="hlwsjdbcb != null" >
+        hlwsjdbcb,
+      </if>
+      <if test="yyml != null" >
+        yyml,
+      </if>
+      <if test="hlwml != null" >
+        hlwml,
+      </if>
+      <if test="sjdbml != null" >
+        sjdbml,
+      </if>
+      <if test="hlwsjdbml != null" >
+        hlwsjdbml,
+      </if>
+      <if test="khml != null" >
+        khml,
+      </if>
+      <if test="zzczzhmlb != null" >
+        zzczzhmlb,
+      </if>
+      <if test="zhmlb12 != null" >
+        zhmlb12,
+      </if>
+      <if test="zhmlb3 != null" >
+        zhmlb3,
+      </if>
+      <if test="zhmlbkhfs != null" >
+        zhmlbkhfs,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="zzc != null" >
+        #{zzc,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwzc != null" >
+        #{hlwzc,jdbcType=VARCHAR},
+      </if>
+      <if test="sgtzxm != null" >
+        #{sgtzxm,jdbcType=VARCHAR},
+      </if>
+      <if test="khzc != null" >
+        #{khzc,jdbcType=VARCHAR},
+      </if>
+      <if test="cwbbyysr != null" >
+        #{cwbbyysr,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwsr != null" >
+        #{hlwsr,jdbcType=VARCHAR},
+      </if>
+      <if test="sjdbsr != null" >
+        #{sjdbsr,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwsjdbsr != null" >
+        #{hlwsjdbsr,jdbcType=VARCHAR},
+      </if>
+      <if test="yycb != null" >
+        #{yycb,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwcb != null" >
+        #{hlwcb,jdbcType=VARCHAR},
+      </if>
+      <if test="sjdbcb != null" >
+        #{sjdbcb,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwsjdbcb != null" >
+        #{hlwsjdbcb,jdbcType=VARCHAR},
+      </if>
+      <if test="yyml != null" >
+        #{yyml,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwml != null" >
+        #{hlwml,jdbcType=VARCHAR},
+      </if>
+      <if test="sjdbml != null" >
+        #{sjdbml,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwsjdbml != null" >
+        #{hlwsjdbml,jdbcType=VARCHAR},
+      </if>
+      <if test="khml != null" >
+        #{khml,jdbcType=VARCHAR},
+      </if>
+      <if test="zzczzhmlb != null" >
+        #{zzczzhmlb,jdbcType=VARCHAR},
+      </if>
+      <if test="zhmlb12 != null" >
+        #{zhmlb12,jdbcType=VARCHAR},
+      </if>
+      <if test="zhmlb3 != null" >
+        #{zhmlb3,jdbcType=VARCHAR},
+      </if>
+      <if test="zhmlbkhfs != null" >
+        #{zhmlbkhfs,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.GrossProfitRatio" >
+  
+     call GROSS_PROFIT_RATIO(#{sgtzxm,jdbcType=VARCHAR},#{month,jdbcType=VARCHAR});
+ <!--    update GROSS_PROFIT_RATIO
+    <set >
+      <if test="zzc != null" >
+        zzc = #{zzc,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwzc != null" >
+        hlwzc = #{hlwzc,jdbcType=VARCHAR},
+      </if>
+      <if test="sgtzxm != null" >
+        sgtzxm = #{sgtzxm,jdbcType=VARCHAR},
+      </if>
+      <if test="khzc != null" >
+        khzc = #{khzc,jdbcType=VARCHAR},
+      </if>
+      <if test="cwbbyysr != null" >
+        cwbbyysr = #{cwbbyysr,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwsr != null" >
+        hlwsr = #{hlwsr,jdbcType=VARCHAR},
+      </if>
+      <if test="sjdbsr != null" >
+        sjdbsr = #{sjdbsr,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwsjdbsr != null" >
+        hlwsjdbsr = #{hlwsjdbsr,jdbcType=VARCHAR},
+      </if>
+      <if test="yycb != null" >
+        yycb = #{yycb,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwcb != null" >
+        hlwcb = #{hlwcb,jdbcType=VARCHAR},
+      </if>
+      <if test="sjdbcb != null" >
+        sjdbcb = #{sjdbcb,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwsjdbcb != null" >
+        hlwsjdbcb = #{hlwsjdbcb,jdbcType=VARCHAR},
+      </if>
+      <if test="yyml != null" >
+        yyml = #{yyml,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwml != null" >
+        hlwml = #{hlwml,jdbcType=VARCHAR},
+      </if>
+      <if test="sjdbml != null" >
+        sjdbml = #{sjdbml,jdbcType=VARCHAR},
+      </if>
+      <if test="hlwsjdbml != null" >
+        hlwsjdbml = #{hlwsjdbml,jdbcType=VARCHAR},
+      </if>
+      <if test="khml != null" >
+        khml = #{khml,jdbcType=VARCHAR},
+      </if>
+      <if test="zzczzhmlb != null" >
+        zzczzhmlb = #{zzczzhmlb,jdbcType=VARCHAR},
+      </if>
+      <if test="zhmlb12 != null" >
+        zhmlb12 = #{zhmlb12,jdbcType=VARCHAR},
+      </if>
+      <if test="zhmlb3 != null" >
+        zhmlb3 = #{zhmlb3,jdbcType=VARCHAR},
+      </if>
+      <if test="zhmlbkhfs != null" >
+        zhmlbkhfs = #{zhmlbkhfs,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER} -->
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.GrossProfitRatio" >
+    update GROSS_PROFIT_RATIO
+    set zzc = #{zzc,jdbcType=VARCHAR},
+      hlwzc = #{hlwzc,jdbcType=VARCHAR},
+      sgtzxm = #{sgtzxm,jdbcType=VARCHAR},
+      khzc = #{khzc,jdbcType=VARCHAR},
+      cwbbyysr = #{cwbbyysr,jdbcType=VARCHAR},
+      hlwsr = #{hlwsr,jdbcType=VARCHAR},
+      sjdbsr = #{sjdbsr,jdbcType=VARCHAR},
+      hlwsjdbsr = #{hlwsjdbsr,jdbcType=VARCHAR},
+      yycb = #{yycb,jdbcType=VARCHAR},
+      hlwcb = #{hlwcb,jdbcType=VARCHAR},
+      sjdbcb = #{sjdbcb,jdbcType=VARCHAR},
+      hlwsjdbcb = #{hlwsjdbcb,jdbcType=VARCHAR},
+      yyml = #{yyml,jdbcType=VARCHAR},
+      hlwml = #{hlwml,jdbcType=VARCHAR},
+      sjdbml = #{sjdbml,jdbcType=VARCHAR},
+      hlwsjdbml = #{hlwsjdbml,jdbcType=VARCHAR},
+      khml = #{khml,jdbcType=VARCHAR},
+      zzczzhmlb = #{zzczzhmlb,jdbcType=VARCHAR},
+      zhmlb12 = #{zhmlb12,jdbcType=VARCHAR},
+      zhmlb3 = #{zhmlb3,jdbcType=VARCHAR},
+      zhmlbkhfs = #{zhmlbkhfs,jdbcType=VARCHAR},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateBySgtzxm">
+    <if test="sgtzxm != null" >
+      sgtzxm = #{sgtzxm,jdbcType=VARCHAR},
+      khzc = zzc - hlwzc - sgtzxm
+    </if>
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

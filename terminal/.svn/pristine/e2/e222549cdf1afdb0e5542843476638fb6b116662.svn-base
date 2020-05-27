@@ -1,0 +1,791 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.consumerBigData.ConsumerBigDataMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.consumerBigData.ConsumerBigData" >
+    <constructor >
+    <arg column="stat_mo" jdbcType="REAL" javaType="java.lang.Integer" /> <!--  '月份'- --> 
+	<arg column="usr_nbr" jdbcType="REAL" javaType="java.lang.String" /><!--  '号码'--> 
+	<arg column="cust_id" jdbcType="REAL" javaType="java.lang.String" /><!--  '号码'--> 
+	<arg column="hall_id" jdbcType="REAL" javaType="java.lang.String" /><!--  '号码'--> 
+	<arg column="cmcc_branch_cd" jdbcType="REAL" javaType="java.lang.String" /><!--  '地市'--> 
+	<arg column="cmcc_cty_nam" jdbcType="REAL" javaType="java.lang.String" /><!--  '区域_市'--> 
+	<arg column="cmcc_cnty_nam" jdbcType="REAL" javaType="java.lang.String" /><!-- '区域_县'--> 
+	<arg column="brnd_cd" jdbcType="REAL" javaType="java.lang.String" /><!-- '号码品牌'--> 
+	<arg column="gdr_typ_cd" jdbcType="REAL" javaType="java.lang.String" /><!--  '性别'--> 
+	<arg column="id_home_prov" jdbcType="REAL" javaType="java.lang.String" /><!--  '籍贯'--> 
+	<arg column="usr_typ_cd" jdbcType="REAL" javaType="java.lang.String" /><!--  '职业'--> 
+	<arg column="age_cnt_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '年龄分层'--> 
+	<arg column="actv_usr_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '活跃用户标志'--> 
+	<arg column="three_chg_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否三换客户'--> 
+	<arg column="lte_4g_net_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否4g客户'--> 
+	<arg column="mh_usr_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否中高端客户'--> 
+	<arg column="vip_usr_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否vip客户'--> 
+	<arg column="cmnct_usr_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否通信用户'--> 
+	<arg column="actv_cmnct_ind" jdbcType="REAL" javaType="java.lang.String" /><!-- '是否主动通信用户'--> 
+	<arg column="high_sch_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否高校'--> 
+	<arg column="arpu_rnk_cd" jdbcType="REAL" javaType="java.lang.String" /><!--  'arpu分层'--> 
+	<arg column="debet_dur_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  'mou分层'--> 
+	<arg column="gprs_flux_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  'dou分层'--> 
+	<arg column="tdlte_gprs_flux_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  'dou_4g分层'--> 
+	<arg column="p2psms_up_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  'sou分层'--> 
+	<arg column="aou_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  'aou分层'--> 
+	<arg column="yue_rnk" jdbcType="REAL" javaType="java.lang.String" /><!-- '人均余额分层'--> 
+	<arg column="both_down_ind" jdbcType="REAL" javaType="java.lang.String" /><!-- '是否双降'--> 
+	<arg column="both_low_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '低龄、低流量客户群'--> 
+	<arg column="both_high_ind" jdbcType="REAL" javaType="java.lang.String" /><!-- '双高客户群'--> 
+	<arg column="exceed_pkg_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '高饱和度客户群'--> 
+	<arg column="key_person_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '重点价值客户群'--> 
+	<arg column="ywst_usr_count" jdbcType="REAL" javaType="java.lang.String" /><!--  'dm异网渗透客户群'--> 
+	<arg column="pkg_up_ind" jdbcType="REAL" javaType="java.lang.String" /><!-- '是否套餐升档'--> 
+	<arg column="pkg_down_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否流量套餐降档'--> 
+	<arg column="contract_bind_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否合约捆绑'--> 
+	<arg column="stpkp_nbr_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否停机保号'--> 
+	<arg column="cm_imei" jdbcType="REAL" javaType="java.lang.String" /><!--  '当前终端imei'--> 
+	<arg column="cm_brand" jdbcType="REAL" javaType="java.lang.String" /><!--  '当前终端品牌'--> 
+	<arg column="cm_ter_type" jdbcType="REAL" javaType="java.lang.String" /><!--  '当前终端型号'--> 
+	<arg column="cm_product_model" jdbcType="REAL" javaType="java.lang.String" /><!--  '当前终端产品型号'--> 
+	<arg column="cm_price_rnk" jdbcType="REAL" javaType="java.lang.String" /><!-- '终端价格'--> 
+	<arg column="cm_screen_pixel_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '手机分辨率'--> 
+	<arg column="cm_ram_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '内存大小'--> 
+	<arg column="cm_weight_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '终端重量'--> 
+	<arg column="cm_screen_size_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '屏幕大小'--> 
+	<arg column="cm_battery_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '电池容量'--> 
+	<arg column="cm_camera_pixel_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '摄像头像素'--> 
+	<arg column="cm_if_dual_card" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否双卡双待'--> 
+	<arg column="cm_network" jdbcType="REAL" javaType="java.lang.String" /><!--  '网络制式'--> 
+	<arg column="cm_term_net_type" jdbcType="REAL" javaType="java.lang.String" /><!--  '网络类型'--> 
+	<arg column="emu_term_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否山寨机'--> 
+	<arg column="cm_if_intell" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否智能机'--> 
+	<arg column="yd_sell_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否移动购机'--> 
+	<arg column="sell_typ_cd" jdbcType="REAL" javaType="java.lang.String" /><!--  '购机类型'--> 
+	<arg column="new_term_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否当月新增终端'--> 
+	<arg column="new_usr_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否当月新入网用户'--> 
+	<arg column="cm_if_nfc" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否支持nfc功能'--> 
+	<arg column="cm_if_wifi" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否支持wifi'--> 
+	<arg column="cm_if_fingerprint" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否支持指纹解锁'--> 
+	<arg column="cm_if_front_camera" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否双摄像头'--> 
+	<arg column="qiqj_ind" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否旗舰机'--> 
+	<arg column="cm_if_td" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否if_td'--> 
+	<arg column="cm_if_fdd_lte" jdbcType="REAL" javaType="java.lang.String" /><!--  '是否if_tdd'--> 
+	<arg column="ji_age_rak" jdbcType="REAL" javaType="java.lang.String" /><!-- '终端机龄'--> 
+	<arg column="fst_eff_mo" jdbcType="REAL" javaType="java.lang.String" /><!-- '换机月份'--> 
+	<arg column="huanji_zq_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '换机周期'--> 
+	<arg column="imei_cnt" jdbcType="REAL" javaType="java.lang.String" /><!-- '换机次数'--> 
+	<arg column="chg_typ_cd1" jdbcType="REAL" javaType="java.lang.String" /><!-- '换机类型'--> 
+	<arg column="chg_typ_cd2" jdbcType="REAL" javaType="java.lang.String" /><!--  '换机类型2'--> 
+	<arg column="lm_imei" jdbcType="REAL" javaType="java.lang.String" /><!--  '换机前的imei'--> 
+	<arg column="lm_brand" jdbcType="REAL" javaType="java.lang.String" /><!--  '换机前的终端品牌'--> 
+	<arg column="lm_ter_type" jdbcType="REAL" javaType="java.lang.String" /><!--  '换机前的终端型号'--> 
+	<arg column="lm_product_model" jdbcType="REAL" javaType="java.lang.String" /><!--  '换机前的终端产品型号'--> 
+	<arg column="lm_price_rnk" jdbcType="REAL" javaType="java.lang.String" /><!-- '换机前的终端价格'--> 
+	<arg column="lm_screen_pixel_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '换机前的手机分辨率'--> 
+	<arg column="lm_ram_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '换机前的内存大小'--> 
+	<arg column="lm_weight_rnk" jdbcType="REAL" javaType="java.lang.String" /><!-- '换机前的终端重量大小'--> 
+	<arg column="lm_screen_size_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '换机前的屏幕大小'--> 
+	<arg column="lm_battery_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '换机前的电池容量'--> 
+	<arg column="lm_camera_pixel_rnk" jdbcType="REAL" javaType="java.lang.String" /><!--  '换机前的摄像头像素'--> 
+	<arg column="cust_cnt" jdbcType="REAL" javaType="java.lang.String" /><!-- '客户数--> 
+	<arg column="innet_usr_cnt" jdbcType="REAL" javaType="java.lang.String" /><!-- '在网用户数'--> 
+	<arg column="cmnct_usr_cnt" jdbcType="REAL" javaType="java.lang.String" /><!-- '主动通信用户数'--> 
+	<arg column="tot_fee" jdbcType="REAL" javaType="java.lang.String" /><!-- '总消费额'--> 
+	<arg column="gprs_fee" jdbcType="REAL" javaType="java.lang.String" /><!--  '总流量费用'--> 
+	<arg column="debet_dur" jdbcType="REAL" javaType="java.lang.String" /><!--  '总计费时长'--> 
+	<arg column="gprs_flux" jdbcType="REAL" javaType="java.lang.String" /><!-- '总流量'--> 
+	<arg column="tdlte_gprs_flux" jdbcType="REAL" javaType="java.lang.String" /><!--  '总4g流量'--> 
+	<arg column="p2psms_up_cnt" jdbcType="REAL" javaType="java.lang.String" /><!-- 点对点短信上行条数'--> 
+	<arg column="aou" jdbcType="REAL" javaType="java.lang.String" /><!--  'aou'--> 
+	<arg column="avl_tot_acct_amt" jdbcType="REAL" javaType="java.lang.String" /><!--  '可用帐户总余额'--> 
+     <arg column="pkg_dtl_fee_amt" jdbcType="REAL" javaType="java.lang.String" /><!--  '消费者大数据宽表-->   
+    </constructor>
+  </resultMap>
+  <resultMap id="crossAnalysisMap" type="com.asiainfo.cmc.enties.consumerBigData.CrossAnalysis">
+        <result property="statMo" column="stat_mo" />
+        <result property="cmccBranchCd" column="CMCC_BRANCH_CD" />
+        <result property="custGpNam" column="CUST_GP_NAM" />
+        <result property="custGpCnt" column="CUST_GP_CNT" />
+        <result property="ywstUsrCnt" column="YWST_USR_CNT" />
+        <result property="ydfkUsrCnt" column="YDFK_USR_CNT" />
+        <result property="ydfkHighFluxUsrCnt" column="YDFK_HIGH_FLUX_USR_CNT" />
+        <result property="ydfkLowgprsHighwifiUsrCnt" column="YDFK_LOWGPRS_HIGHWIFI_USR_CNT" />
+       
+    </resultMap>
+
+<!--    <sql id="Base_Column_List" >
+     STAT_MO ,USR_NBR,CUST_ID,HALL_ID,CMCC_BRANCH_CD,CMCC_CTY_NAM,CMCC_CNTY_NAM,BRND_CD,GDR_TYP_CD,ID_HOME_PROV,USR_TYP_CD,AGE_CNT_RNK,ACTV_USR_IND,THREE_CHG_IND,LTE_4G_NET_IND,MH_USR_IND,                            
+	VIP_USR_IND,CMNCT_USR_IND,ACTV_CMNCT_IND,HIGH_SCH_IND,ARPU_RNK_CD,DEBET_DUR_RNK,GPRS_FLUX_RNK,TDLTE_GPRS_FLUX_RNK,P2PSMS_UP_RNK,AOU_RNK,YUE_RNK,BOTH_DOWN_IND,BOTH_LOW_IND,BOTH_HIGH_IND,EXCEED_PKG_IND,KEY_PERSON_IND,YWST_USR_COUNT,PKG_UP_IND,                            
+	PKG_DOWN_IND,CONTRACT_BIND_IND,STPKP_NBR_IND,CM_IMEI,CM_BRAND,CM_TER_TYPE,                           
+	CM_PRODUCT_MODEL,CM_PRICE_RNK,CM_SCREEN_PIXEL_RNK,CM_RAM_RNK,CM_WEIGHT_RNK,CM_SCREEN_SIZE_RNK,                    
+	CM_BATTERY_RNK,CM_CAMERA_PIXEL_RNK,CM_IF_DUAL_CARD,CM_NETWORK,CM_TERM_NET_TYPE,EMU_TERM_IND,CM_IF_INTELL,YD_SELL_IND,                           
+	SELL_TYP_CD,NEW_TERM_IND,NEW_USR_IND,CM_IF_NFC,CM_IF_WIFI,CM_IF_FINGERPRINT,CM_IF_FRONT_CAMERA,QIQJ_IND,                              
+	CM_IF_TD,CM_IF_FDD_LTE,JI_AGE_RAK,FST_EFF_MO,HUANJI_ZQ_RNK,IMEI_CNT,                              
+	CHG_TYP_CD1,CHG_TYP_CD2,LM_IMEI,LM_BRAND,LM_TER_TYPE,                           
+	LM_PRODUCT_MODEL,LM_PRICE_RNK,LM_SCREEN_PIXEL_RNK,LM_RAM_RNK,LM_WEIGHT_RNK,LM_SCREEN_SIZE_RNK,                    
+	LM_BATTERY_RNK,LM_CAMERA_PIXEL_RNK,CUST_CNT,INNET_USR_CNT,CMNCT_USR_CNT,TOT_FEE,GPRS_FEE,                              
+	DEBET_DUR,GPRS_FLUX,TDLTE_GPRS_FLUX,P2PSMS_UP_CNT,AOU,AVL_TOT_ACCT_AMT ,PKG_DTL_FEE_AMT
+  </sql> -->
+  <sql id="Base_Column_List" >
+  		    stat_mo,  usr_nbr, cust_id, hall_id, cmcc_branch_cd, cmcc_cty_nam, cmcc_cnty_nam, brnd_cd, 
+			gdr_typ_cd, id_home_prov, usr_typ_cd, age_cnt_rnk, actv_usr_ind, three_chg_ind, lte_4g_net_ind, 
+			mh_usr_ind, vip_usr_ind, cmnct_usr_ind, actv_cmnct_ind, high_sch_ind, arpu_rnk_cd, debet_dur_rnk, 
+			gprs_flux_rnk, tdlte_gprs_flux_rnk, p2psms_up_rnk, aou_rnk, yue_rnk, both_down_ind, both_low_ind, 
+			both_high_ind, exceed_pkg_ind, key_person_ind, ywst_usr_count, pkg_up_ind, pkg_down_ind, contract_bind_ind, 
+			stpkp_nbr_ind, cm_imei, cm_brand, cm_ter_type, cm_product_model, cm_price_rnk, cm_screen_pixel_rnk, cm_ram_rnk, 
+			cm_weight_rnk, cm_screen_size_rnk, cm_battery_rnk, cm_camera_pixel_rnk, cm_if_dual_card, cm_network, cm_term_net_type, 
+			emu_term_ind, cm_if_intell, yd_sell_ind, sell_typ_cd, new_term_ind, new_usr_ind, cm_if_nfc, cm_if_wifi, cm_if_fingerprint, 
+			cm_if_front_camera, qiqj_ind, cm_if_td, cm_if_fdd_lte, ji_age_rak, fst_eff_mo, huanji_zq_rnk, imei_cnt, chg_typ_cd1, chg_typ_cd2, 
+			lm_imei, lm_brand, lm_ter_type, lm_product_model, lm_price_rnk, lm_screen_pixel_rnk, lm_ram_rnk, lm_weight_rnk, lm_screen_size_rnk, 
+			lm_battery_rnk, lm_camera_pixel_rnk, cust_cnt, innet_usr_cnt, cmnct_usr_cnt, tot_fee, gprs_fee, debet_dur, gprs_flux, tdlte_gprs_flux,  
+			p2psms_up_cnt, aou, avl_tot_acct_amt,  pkg_dtl_fee_amt 
+  </sql>
+  <select id="queryList" resultType="com.asiainfo.cmc.enties.consumerBigData.ConsumerBigData" parameterType="Map">
+    select
+    <include refid="Base_Column_List" />
+    from zd_result_consumer_all
+    where stat_mo=#{billcyc} 
+    <if test="city != null  and city != '' " >
+   			 and cmcc_branch_cd = #{city}
+    </if>
+    <if test="brnd_cd != null  and brnd_cd != '' " >
+          and  brnd_cd in<!--  #{brnd_cd}  -->
+              	 <foreach collection="brnd_cd" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+          
+          
+    </if>
+    <if test="gdr_typ_cd != null  and gdr_typ_cd != '' " >
+          and  gdr_typ_cd in <!-- = #{gdr_typ_cd}  -->
+          	 <foreach collection="gdr_typ_cd" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    	</foreach>
+    </if>
+       <if test="id_home_prov != null  and id_home_prov != ''" >
+          and  id_home_prov in <!-- = #{id_home_prov}  -->
+           <foreach collection="id_home_prov" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="usr_typ_cd != null  and usr_typ_cd != ''" >
+          and  usr_typ_cd  in<!--  = #{usr_typ_cd}  -->
+           <foreach collection="usr_typ_cd" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="age_cnt_rnk != null  and age_cnt_rnk != ''" >
+          and  age_cnt_rnk in <!--  = #{age_cnt_rnk}  -->
+           <foreach collection="age_cnt_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="lte_4g_net_ind != null and   lte_4g_net_ind != ''" >
+          and  lte_4g_net_ind in<!--  = #{lte_4g_net_ind}  -->
+           <foreach collection="lte_4g_net_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="mh_usr_ind != null  and mh_usr_ind != ''" >
+          and  mh_usr_ind in <!-- = #{mh_usr_ind}  -->
+           <foreach collection="mh_usr_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="vip_usr_ind != null  and vip_usr_ind != ''" >
+          and  vip_usr_ind in<!--  = #{vip_usr_ind}  -->
+           <foreach collection="vip_usr_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="high_sch_ind != null  and high_sch_ind != ''" >
+          and  high_sch_ind in <!-- = #{high_sch_ind}  -->
+           <foreach collection="high_sch_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="arpu_rnk_cd != null  and arpu_rnk_cd != ''" >
+          and  arpu_rnk_cd in<!--  = #{arpu_rnk_cd}  -->
+           <foreach collection="arpu_rnk_cd" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="debet_dur_rnk != null  and debet_dur_rnk != ''" >
+          and  debet_dur_rnk in <!-- = #{debet_dur_rnk}  -->
+           <foreach collection="debet_dur_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="gprs_flux_rnk != null  and gprs_flux_rnk != ''" >
+          and  gprs_flux_rnk in<!--  = #{gprs_flux_rnk}  -->
+           <foreach collection="gprs_flux_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="tdlte_gprs_flux_rnk != null  and tdlte_gprs_flux_rnk != ''" >
+          and  tdlte_gprs_flux_rnk in <!-- = #{tdlte_gprs_flux_rnk}  -->
+           <foreach collection="tdlte_gprs_flux_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="yue_rnk != null  and yue_rnk != ''" >
+          and  yue_rnk in <!-- = #{yue_rnk}  -->
+           <foreach collection="yue_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="both_down_ind != null  and both_down_ind != ''" >
+          and  both_down_ind in <!-- = #{both_down_ind}  -->
+           <foreach collection="both_down_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="both_low_ind != null  and both_low_ind != ''" >
+          and  both_low_ind in <!-- = #{both_low_ind}  -->
+           <foreach collection="both_low_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="both_high_ind != null  and both_high_ind != ''" >
+          and  both_high_ind in <!-- = #{both_high_ind}  -->
+           <foreach collection="both_high_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="exceed_pkg_ind != null  and exceed_pkg_ind != ''" >
+          and  exceed_pkg_ind in <!-- = #{exceed_pkg_ind}  -->
+           <foreach collection="exceed_pkg_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="ywst_usr_count != null  and ywst_usr_count != ''" >
+          and  ywst_usr_count in <!-- = #{ywst_usr_count}  -->
+           <foreach collection="ywst_usr_count" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="pkg_up_ind != null  and pkg_up_ind != ''" >
+          and  pkg_up_ind in<!--  = #{pkg_up_ind}  -->
+           <foreach collection="pkg_up_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="pkg_down_ind != null  and pkg_down_ind != ''" >
+          and  pkg_down_ind in<!--  = #{pkg_down_ind}  -->
+           <foreach collection="pkg_down_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="contract_bind_ind != null  and contract_bind_ind != ''" >
+          and  contract_bind_ind in<!--  = #{contract_bind_ind}  -->
+           <foreach collection="contract_bind_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="stpkp_nbr_ind != null  and stpkp_nbr_ind != ''" >
+          and  stpkp_nbr_ind in <!-- = #{stpkp_nbr_ind}  -->
+           <foreach collection="stpkp_nbr_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="actv_usr_ind != null  and actv_usr_ind != ''" >
+          and  actv_usr_ind in <!-- = #{actv_usr_ind}  -->
+           <foreach collection="actv_usr_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    
+    
+    <if test="cm_brand != null  and cm_brand != ''" >
+          and  cm_brand   = #{cm_brand}  
+         <!--   <foreach collection="cm_brand" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+    <if test="cm_ter_type != null  and cm_ter_type != ''" >
+          and  cm_ter_type   = #{cm_ter_type}  
+       <!--     <foreach collection="cm_ter_type" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+    <if test="cm_price_rnk != null  and cm_price_rnk != ''" >
+          and  cm_price_rnk in <!-- = #{cm_price_rnk}  -->
+           <foreach collection="cm_price_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_screen_pixel_rnk != null  and cm_screen_pixel_rnk != ''" >
+          and  cm_screen_pixel_rnk in <!-- = #{cm_screen_pixel_rnk}  -->
+           <foreach collection="cm_screen_pixel_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_ram_rnk != null  and cm_ram_rnk != ''" >
+          and  cm_ram_rnk in <!-- = #{cm_ram_rnk}  -->
+           <foreach collection="cm_ram_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_screen_size_rnk != null  and cm_screen_size_rnk != ''" >
+          and  cm_screen_size_rnk in <!-- = #{cm_screen_size_rnk}  -->
+           <foreach collection="cm_screen_size_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_battery_rnk != null  and cm_battery_rnk != ''" >
+          and  cm_battery_rnk in <!-- = #{cm_battery_rnk}  -->
+           <foreach collection="cm_battery_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_camera_pixel_rnk != null  and cm_camera_pixel_rnk != ''" >
+          and  cm_camera_pixel_rnk in <!-- = #{cm_camera_pixel_rnk}  -->
+           <foreach collection="cm_camera_pixel_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_if_dual_card != null  and cm_if_dual_card != ''" >
+          and  cm_if_dual_card  in <!-- = #{cm_if_dual_card}  -->
+           <foreach collection="cm_if_dual_card" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_term_net_type != null  and cm_term_net_type != ''" >
+          and  cm_term_net_type in <!-- = #{cm_term_net_type}  -->
+           <foreach collection="cm_term_net_type" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="yd_sell_ind != null  and yd_sell_ind != ''" >
+          and  yd_sell_ind in <!--  = #{yd_sell_ind}  -->
+           <foreach collection="yd_sell_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_if_fingerprint != null  and cm_if_fingerprint != ''" >
+          and  cm_if_fingerprint in <!-- = #{cm_if_fingerprint}  -->
+           <foreach collection="cm_if_fingerprint" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_if_front_camera != null  and cm_if_front_camera != ''" >
+          and  cm_if_front_camera in <!-- = #{cm_if_front_camera}  -->
+           <foreach collection="cm_if_front_camera" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="ji_age_rak != null  and ji_age_rak != ''" >
+          and  ji_age_rak in <!-- = #{ji_age_rak}  -->
+           <foreach collection="ji_age_rak" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="fst_eff_mo != null  and fst_eff_mo != ''" >
+          and  fst_eff_mo  in <!-- = #{fst_eff_mo}  -->
+           <foreach collection="fst_eff_mo" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+      <if test="chg_typ_cd1 != null  and chg_typ_cd1 != ''" >
+          and  chg_typ_cd1  in <!-- = #{chg_typ_cd1}  -->
+           <foreach collection="chg_typ_cd1" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+      <if test="lm_brand != null  and lm_brand != ''" >
+          and  lm_brand    = #{lm_brand}  
+     <!--       <foreach collection="lm_brand" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+      <if test="lm_ter_type != null  and lm_ter_type != ''" >
+          and  lm_product_model   = #{lm_ter_type}  
+          <!--  <foreach collection="lm_ter_type" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+     <if test="lm_price_rnk != null  and lm_price_rnk != ''" >
+          and  lm_price_rnk  in <!-- = #{lm_price_rnk}  -->
+           <foreach collection="lm_price_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+     <if test="pkg_dtl_fee_amt != null  and pkg_dtl_fee_amt != ''" >
+          and  pkg_dtl_fee_amt  in = #{lm_price_rnk} 
+           <foreach collection="pkg_dtl_fee_amt" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if> 
+    <if test="pkgDtlFeeAmtMin != null  and pkgDtlFeeAmtMin != ''" >
+          and  pkg_dtl_fee_amt    <![CDATA[ >= #{pkgDtlFeeAmtMin}  ]]>
+     <!--       <foreach collection="lm_brand" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+        <if test="pkgDtlFeeAmtMax != null  and pkgDtlFeeAmtMax != ''" >
+          and  pkg_dtl_fee_amt    <![CDATA[ <= #{pkgDtlFeeAmtMax}  ]]>
+     <!--       <foreach collection="lm_brand" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+  </select>
+  
+  
+  <select id="sumInnetUsrCnt" resultType="Map" parameterType="Map">
+    select
+     sum(innet_usr_cnt) InnetUsrCnt
+    from zd_result_consumer_all
+    where stat_mo=#{billcyc} 
+    <if test="city != null  and city != '' " >
+   			 and cmcc_branch_cd = #{city}
+    </if>
+    <if test="brnd_cd != null  and brnd_cd != '' " >
+          and  brnd_cd in<!--  #{brnd_cd}  -->
+              	 <foreach collection="brnd_cd" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+          
+          
+    </if>
+    <if test="gdr_typ_cd != null  and gdr_typ_cd != '' " >
+          and  gdr_typ_cd in <!-- = #{gdr_typ_cd}  -->
+          	 <foreach collection="gdr_typ_cd" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    	</foreach>
+    </if>
+       <if test="id_home_prov != null  and id_home_prov != ''" >
+          and  id_home_prov in <!-- = #{id_home_prov}  -->
+           <foreach collection="id_home_prov" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="usr_typ_cd != null  and usr_typ_cd != ''" >
+          and  usr_typ_cd  in<!--  = #{usr_typ_cd}  -->
+           <foreach collection="usr_typ_cd" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="age_cnt_rnk != null  and age_cnt_rnk != ''" >
+          and  age_cnt_rnk in <!--  = #{age_cnt_rnk}  -->
+           <foreach collection="age_cnt_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="lte_4g_net_ind != null and   lte_4g_net_ind != ''" >
+          and  lte_4g_net_ind in<!--  = #{lte_4g_net_ind}  -->
+           <foreach collection="lte_4g_net_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="mh_usr_ind != null  and mh_usr_ind != ''" >
+          and  mh_usr_ind in <!-- = #{mh_usr_ind}  -->
+           <foreach collection="mh_usr_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="vip_usr_ind != null  and vip_usr_ind != ''" >
+          and  vip_usr_ind in<!--  = #{vip_usr_ind}  -->
+           <foreach collection="vip_usr_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="high_sch_ind != null  and high_sch_ind != ''" >
+          and  high_sch_ind in <!-- = #{high_sch_ind}  -->
+           <foreach collection="high_sch_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="arpu_rnk_cd != null  and arpu_rnk_cd != ''" >
+          and  arpu_rnk_cd in<!--  = #{arpu_rnk_cd}  -->
+           <foreach collection="arpu_rnk_cd" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="debet_dur_rnk != null  and debet_dur_rnk != ''" >
+          and  debet_dur_rnk in <!-- = #{debet_dur_rnk}  -->
+           <foreach collection="debet_dur_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="gprs_flux_rnk != null  and gprs_flux_rnk != ''" >
+          and  gprs_flux_rnk in<!--  = #{gprs_flux_rnk}  -->
+           <foreach collection="gprs_flux_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="tdlte_gprs_flux_rnk != null  and tdlte_gprs_flux_rnk != ''" >
+          and  tdlte_gprs_flux_rnk in <!-- = #{tdlte_gprs_flux_rnk}  -->
+           <foreach collection="tdlte_gprs_flux_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="yue_rnk != null  and yue_rnk != ''" >
+          and  yue_rnk in <!-- = #{yue_rnk}  -->
+           <foreach collection="yue_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="both_down_ind != null  and both_down_ind != ''" >
+          and  both_down_ind in <!-- = #{both_down_ind}  -->
+           <foreach collection="both_down_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="both_low_ind != null  and both_low_ind != ''" >
+          and  both_low_ind in <!-- = #{both_low_ind}  -->
+           <foreach collection="both_low_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="both_high_ind != null  and both_high_ind != ''" >
+          and  both_high_ind in <!-- = #{both_high_ind}  -->
+           <foreach collection="both_high_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="exceed_pkg_ind != null  and exceed_pkg_ind != ''" >
+          and  exceed_pkg_ind in <!-- = #{exceed_pkg_ind}  -->
+           <foreach collection="exceed_pkg_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="ywst_usr_count != null  and ywst_usr_count != ''" >
+          and  ywst_usr_count in <!-- = #{ywst_usr_count}  -->
+           <foreach collection="ywst_usr_count" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="pkg_up_ind != null  and pkg_up_ind != ''" >
+          and  pkg_up_ind in<!--  = #{pkg_up_ind}  -->
+           <foreach collection="pkg_up_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="pkg_down_ind != null  and pkg_down_ind != ''" >
+          and  pkg_down_ind in<!--  = #{pkg_down_ind}  -->
+           <foreach collection="pkg_down_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="contract_bind_ind != null  and contract_bind_ind != ''" >
+          and  contract_bind_ind in<!--  = #{contract_bind_ind}  -->
+           <foreach collection="contract_bind_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+       <if test="stpkp_nbr_ind != null  and stpkp_nbr_ind != ''" >
+          and  stpkp_nbr_ind in <!-- = #{stpkp_nbr_ind}  -->
+           <foreach collection="stpkp_nbr_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="actv_usr_ind != null  and actv_usr_ind != ''" >
+          and  actv_usr_ind in <!-- = #{actv_usr_ind}  -->
+           <foreach collection="actv_usr_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    
+    
+    <if test="cm_brand != null  and cm_brand != ''" >
+          and  cm_brand   = #{cm_brand}  
+         <!--   <foreach collection="cm_brand" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+    <if test="cm_ter_type != null  and cm_ter_type != ''" >
+          and  cm_ter_type   = #{cm_ter_type}  
+       <!--     <foreach collection="cm_ter_type" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+    <if test="cm_price_rnk != null  and cm_price_rnk != ''" >
+          and  cm_price_rnk in <!-- = #{cm_price_rnk}  -->
+           <foreach collection="cm_price_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_screen_pixel_rnk != null  and cm_screen_pixel_rnk != ''" >
+          and  cm_screen_pixel_rnk in <!-- = #{cm_screen_pixel_rnk}  -->
+           <foreach collection="cm_screen_pixel_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_ram_rnk != null  and cm_ram_rnk != ''" >
+          and  cm_ram_rnk in <!-- = #{cm_ram_rnk}  -->
+           <foreach collection="cm_ram_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_screen_size_rnk != null  and cm_screen_size_rnk != ''" >
+          and  cm_screen_size_rnk in <!-- = #{cm_screen_size_rnk}  -->
+           <foreach collection="cm_screen_size_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_battery_rnk != null  and cm_battery_rnk != ''" >
+          and  cm_battery_rnk in <!-- = #{cm_battery_rnk}  -->
+           <foreach collection="cm_battery_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_camera_pixel_rnk != null  and cm_camera_pixel_rnk != ''" >
+          and  cm_camera_pixel_rnk in <!-- = #{cm_camera_pixel_rnk}  -->
+           <foreach collection="cm_camera_pixel_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_if_dual_card != null  and cm_if_dual_card != ''" >
+          and  cm_if_dual_card  in <!-- = #{cm_if_dual_card}  -->
+           <foreach collection="cm_if_dual_card" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_term_net_type != null  and cm_term_net_type != ''" >
+          and  cm_term_net_type in <!-- = #{cm_term_net_type}  -->
+           <foreach collection="cm_term_net_type" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="yd_sell_ind != null  and yd_sell_ind != ''" >
+          and  yd_sell_ind in <!--  = #{yd_sell_ind}  -->
+           <foreach collection="yd_sell_ind" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_if_fingerprint != null  and cm_if_fingerprint != ''" >
+          and  cm_if_fingerprint in <!-- = #{cm_if_fingerprint}  -->
+           <foreach collection="cm_if_fingerprint" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="cm_if_front_camera != null  and cm_if_front_camera != ''" >
+          and  cm_if_front_camera in <!-- = #{cm_if_front_camera}  -->
+           <foreach collection="cm_if_front_camera" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="ji_age_rak != null  and ji_age_rak != ''" >
+          and  ji_age_rak in <!-- = #{ji_age_rak}  -->
+           <foreach collection="ji_age_rak" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+    <if test="fst_eff_mo != null  and fst_eff_mo != ''" >
+          and  fst_eff_mo  in <!-- = #{fst_eff_mo}  -->
+           <foreach collection="fst_eff_mo" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+      <if test="chg_typ_cd1 != null  and chg_typ_cd1 != ''" >
+          and  chg_typ_cd1  in <!-- = #{chg_typ_cd1}  -->
+           <foreach collection="chg_typ_cd1" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+      <if test="lm_brand != null  and lm_brand != ''" >
+          and  lm_brand    = #{lm_brand}  
+     <!--       <foreach collection="lm_brand" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+      <if test="lm_ter_type != null  and lm_ter_type != ''" >
+          and  lm_product_model   = #{lm_ter_type}  
+          <!--  <foreach collection="lm_ter_type" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+     <if test="lm_price_rnk != null  and lm_price_rnk != ''" >
+          and  lm_price_rnk  in <!-- = #{lm_price_rnk}  -->
+           <foreach collection="lm_price_rnk" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if>
+     <if test="pkg_dtl_fee_amt != null  and pkg_dtl_fee_amt != ''" >
+          and  pkg_dtl_fee_amt  in = #{lm_price_rnk} 
+           <foreach collection="pkg_dtl_fee_amt" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach>
+    </if> 
+    <if test="pkgDtlFeeAmtMin != null  and pkgDtlFeeAmtMin != ''" >
+          and  pkg_dtl_fee_amt    <![CDATA[ >= #{pkgDtlFeeAmtMin}  ]]>
+     <!--       <foreach collection="lm_brand" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+        <if test="pkgDtlFeeAmtMax != null  and pkgDtlFeeAmtMax != ''" >
+          and  pkg_dtl_fee_amt    <![CDATA[ <= #{pkgDtlFeeAmtMax}  ]]>
+     <!--       <foreach collection="lm_brand" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    		 </foreach> -->
+    </if>
+  </select>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <select id="getIdimensional" resultType="com.asiainfo.cmc.enties.consumerBigData.ZdMultIdimensional">
+  	select 
+  	id,composeDims,dimension,dimensionDesc,idxdimId,idxid,level,memo,num,referinfo,showdesc,starttime,stoptime 
+  	from ZD_MULT_idimensional where showdesc = 1
+  </select>
+  <select id="getIdimensionalNumDetails" resultType="com.asiainfo.cmc.enties.consumerBigData.ZdMultIdimensionalNumDetails">
+ 	select 
+ 	id,num,`key`,`value`  
+ 	from ZD_MULT_idimensional_num_details order by id
+  </select>
+  
+  <select id="getNums" resultType="java.lang.String">
+   select DISTINCT num from ZD_MULT_idimensional_num_details
+  </select>
+  
+  <select id="brandSelectInfo" resultType="Map" parameterType="Map">
+  <!-- 	select DISTINCT term_brnd_nam from ZD_TERM_BRND_MDL_BI -->
+  <!-- 	select DISTINCT BRANDNAME  termBrndNam  from ZD_CTMS_SO_DETAIL_D -->
+  	select DISTINCT cm_brand id ,cm_brand text from zd_result_consumer_all  where stat_mo = #{statMo}
+  	<if test="cm_brand != null and cm_brand != '' ">
+			  and cm_brand like  CONCAT('%',#{cm_brand},'%') 
+		</if>
+  </select>
+  <select id="pkgDtlFeeAmtSelectInfo" resultType="java.lang.String">
+  <!-- 	select DISTINCT term_brnd_nam from ZD_TERM_BRND_MDL_BI -->
+  	select DISTINCT value  value  from ZD_MULT_idimensional_num_details where num='pkg_dtl_fee_amt' order by id
+  	
+  </select>
+  <select  id="specSelectInfo" resultType="Map" parameterType="Map">
+<!--   	select  term_mdl_nam  from ZD_TERM_BRND_MDL_BI
+	<where>
+		<if test="cm_brand != null and cm_brand != '' ">
+			and term_brnd_nam=#{cm_brand}
+		</if>
+	</where>
+	 GROUP BY term_mdl_nam -->
+	 	select  DISTINCT  cm_ter_type id ,cm_ter_type text from zd_result_consumer_all  where stat_mo = #{statMo}
+<!-- 	select SPEC  termMdlNam  from ZD_CTMS_SO_DETAIL_D -->
+ 
+		<if test="cm_brand != null and cm_brand != '' ">
+			  and cm_brand = #{cm_brand}
+		</if>
+	 	<if test="cm_ter_type != null and cm_ter_type != ''  and cm_ter_type != 'null' ">
+	 	     and cm_ter_type like  CONCAT('%',#{cm_ter_type},'%') 
+	 	</if>
+	 
+	  
+  </select>
+  
+  
+  
+  
+  
+  
+  
+  <select id="crossAnalysisList" resultMap="crossAnalysisMap">
+  select  stat_mo,CMCC_BRANCH_CD,CUST_GP_NAM,CUST_GP_CNT,YWST_USR_CNT,YDFK_USR_CNT,YDFK_HIGH_FLUX_USR_CNT 
+  from ${tableName}
+    where stat_mo=#{billcyc} and CMCC_BRANCH_CD = #{city}
+  </select>
+  
+  </mapper>
+  

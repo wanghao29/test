@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.weekReport.DMAmountMapper" >
+<!--根据时间查询出分销表中合约机的量  -->
+<select id="selectMonthDistribution" resultType="DMAmount">
+ SELECT  SUM(ydratio) ydratio,SUM(allratio) allratio FROM  zd_result_week_report_dm_m 
+ WHERE SUBSTR(`month`,1,07)   BETWEEN #{DODATE} AND #{DODATE1}   
+</select>
+
+<!--查询出零售表SALETPYE为合约机，ISZD为1的sum（AMOUT）  -->
+
+<select id="selectMonthRetail" resultType="DMAmount">
+SELECT `month`, ydratio,allratio FROM  zd_result_week_report_dm_m 
+ WHERE SUBSTR(`month`,1,07)   BETWEEN #{DODATE} AND #{DODATE1} GROUP BY `month`
+</select>
+<!--查询出零售表SALETPYE为合约机，ISZD为1的sum（AMOUT）按年来查  -->
+
+<select id="selectMonthRetail1" resultType="DMAmount">
+SELECT SUBSTR(`month`,1,04) MONTH, SUM(ydratio) ydratio,SUM(allratio) allratio FROM  zd_result_week_report_dm_m 
+ WHERE SUBSTR(`month`,1,07)   BETWEEN #{DODATE} AND #{DODATE1}
+</select>
+
+    <select id="listCoverBrand1"  resultType="OverCustomers">
+           SELECT SUBSTR(MONTH, 1, 7) MONTH,AREANAME,SUM(cnt) cnt FROM 
+           zd_result_brand_over_cust_m WHERE MONTH 
+           BETWEEN #{DODATE2} AND #{DODATE1} AND
+           BRANDNAME=#{BRANDNAME} AND AREANAME=#{AREANAME} GROUP BY SUBSTR(MONTH,1,7)
+    </select> 
+
+ <select id="listCoverBrand"  resultType="map">
+           SELECT * FROM zd_result_brand_over_cust_m WHERE  DODATE 
+           BETWEEN #{DODATE} AND #{DODATE1} AND
+           BRANDNAME=#{BRANDNAME} AND AREANAME=#{AREANAME} GROUP BY SUBSTR(DODATE,1,7)
+    </select> 
+
+
+</mapper>

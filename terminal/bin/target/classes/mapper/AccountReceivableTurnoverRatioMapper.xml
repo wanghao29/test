@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.AccountReceivableTurnoverRatioMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.AccountReceivableTurnoverRatio" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="yysr" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="sgtzxm" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="sjdb" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="yszkkhsr" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="yszkjz" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="byyskzzl" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="ndyskzzl" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="mbz" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="df" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, yysr, sgtzxm, sjdb, yszkkhsr, yszkjz, byyskzzl, ndyskzzl, mbz, df, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ACCOUNT_RECEIVABLE_TURNOVER_RATIO
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAccountReceivableTurnoverRatio" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from ACCOUNT_RECEIVABLE_TURNOVER_RATIO
+    where month = #{month}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ACCOUNT_RECEIVABLE_TURNOVER_RATIO
+    <include refid="dynamicWhere" />
+    order by month  desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from ACCOUNT_RECEIVABLE_TURNOVER_RATIO
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ACCOUNT_RECEIVABLE_TURNOVER_RATIO
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ACCOUNT_RECEIVABLE_TURNOVER_RATIO
+    where <![CDATA[ month <= #{endMonth}]]> order by month desc LIMIT 0,1
+  </select>
+
+  <!--<select id="getKeyData" resultType="Map">-->
+    <!--select-->
+    <!--sum(hyyhsl) hyyhsls,sum(wqqkzb) wqqkzbs,sum(df) dfs,sum(sjjd) sjjds-->
+    <!--from ACCOUNT_RECEIVABLE_TURNOVER_RATIO-->
+  <!--</select>-->
+
+  <select id="getLastMonthWcqkzb" resultType="String">
+    select ifnull(ndyskzzl,0) from ACCOUNT_RECEIVABLE_TURNOVER_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="String">
+    select ifnull(ndyskzzl,0) from ACCOUNT_RECEIVABLE_TURNOVER_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ACCOUNT_RECEIVABLE_TURNOVER_RATIO
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.AccountReceivableTurnoverRatio" >
+    insert into ACCOUNT_RECEIVABLE_TURNOVER_RATIO (id, yysr, sgtzxm, sjdb, 
+      yszkkhsr, yszkjz, byyskzzl, 
+      ndyskzzl, mbz, df, month
+      )
+    values (#{id,jdbcType=INTEGER}, #{yysr,jdbcType=REAL}, #{sgtzxm,jdbcType=REAL}, #{sjdb,jdbcType=REAL}, 
+      #{yszkkhsr,jdbcType=REAL}, #{yszkjz,jdbcType=REAL}, #{byyskzzl,jdbcType=REAL}, 
+      #{ndyskzzl,jdbcType=REAL}, #{mbz,jdbcType=REAL}, #{df,jdbcType=REAL}, #{month,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.AccountReceivableTurnoverRatio" >
+    insert into ACCOUNT_RECEIVABLE_TURNOVER_RATIO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="yysr != null" >
+        yysr,
+      </if>
+      <if test="sgtzxm != null" >
+        sgtzxm,
+      </if>
+      <if test="sjdb != null" >
+        sjdb,
+      </if>
+      <if test="yszkkhsr != null" >
+        yszkkhsr,
+      </if>
+      <if test="yszkjz != null" >
+        yszkjz,
+      </if>
+      <if test="byyskzzl != null" >
+        byyskzzl,
+      </if>
+      <if test="ndyskzzl != null" >
+        ndyskzzl,
+      </if>
+      <if test="mbz != null" >
+        mbz,
+      </if>
+      <if test="df != null" >
+        df,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="yysr != null" >
+        #{yysr,jdbcType=REAL},
+      </if>
+      <if test="sgtzxm != null" >
+        #{sgtzxm,jdbcType=REAL},
+      </if>
+      <if test="sjdb != null" >
+        #{sjdb,jdbcType=REAL},
+      </if>
+      <if test="yszkkhsr != null" >
+        #{yszkkhsr,jdbcType=REAL},
+      </if>
+      <if test="yszkjz != null" >
+        #{yszkjz,jdbcType=REAL},
+      </if>
+      <if test="byyskzzl != null" >
+        #{byyskzzl,jdbcType=REAL},
+      </if>
+      <if test="ndyskzzl != null" >
+        #{ndyskzzl,jdbcType=REAL},
+      </if>
+      <if test="mbz != null" >
+        #{mbz,jdbcType=REAL},
+      </if>
+      <if test="df != null" >
+        #{df,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective"  >
+  call ACCOUNT_RECEIVABLE_TURNOVER_RATIO(#{sgtzxm},#{yszkjz},#{mbz},#{month})
+   <!--  update ACCOUNT_RECEIVABLE_TURNOVER_RATIO
+    <set >
+      <if test="yysr != null" >
+        yysr = #{yysr,jdbcType=REAL},
+      </if>
+      <if test="sgtzxm != null" >
+        sgtzxm = #{sgtzxm,jdbcType=REAL},
+      </if>
+      <if test="sjdb != null" >
+        sjdb = #{sjdb,jdbcType=REAL},
+      </if>
+      <if test="yszkkhsr != null" >
+        yszkkhsr = #{yszkkhsr,jdbcType=REAL},
+      </if>
+      <if test="yszkjz != null" >
+        yszkjz = #{yszkjz,jdbcType=REAL},
+      </if>
+      <if test="byyskzzl != null" >
+        byyskzzl = #{byyskzzl,jdbcType=REAL},
+      </if>
+      <if test="ndyskzzl != null" >
+        ndyskzzl = #{ndyskzzl,jdbcType=REAL},
+      </if>
+      <if test="mbz != null" >
+        mbz = #{mbz,jdbcType=REAL},
+      </if>
+      <if test="df != null" >
+        df = #{df,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER} -->
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.AccountReceivableTurnoverRatio" >
+    update ACCOUNT_RECEIVABLE_TURNOVER_RATIO
+    set yysr = #{yysr,jdbcType=REAL},
+      sgtzxm = #{sgtzxm,jdbcType=REAL},
+      sjdb = #{sjdb,jdbcType=REAL},
+      yszkkhsr = #{yszkkhsr,jdbcType=REAL},
+      yszkjz = #{yszkjz,jdbcType=REAL},
+      byyskzzl = #{byyskzzl,jdbcType=REAL},
+      ndyskzzl = #{ndyskzzl,jdbcType=REAL},
+      mbz = #{mbz,jdbcType=REAL},
+      df = #{df,jdbcType=REAL},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

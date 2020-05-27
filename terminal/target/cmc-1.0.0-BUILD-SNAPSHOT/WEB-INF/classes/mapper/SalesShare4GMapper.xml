@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.SalesShare4GMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.SalesShare4G" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="khjx" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="dyzb" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="syzb" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="jcdf" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="jf" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="gydf" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="df" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, khjx, dyzb, syzb, jcdf, jf, gydf, df, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from 4G_SALES_SHARE
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from 4G_SALES_SHARE
+    <include refid="dynamicWhere" />
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="selectSalesShare" resultMap="BaseResultMap">
+    select
+   <!--  <include refid="Base_Column_List" /> -->
+ 
+    
+     id id,khjx khjx,dyzb dyzb,syzb syzb,jcdf jcdf,jf jf,cast(sum(gydf)as char) gydf ,df df,month month
+    from 4G_SALES_SHARE
+    where month = #{month} LIMIT 0,1
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from 4G_SALES_SHARE
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from 4G_SALES_SHARE
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from 4G_SALES_SHARE 
+    where  <![CDATA[ month = #{endMonth}]]>
+    order by month desc LIMIT 0,1
+  </select>
+
+  <select id="getKeyData" resultType="Map">
+    select
+    sum(hyyhsl) hyyhsls,sum(wqqkzb) wqqkzbs,sum(df) dfs,sum(sjjd) sjjds
+    from 4G_SALES_SHARE
+  </select>
+
+  <select id="getLastMonthWcqkzb" resultType="Float">
+    select ifnull(dyzb,0) from 4G_SALES_SHARE where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="Float">
+    select ifnull(dyzb,0) from 4G_SALES_SHARE where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from 4G_SALES_SHARE
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="Map" >
+    insert into 4G_SALES_SHARE (  khjx, dyzb, 
+      syzb, jcdf, jf, gydf, 
+      df, month)
+    values (  #{params.khjx}, #{params.dyzb}, 
+      #{params.syzb}, #{params.jcdf}, #{params.jf}, #{params.gydf}, 
+      #{params.df}, #{params.month})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.SalesShare4G" >
+    insert into 4G_SALES_SHARE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="khjx != null" >
+        khjx,
+      </if>
+      <if test="dyzb != null" >
+        dyzb,
+      </if>
+      <if test="syzb != null" >
+        syzb,
+      </if>
+      <if test="jcdf != null" >
+        jcdf,
+      </if>
+      <if test="jf != null" >
+        jf,
+      </if>
+      <if test="gydf != null" >
+        gydf,
+      </if>
+      <if test="df != null" >
+        df,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="khjx != null" >
+        #{khjx,jdbcType=VARCHAR},
+      </if>
+      <if test="dyzb != null" >
+        #{dyzb,jdbcType=REAL},
+      </if>
+      <if test="syzb != null" >
+        #{syzb,jdbcType=REAL},
+      </if>
+      <if test="jcdf != null" >
+        #{jcdf,jdbcType=REAL},
+      </if>
+      <if test="jf != null" >
+        #{jf,jdbcType=REAL},
+      </if>
+      <if test="gydf != null" >
+        #{gydf,jdbcType=REAL},
+      </if>
+      <if test="df != null" >
+        #{df,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="Map" >
+    update 4G_SALES_SHARE
+    <set >
+      <if test="params.khjx != null" >
+        khjx = #{params.khjx},
+      </if>
+      <if test="params.dyzb != null" >
+        dyzb = #{params.dyzb},
+      </if>
+      <if test="params.syzb != null" >
+        syzb = #{params.syzb},
+      </if>
+      <if test="params.jcdf != null" >
+        jcdf = #{params.jcdf},
+      </if>
+      <if test="params.jf != null" >
+        jf = #{params.jf},
+      </if>
+      <if test="params.gydf != null" >
+        gydf = #{params.gydf},
+      </if>
+      <if test="params.df != null" >
+        df = #{params.df},
+      </if>
+ 
+    </set>
+    where month =  #{params.month}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.SalesShare4G" >
+    update 4G_SALES_SHARE
+    set khjx = #{khjx,jdbcType=VARCHAR},
+      dyzb = #{dyzb},
+      syzb = #{syzb,jdbcType=REAL},
+      jcdf = #{jcdf,jdbcType=REAL},
+      jf = #{jf,jdbcType=REAL},
+      gydf = #{gydf,jdbcType=REAL},
+      df = #{df,jdbcType=REAL},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

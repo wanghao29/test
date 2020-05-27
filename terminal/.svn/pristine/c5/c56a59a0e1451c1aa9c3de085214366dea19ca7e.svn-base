@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.IncomePhoneBrandMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.IncomePhoneBrand" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="sr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="srtz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="qnwcsr" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="mbz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sjwcd" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="qnwcd" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="bysrwcl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="fz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="bywcqk" jdbcType="VARCHAR" javaType="java.lang.String"/>
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, sr, srtz, qnwcsr, mbz, sjwcd, qnwcd, bysrwcl, fz, month,bywcqk
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from INCOME_PHONE_BRAND
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from INCOME_PHONE_BRAND
+    <include refid="dynamicWhere" />
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="selectBrandIncome" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from INCOME_PHONE_BRAND
+    where month = #{month}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from INCOME_PHONE_BRAND
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from INCOME_PHONE_BRAND
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from INCOME_PHONE_BRAND 
+  	where <![CDATA[ month = #{endMonth}]]>
+    order by month desc LIMIT 0,1
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from INCOME_PHONE_BRAND
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.IncomePhoneBrand" >
+    insert into INCOME_PHONE_BRAND (id, sr, srtz, qnwcsr, 
+      mbz, sjwcd, qnwcd, bysrwcl, 
+      fz, month)
+    values (#{id,jdbcType=INTEGER}, #{sr,jdbcType=VARCHAR}, #{srtz,jdbcType=VARCHAR}, #{qnwcsr,jdbcType=VARCHAR}, 
+      #{mbz,jdbcType=VARCHAR}, #{sjwcd,jdbcType=VARCHAR}, #{qnwcd,jdbcType=VARCHAR}, #{bysrwcl,jdbcType=VARCHAR}, 
+      #{fz,jdbcType=VARCHAR}, #{month,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.IncomePhoneBrand" >
+    insert into INCOME_PHONE_BRAND
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sr != null" >
+        sr,
+      </if>
+      <if test="srtz != null" >
+        srtz,
+      </if>
+      <if test="qnwcsr != null" >
+        qnwcsr,
+      </if>
+      <if test="mbz != null" >
+        mbz,
+      </if>
+      <if test="sjwcd != null" >
+        sjwcd,
+      </if>
+      <if test="qnwcd != null" >
+        qnwcd,
+      </if>
+      <if test="bysrwcl != null" >
+        bysrwcl,
+      </if>
+      <if test="fz != null" >
+        fz,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sr != null" >
+        #{sr,jdbcType=VARCHAR},
+      </if>
+      <if test="srtz != null" >
+        #{srtz,jdbcType=VARCHAR},
+      </if>
+      <if test="qnwcsr != null" >
+        #{qnwcsr,jdbcType=VARCHAR},
+      </if>
+      <if test="mbz != null" >
+        #{mbz,jdbcType=VARCHAR},
+      </if>
+      <if test="sjwcd != null" >
+        #{sjwcd,jdbcType=VARCHAR},
+      </if>
+      <if test="qnwcd != null" >
+        #{qnwcd,jdbcType=VARCHAR},
+      </if>
+      <if test="bysrwcl != null" >
+        #{bysrwcl,jdbcType=VARCHAR},
+      </if>
+      <if test="fz != null" >
+        #{fz,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.IncomePhoneBrand" >
+    update INCOME_PHONE_BRAND
+    <set >
+      <if test="sr != null" >
+        sr = #{sr,jdbcType=VARCHAR},
+      </if>
+      <if test="srtz != null" >
+        srtz = #{srtz,jdbcType=VARCHAR},
+      </if>
+      <if test="qnwcsr != null" >
+        qnwcsr = #{qnwcsr,jdbcType=VARCHAR},
+      </if>
+      <if test="mbz != null" >
+        mbz = #{mbz,jdbcType=VARCHAR},
+      </if>
+      <if test="sjwcd != null" >
+        sjwcd = #{sjwcd,jdbcType=VARCHAR},
+      </if>
+      <if test="qnwcd != null" >
+        qnwcd = #{qnwcd,jdbcType=VARCHAR},
+      </if>
+      <if test="bysrwcl != null" >
+        bysrwcl = #{bysrwcl,jdbcType=VARCHAR},
+      </if>
+      <if test="fz != null" >
+        fz = #{fz,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.IncomePhoneBrand" >
+    update INCOME_PHONE_BRAND
+    set sr = #{sr,jdbcType=VARCHAR},
+      srtz = #{srtz,jdbcType=VARCHAR},
+      qnwcsr = #{qnwcsr,jdbcType=VARCHAR},
+      mbz = #{mbz,jdbcType=VARCHAR},
+      sjwcd = #{sjwcd,jdbcType=VARCHAR},
+      qnwcd = #{qnwcd,jdbcType=VARCHAR},
+      bysrwcl = #{bysrwcl,jdbcType=VARCHAR},
+      fz = #{fz,jdbcType=VARCHAR},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="update" parameterType="com.asiainfo.cmc.enties.IncomePhoneBrand">
+    update INCOME_PHONE_BRAND
+    <set >
+      <if test="srtz != null" >
+        bywcqk = sr - #{srtz,jdbcType=VARCHAR} ,
+      </if>
+    
+      <if test="srtz != null" >
+        srtz = #{srtz,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    <!--   update INCOME_PHONE_BRAND
+    <set>
+    <if test="srtz != null" >
+      srtz = #{srtz,jdbcType=VARCHAR},
+      qnwcsr = (select diff from (select (sum(sr) - sum(srtz)) diff from INCOME_PHONE_BRAND) a),
+      sjwcd = qnwcsr / mbz - ((select DAYOFMONTH(LAST_DAY(now())) + 0)/365),
+      qnwcd = qnwcsr / mbz,
+      bysrwcl = (sr - srtz) / ((select DAYOFMONTH(LAST_DAY(now())) + 0)/365*mbz),
+      fz = (
+        case
+        when bysrwcl &gt;= 1 then 10
+        when bysrwcl &lt; 0.8 then 0
+        else 10*(bysrwcl-0.8)*5
+        end
+      )
+    </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}	 -->
+    
+  </update>
+
+  <update id="updateByTargetVal">
+    <!-- update INCOME_PHONE_BRAND
+    set
+    mbz=${mbz},
+    qnwcd = qnwcsr/${mbz},
+    sjwcd = qnwcsr/${mbz} - (select DAYOFMONTH(LAST_DAY(now())) + 0)/365,
+    bysrwcl = (sr-srtz)/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365*${mbz}),
+    fz = (
+    case
+    WHEN ((sr-srtz)/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365)*${mbz}) &gt; 1 then 10
+    WHEN ((sr-srtz)/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365)*${mbz}) &lt; 0.8 then 0
+    ELSE 10*(((sr-srtz)/((select DAYOFMONTH(LAST_DAY(now())) + 0)/365)*${mbz})-0.8)*5
+    END
+    ),
+    mbz = #{mbz,jdbcType=VARCHAR}
+    <include refid="dynamicWhere" />   -->
+    call INCOME_PHONE_BRAND(#{mbz},#{endMonth})
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+
+  <!--自有品牌手机收入动态查询条件-->
+  <sql id="dynamicWherePrivateBrand">
+    <where>
+      <if test="id != null and id != ''" >AND ID  = #{id}</if>
+      <if test="sr != null and sr != ''" >AND SR  = #{sr}</if>
+      <if test="srtz != null and srtz != ''" > AND SRTZ  = #{srtz}</if>
+      <if test="qnwcsr != null and qnwcsr != ''" > AND QNWCSR  = #{qnwcsr}</if>
+      <if test="mbz != null and mbz != ''" > AND MBZ  = #{mbz}</if>
+      <if test="sjwcd != null and sjwcd != ''" > AND SJWCD = #{sjwcd}</if>
+      <if test="qnwcd != null and qnwcd != ''" > AND QNWCD  = #{qnwcd}</if>
+      <if test="bysrwcl != null and bysrwcl != ''" > AND BYSRWCL  = #{bysrwcl}</if>
+      <if test="fz != null and fz != ''" > AND FZ  = #{fz}</if>
+      <if test="month != null and month != ''" > AND month  = #{month}</if>
+    </where>
+  </sql>
+</mapper>

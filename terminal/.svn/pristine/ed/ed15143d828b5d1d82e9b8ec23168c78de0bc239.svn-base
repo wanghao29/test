@@ -1,0 +1,90 @@
+package com.asiainfo.cmc.qudao.service;
+
+import java.util.List;
+
+import com.asiainfo.cmc.qudao.enties.CusChanPortray;
+import com.asiainfo.cmc.qudao.enties.SevenPort;
+import com.asiainfo.cmc.qudao.enties.ZdHallTshop;
+import com.asiainfo.cmc.qudao.vo.StoreBattleVo;
+
+public interface ICustomerChannelService {
+	
+	/**
+	 * 获取所有的厂商(orgacode、厂商名)
+	 */
+	public List<StoreBattleVo> listAllCustomer(StoreBattleVo vo);
+	
+	/**
+	 * 七口客商查询
+	 */
+	
+	public List<SevenPort> sevenListAllCustomer(SevenPort vo);
+	
+	/**
+	 *厅店属性查询
+	 */
+	
+	public List<SevenPort> hallListPort(SevenPort vo);
+	
+	/**
+	 * 厅店
+	 * @param vo
+	 * @return
+	 */
+	public List<StoreBattleVo> listAllHallNew(StoreBattleVo vo);
+	/**
+	 * 根据厂商获取其下门店(orgacode、厂商名)
+	 */
+	public List<StoreBattleVo> listHallByCustomer(StoreBattleVo vo);
+	/**
+	 * 根据厂商名称、厂商编码，模糊查询
+	 */
+	public List<StoreBattleVo> vagueQuery(StoreBattleVo vo);
+	public List<StoreBattleVo> vagueQuery1(StoreBattleVo vo);
+	
+    /**
+     *  获取 "客商" 画像模型
+     *  isIncludeType1，是否包含tiye=1。
+     *  渠道客户画像中除了ids还包含type1，门店作战中不包含
+     */
+	public List<CusChanPortray> listCustmerPortray(StoreBattleVo vo);
+	/**
+	 * 厅店画像模型
+	 */
+	
+	public List<CusChanPortray> listHallPortray(StoreBattleVo vo);
+	/**
+	 * 
+	 */
+	
+	/**
+	 * 获取渠道客商 所有有用的的字段（不包含show_type=0、1）
+	 */
+	public List<CusChanPortray> listPortrayFieldInCusChanl();
+	public List<CusChanPortray> listPortrayFieldInHallPortrait();
+
+	
+	
+    //以下是门店作战地图
+	
+	/**
+	 *  
+	 * 当门店id不为空：获取该门店1公里范围内不属于改厂商的其他门店
+	 */
+	public List<StoreBattleVo> listOtherHalls(StoreBattleVo vo);
+	
+	/**
+	 * 获取门店作战、"门店" 画像
+	 * 当ids为空时获取默认选中的
+	 */
+	public List<CusChanPortray> listHallStoreBattleByIds(StoreBattleVo vo);
+	public List<CusChanPortray> listCusStoreBattleByIds(StoreBattleVo vo);
+	
+	/**
+	 * 获取所有的厅店
+	 */
+	public List<String> listAllHall(ZdHallTshop vo);
+	
+	
+	
+}

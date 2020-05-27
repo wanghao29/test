@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.asiainfo.cmc.qudao.mapper.CustomerChannelMapper">
+   <!-- //*************** -->
+    <select id="listAllCustomer" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="com.asiainfo.cmc.qudao.vo.StoreBattleVo">
+        SELECT orgacode cusOrgacode,orgacode id,MAX(custname) custname,MAX(custname) text  FROM zd_result_cust_portrait_new_m 
+        WHERE <if test="tag1!=null and tag1!=''">areaname=#{tag1} and</if>  (over_cell <![CDATA[>]]> 0 OR si_val <![CDATA[>]]> 0)
+        <if test="month!=null and month!=''">and month = #{month}</if>
+        <if test="startMonth!=null and startMonth!=''">and month <![CDATA[>=]]> #{startMonth} and month <![CDATA[<=]]> #{endMonth}</if>
+        GROUP BY orgacode ORDER BY <if test="tag1!=null and tag1!=''">cusOrgacode=#{tag1}</if>   DESC
+    </select>
+    
+    <!--如果地市全省  -->
+     <select id="listAllCustomerNull" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="com.asiainfo.cmc.qudao.vo.StoreBattleVo">
+        SELECT orgacode cusOrgacode,orgacode id,MAX(custname) custname,MAX(custname) text  FROM zd_result_cust_portrait_new_m 
+        WHERE (over_cell <![CDATA[>]]> 0 OR si_val <![CDATA[>]]> 0)
+        <if test="month!=null and month!=''">and month = #{month}</if>
+        <if test="startMonth!=null and startMonth!=''">and month <![CDATA[>=]]> #{startMonth} and month <![CDATA[<=]]> #{endMonth}</if>
+        GROUP BY orgacode ORDER BY SUM(over_cell)   DESC
+    </select>
+    
+    
+    
+    
+    <!--查询出按七口分类  -->
+    
+    <select id="sevenListAllCustomer" parameterType="com.asiainfo.cmc.qudao.enties.SevenPort" resultType="com.asiainfo.cmc.qudao.enties.SevenPort">
+    SELECT DISTINCT b.orgacode,b.`custname` custName
+     FROM
+   zd_result_cust_portrait_new_m b 
+   WHERE <if test="tag1!=null and tag1!=''">b.areaname=#{tag1} and</if>
+      b.`month` <![CDATA[>=]]> #{startMonth} 
+  AND b.`month` <![CDATA[<=]]> #{endMonth} AND (over_cell > 0 OR si_val > 0)  
+    AND b.orgacode IN (
+    SELECT DISTINCT orgacode FROM 
+   (SELECT DISTINCT o.PROVIDERCODE orgacode FROM ZD_CTMS_SO_D o
+   WHERE o.dodate BETWEEN #{dodateMonth} AND #{dodateEndMonth}
+   <if test="portCode!=null and portCode!=''"> AND o.PORTCODE=#{portCode}</if>
+   UNION ALL 
+   SELECT DISTINCT i.ORGACODE FROM ZD_CTMS_SI_D i
+   WHERE i.dodate BETWEEN #{dodateMonth} AND #{dodateEndMonth}
+   <if test="portCode!=null and portCode!=''"> AND i.PORTCODE=#{portCode}</if>) X
+ )
+          
+    </select>
+ <!--按厅店属性来查  -->   
+    
+   <select id="hallListPort" parameterType="com.asiainfo.cmc.qudao.enties.SevenPort" resultType="com.asiainfo.cmc.qudao.enties.SevenPort">
+   
+   SELECT DISTINCT a.`TFULLNAME` custName,a.orgacode FROM  ZD_CTMS_HALL a LEFT JOIN zd_result_hall_portrait_new_m b ON a.`orgacode`=b.`orgacode` 
+  WHERE  <if test="tag1!=null and tag1!=''">b.areaname=#{tag1} and</if> 
+  b.`month` <![CDATA[>=]]> #{startMonth} 
+  AND b.`month` <![CDATA[<=]]> #{endMonth} AND (b.all_so_val >0 AND b.nbrstock >0)  <if test="portCode!=null and portCode!=''"> AND a.SUBTYPE=#{portCode}</if>
+   
+   
+   </select>  
+    
+    
+    
+   <!--厅店选择框查询出所有的厅店  --> 
+    <select id="listAllHallNew" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="com.asiainfo.cmc.qudao.vo.StoreBattleVo">
+       <!--  SELECT orgacode cusOrgacode,orgacode id,MAX(hallname) hallname,MAX(hallname) text  FROM zd_result_hall_portrait_new_m 
+        WHERE <if test="tag1!=null and tag1!=''">areaname=#{tag1} and</if> 
+        <if test="month!=null and month!=''"> month = #{month}</if>
+        <if test="startMonth!=null and startMonth!=''"> month <![CDATA[>=]]> #{startMonth} and month <![CDATA[<=]]> #{endMonth}</if>
+        GROUP BY orgacode -->
+       SELECT orgacode cusOrgacode,orgacode id,MAX(hallname) custname,MAX(hallname) text  FROM zd_result_hall_portrait_new_m 
+        WHERE <if test="tag1!=null and tag1!=''">areaname=#{tag1} and</if>  (all_so_val <![CDATA[>]]> 0)
+        <if test="month!=null and month!=''">and month = #{month}</if>
+        <if test="startMonth!=null and startMonth!=''">and month <![CDATA[>=]]> #{startMonth} and month <![CDATA[<=]]> #{endMonth}</if>
+        GROUP BY orgacode ORDER BY SUM(all_so_val) DESC 
+        
+         
+    </select>
+    
+    
+    
+    
+    
+    <!-- 查询出所有的厅店 -->
+    <select id="listAllHall" parameterType="ZdHallTshop" resultType="string">
+      
+ SELECT  hallname text FROM zd_result_hall_portrait_new_m WHERE <if test="areaname!=null and areaname!=''"> areaname=#{areaname} AND</if> 
+(all_so_val >0 AND nbrstock >0) and  <if test="startMonth!=null and startMonth!=''"> month <![CDATA[>=]]> #{startMonth} and month <![CDATA[<=]]> #{endMonth}</if>
+GROUP BY hallname 
+     
+
+    </select>
+    
+    
+    
+    
+    <select id="listHallByCustomer" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="com.asiainfo.cmc.qudao.vo.StoreBattleVo">
+		
+		
+		SELECT
+	b.orgacode id,MAX(b.hallname) text, b.orgacode orgacode,MAX(b.hallname) hallname,b.longitudeminus longitude,b.latitudeminus latitude,a.custname custname ,a.month month 
+FROM
+	zd_result_cust_hall_inf_m a LEFT JOIN zd_result_hall_portrait_new_m b
+on a.hallcode = b.orgacode and a.hallarea = b.areaname and a.`month`=b.`month`  
+where
+a.MONTH = #{month} 
+and a.custcode = #{cusOrgacode} <if test="orgacode!=null and orgacode!=''">AND orgacode = #{orgacode}</if>
+GROUP BY b.orgacode 
+		
+ </select> 
+    <select id="vagueQuery" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="com.asiainfo.cmc.qudao.vo.StoreBattleVo">
+		SELECT areaname tag1,month,orgacode cusOrgacode,custname custname FROM zd_result_cust_portrait_new_m 
+		WHERE  <if test="tag1!=null and tag1!=''"> areaname=#{tag1} and</if> month <![CDATA[>=]]> #{startMonth} and month <![CDATA[<=]]> #{endMonth}
+		<if test="cusOrgacode!=null and cusOrgacode!=''">AND orgacode LIKE CONCAT('%',#{cusOrgacode},'%')</if>
+		<if test="custname!=null and custname!=''">AND custname LIKE CONCAT('%',#{custname},'%')</if>	
+		group by orgacode
+    </select>     
+<!--厅店搜索功能的实现  -->
+ <select id="vagueQuery1" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="com.asiainfo.cmc.qudao.vo.StoreBattleVo">
+		SELECT areaname tag1,month,orgacode cusOrgacode,hallname custname FROM zd_result_hall_portrait_new_m 
+		WHERE  <if test="tag1!=null and tag1!=''"> areaname=#{tag1} and</if> month <![CDATA[>=]]> #{startMonth} and month <![CDATA[<=]]> #{endMonth}
+		<if test="cusOrgacode!=null and cusOrgacode!=''">AND orgacode LIKE CONCAT('%',#{cusOrgacode},'%')</if>
+		<if test="custname!=null and custname!=''">AND hallname LIKE CONCAT('%',#{custname},'%')</if>	
+		group by orgacode
+    </select>
+
+
+    <!-- 渠道客户画像 -->  
+    <select id="getCustomerFieldByMon" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select ${field} from zd_result_cust_portrait_new_m where orgacode=#{cusOrgacode} <if test="tag1!=null and tag1!=''">and areaname=#{tag1}</if>
+	    <choose>
+		    <when test="month!=null">
+		    	AND month=#{month} 	    
+		    </when>
+		    <otherwise>
+		        AND month in
+		        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach> 	                
+		    </otherwise>
+		</choose>                 
+        group by orgacode
+    </select>
+    <!--厅店客户画像  -->
+    <select id="getHallFieldByMon" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select ${field} from zd_result_hall_portrait_new_m where <if test="cusOrgacode!=null and cusOrgacode!=''"> orgacode=#{cusOrgacode} and</if> 
+         <if test="tag1!=null and tag1!=''">  areaname=#{tag1} </if>
+	    <choose>
+		    <when test="month!=null">
+		    	 month=#{month} 	    
+		    </when>
+		    <otherwise>
+		        AND month in
+		        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach> 	                
+		    </otherwise>
+		</choose>                 
+        group by orgacode
+    </select>
+    
+    
+    <select id="getHallFieldByMonQuanshen" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select ${field} from zd_result_hall_portrait_new_m where <if test="cusOrgacode!=null and cusOrgacode!=''"> orgacode=#{cusOrgacode}</if> 
+         
+	    <choose>
+		    <when test="month!=null">
+		    	 month=#{month} 	    
+		    </when>
+		    <otherwise>
+		        AND month in
+		        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach> 	                
+		    </otherwise>
+		</choose>                 
+        group by orgacode
+    </select>
+    
+    
+    
+    
+    
+    <!--/////////////*******************  -->
+    <select id="getCustomerFieldByMons" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select orgacode,custname,areaname,tag3,tag6,tag7,over_cell,si_val,zd_so_val,all_so_val,
+        usr_nbr_hall,usr_nbr_hall_val,nbrstock,kll,netin_val,avg_dwell_time,single_sales_ability,
+        single_sales_amount,market_matche_brand,market_matche_price,market_matche_sales,
+        dm_stock_rate,diff_net_rate,diff_net_rate_val,net_in_ratio,unhealth_ratio_all,black_cust_ratio,
+        sus_cark_ratio,one_three_ratio,arpu,dou,mou,tag11,amount11,tag12,amount12,tag24,amount24,tag13,
+        tag14,tag16,tag20,tag21,tag34,amount34,tag35,amount35,tag41,monthtime,`month` from zd_result_cust_portrait_new_m where  orgacode=#{cusOrgacode}  <if test="tag1!=null and tag1!=''">and areaname=#{tag1}</if>
+        and month in
+        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>  
+	    order by month      
+    </select> 
+    
+    <!-- 全部 -->
+   <select id="getCustomerFieldByMonsAll" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        SELECT orgacode,custname,areaname,tag3,tag6,tag7,SUM(over_cell) over_cell, SUM(si_val) si_val, SUM(zd_so_val) zd_so_val, SUM(all_so_val) all_so_val,SUM(usr_nbr_hall) usr_nbr_hall,SUM(usr_nbr_hall_val) usr_nbr_hall_val,SUM(nbrstock) nbrstock,SUM(kll) kll,SUM(netin_val) netin_val,single_sales_ability,SUM(avg_dwell_time) avg_dwell_time,SUM(single_sales_amount) single_sales_amount,SUM(market_matche_brand) market_matche_brand,
+  SUM(market_matche_price) market_matche_price,SUM(market_matche_sales) market_matche_sales,SUM(dm_stock_rate) dm_stock_rate,SUM(diff_net_rate) diff_net_rate,SUM(diff_net_rate_val) diff_net_rate_val,SUM(net_in_ratio) net_in_ratio,SUM(unhealth_ratio_all) unhealth_ratio_all,SUM(black_cust_ratio) black_cust_ratio,SUM(sus_cark_ratio) sus_cark_ratio,SUM(one_three_ratio) one_three_ratio,SUM(arpu) arpu,SUM(dou) dou,
+  SUM(mou) mou,tag11,amount11,tag12,amount12,tag24,amount24,SUM(tag13) tag13,SUM(tag14) tag14,SUM(tag16) tag16,SUM(tag20) tag20,SUM(tag21) tag21, tag34,SUM(amount34) amount34,tag35,amount35,SUM(tag41) tag41,SUM(monthtime) monthtime,`month` FROM zd_result_cust_portrait_new_m where  
+  orgacode in <foreach collection="oragcodes" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>  <if test="tag1!=null and tag1!=''">and areaname=#{tag1}</if>
+        and month in
+        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>  
+	    order by month      
+    </select>      
+    
+   <select id="getCustomerFieldByMon2" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select ${field} from zd_result_cust_portrait_new_m where orgacode=#{cusOrgacode} <if test="tag1!=null and tag1!=''">and areaname=#{tag1}</if>
+	    <choose>
+		    <when test="month!=null">
+		    	AND month=#{month} 	    
+		    </when>
+		    <otherwise>
+		        AND month in
+		        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach> 	                
+		    </otherwise>
+		</choose>                 
+        group by orgacode
+    </select> 
+    
+    
+    
+    
+    
+    
+        
+    <!-- 厅店的方法 -->
+    <select id="getHallFieldByMons" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select * from zd_result_hall_portrait_new_m where <if test="cusOrgacode!=null and cusOrgacode!=''"> orgacode=#{cusOrgacode} and</if>  <if test="tag1!=null and tag1!=''">  areaname=#{tag1}  and</if>
+        month in
+        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>  
+	    order by month      
+    </select>   
+    
+    <select id="getHallFieldByMons1" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        SELECT orgacode,longitudeminus,latitudeminus,custcode,custname,hallname,areaname,over_cust, SUM(zd_so_val) zd_so_val, SUM(all_so_val) all_so_val,SUM(nbrstock) nbrstock,SUM(kll) kll,SUM(netin_val) netin_val,SUM(avg_dwell_time) avg_dwell_time,SUM(single_sales_ability) single_sales_ability,SUM(single_sales_amount) single_sales_amount,
+  SUM(market_matche_brand) market_matche_brand,SUM(market_matche_price) market_matche_price,SUM(market_matche_sales) market_matche_sales,SUM(dm_stock_rate) dm_stock_rate,SUM(diff_net_rate) diff_net_rate,SUM(diff_net_rate_val) diff_net_rate_val,SUM(net_in_ratio) net_in_ratio,SUM(unhealth_ratio_all) unhealth_ratio_all,SUM(black_cust_ratio) black_cust_ratio,SUM(sus_cark_ratio) sus_cark_ratio,SUM(one_three_ratio) one_three_ratio,SUM(arpu) arpu,
+  SUM(dou) dou,SUM(mou) mou,tag11,amount11,tag12,amount12,tag24,amount24,amount24,amountbrand,chgprice,amountprice,chgspec,amountspec,SUM(tag13) tag13,SUM(tag14) tag14,SUM(tag16) tag16,SUM(tag20) tag20,SUM(tag21) tag21, tag34,SUM(amount34) amount34,tag35,amount35,SUM(tag41) tag41,`month` FROM zd_result_hall_portrait_new_m WHERE  orgacode in 
+  <foreach collection="oragcodes" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>    <if test="tag1!=null and tag1!=''"> and areaname=#{tag1}</if>
+        and month in
+        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>  
+	    order by month      
+    </select>
+      
+    <select id="getHallFieldByMons11" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        SELECT orgacode,longitudeminus,latitudeminus,custcode,custname,hallname,areaname,over_cust, SUM(zd_so_val) zd_so_val, SUM(all_so_val) all_so_val,SUM(nbrstock) nbrstock,SUM(kll) kll,SUM(netin_val) netin_val,SUM(avg_dwell_time) avg_dwell_time,SUM(single_sales_ability) single_sales_ability,SUM(single_sales_amount) single_sales_amount,
+  SUM(market_matche_brand) market_matche_brand,SUM(market_matche_price) market_matche_price,SUM(market_matche_sales) market_matche_sales,SUM(dm_stock_rate) dm_stock_rate,SUM(diff_net_rate) diff_net_rate,SUM(diff_net_rate_val) diff_net_rate_val,SUM(net_in_ratio) net_in_ratio,SUM(unhealth_ratio_all) unhealth_ratio_all,SUM(black_cust_ratio) black_cust_ratio,SUM(sus_cark_ratio) sus_cark_ratio,SUM(one_three_ratio) one_three_ratio,SUM(arpu) arpu,
+  SUM(dou) dou,SUM(mou) mou,tag11,amount11,tag12,amount12,tag24,amount24,amount24,amountbrand,chgprice,amountprice,chgspec,amountspec,SUM(tag13) tag13,SUM(tag14) tag14,SUM(tag16) tag16,SUM(tag20) tag20,SUM(tag21) tag21, tag34,SUM(amount34) amount34,tag35,amount35,SUM(tag41) tag41,`month` FROM zd_result_hall_portrait_new_m WHERE 
+      <if test="tag1!=null and tag1!=''">  areaname=#{tag1}</if>
+        and month in
+        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>  
+	    order by month      
+    </select>
+    
+    
+    <!-- 以下是门店作战信息 -->
+    <select id="listOtherHalls" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="com.asiainfo.cmc.qudao.vo.StoreBattleVo">
+        select o.other_orgacode orgacode ,o.other_hallname hallname,o.other_longitudeminus longitude,o.other_latitudeminus latitude
+		      from  ZD_RESULT_HALL_OTHER_1K_M o where  o.ORGACODE=#{orgacode}  
+    </select>
+    <!-- 门店作战地图、门店画像 -->   
+    <select id="getHallHallStoreBattleByMon" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo"  resultType="map">
+        select ${field} from zd_result_hall_portrait_new_m where  orgacode=#{orgacode}
+	    <choose>
+		    <when test="month != null">
+		    	AND month=#{month} 	    
+		    </when>
+		    <otherwise>
+		        AND month in
+		        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach> 	                
+		    </otherwise>
+		</choose>               
+        <!--  <if test="@Ognl@isNotEmpty(cusOrgacode)">
+           and custcode=#{cusOrgacode}  
+        </if> -->
+    </select>
+    <select id="getHallHallStoreBattleByMons" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo"  resultType="map">
+        select * from zd_result_hall_portrait_new_m where  orgacode=#{orgacode} and  month in
+	        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+	               #{item}       
+	        </foreach>  
+	        <!-- <if test="@Ognl@isNotEmpty(cusOrgacode)">
+	           and custcode=#{cusOrgacode}  
+	        </if> -->
+	    order by month      
+    </select>  
+    
+    <!-- 门店作战地图、厂商画像 -->  
+    <select id="getCustHallStoreBattleFieldByMon" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select * from zd_result_cust_portrait_new_m where orgacode=#{cusOrgacode}  
+        <if test="tag1!=null and tag1!=''">and areaname=#{tag1}</if>
+        and month=#{month}  
+    </select>
+    <select id="getCustHallStoreBattleFieldByMons" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select * from zd_result_cust_portrait_new_m where  orgacode=#{cusOrgacode}  
+        <if test="tag1!=null and tag1!=''">and areaname=#{tag1}</if> 
+        and month in
+        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>  
+	    order by month      
+    </select>     
+</mapper>

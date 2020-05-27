@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.AccountsReceivableRatioMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.AccountsReceivableRatio" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="cflhysye" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="yszk90" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="yszkzb90" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="yszkdf90" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="yszk180" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="yszkzb180" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="yszkdf180" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, cflhysye, yszk90, yszkzb90, yszkdf90, yszk180, yszkzb180, yszkdf180, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ACCOUNTS_RECEIVABLE_RATIO
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAccountsReceivableRatio" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from ACCOUNTS_RECEIVABLE_RATIO
+    where month = #{month}
+  </select>
+
+<select id="overview" resultType="AccountsReceivableRatio">
+    select
+    round(IFNULL(AVG(yszkzb90),0),2) yszkzb90 ,round(IFNULL(AVG(yszkzb180),0),2)  yszkzb180
+    from ACCOUNTS_RECEIVABLE_RATIO 
+    where <![CDATA[ month >= #{startMonth} and month <=  #{stopMonth}]]>
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ACCOUNTS_RECEIVABLE_RATIO
+    <include refid="dynamicWhere" />
+    order by month desc
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from ACCOUNTS_RECEIVABLE_RATIO
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ACCOUNTS_RECEIVABLE_RATIO
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ACCOUNTS_RECEIVABLE_RATIO 
+    where <![CDATA[ month <= #{endMonth,jdbcType=VARCHAR}]]>  order by month desc LIMIT 0,1
+  </select>
+
+  <select id="getKeyData" resultType="Map">
+    select
+    sum(hyyhsl) hyyhsls,sum(wqqkzb) wqqkzbs,sum(df) dfs,sum(sjjd) sjjds
+    from ACCOUNTS_RECEIVABLE_RATIO
+  </select>
+
+  <select id="getLastMonthWcqkzb" resultType="java.lang.String">
+    select ifnull(yszkzb90,0) from ACCOUNTS_RECEIVABLE_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastMonthWcqkzb2" resultType="java.lang.String">
+    select ifnull(yszkzb180,0) from ACCOUNTS_RECEIVABLE_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="java.lang.String">
+    select ifnull(yszkzb90,0) from ACCOUNTS_RECEIVABLE_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb2" resultType="java.lang.String">
+    select ifnull(yszkzb180,0) from ACCOUNTS_RECEIVABLE_RATIO where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from ACCOUNTS_RECEIVABLE_RATIO
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.AccountsReceivableRatio" >
+    insert into ACCOUNTS_RECEIVABLE_RATIO (id, cflhysye, yszk90, 
+      yszkzb90, yszkdf90, yszk180, 
+      yszkzb180, yszkdf180, month
+      )
+    values (#{id,jdbcType=INTEGER}, #{cflhysye,jdbcType=REAL}, #{yszk90,jdbcType=REAL}, 
+      #{yszkzb90,jdbcType=REAL}, #{yszkdf90,jdbcType=REAL}, #{yszk180,jdbcType=REAL}, 
+      #{yszkzb180,jdbcType=REAL}, #{yszkdf180,jdbcType=REAL}, #{month,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.AccountsReceivableRatio" >
+    insert into ACCOUNTS_RECEIVABLE_RATIO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="cflhysye != null" >
+        cflhysye,
+      </if>
+      <if test="yszk90 != null" >
+        yszk90,
+      </if>
+      <if test="yszkzb90 != null" >
+        yszkzb90,
+      </if>
+      <if test="yszkdf90 != null" >
+        yszkdf90,
+      </if>
+      <if test="yszk180 != null" >
+        yszk180,
+      </if>
+      <if test="yszkzb180 != null" >
+        yszkzb180,
+      </if>
+      <if test="yszkdf180 != null" >
+        yszkdf180,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="cflhysye != null" >
+        #{cflhysye,jdbcType=REAL},
+      </if>
+      <if test="yszk90 != null" >
+        #{yszk90,jdbcType=REAL},
+      </if>
+      <if test="yszkzb90 != null" >
+        #{yszkzb90,jdbcType=REAL},
+      </if>
+      <if test="yszkdf90 != null" >
+        #{yszkdf90,jdbcType=REAL},
+      </if>
+      <if test="yszk180 != null" >
+        #{yszk180,jdbcType=REAL},
+      </if>
+      <if test="yszkzb180 != null" >
+        #{yszkzb180,jdbcType=REAL},
+      </if>
+      <if test="yszkdf180 != null" >
+        #{yszkdf180,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.AccountsReceivableRatio" >
+    update ACCOUNTS_RECEIVABLE_RATIO
+    <set >
+      <if test="cflhysye != null" >
+        cflhysye = #{cflhysye,jdbcType=REAL},
+      </if>
+      <if test="yszk90 != null" >
+        yszk90 = #{yszk90,jdbcType=REAL},
+      </if>
+      <if test="yszkzb90 != null" >
+        yszkzb90 = #{yszkzb90,jdbcType=REAL},
+      </if>
+      <if test="yszkdf90 != null" >
+        yszkdf90 = #{yszkdf90,jdbcType=REAL},
+      </if>
+      <if test="yszk180 != null" >
+        yszk180 = #{yszk180,jdbcType=REAL},
+      </if>
+      <if test="yszkzb180 != null" >
+        yszkzb180 = #{yszkzb180,jdbcType=REAL},
+      </if>
+      <if test="yszkdf180 != null" >
+        yszkdf180 = #{yszkdf180,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.AccountsReceivableRatio" >
+    update ACCOUNTS_RECEIVABLE_RATIO
+    set cflhysye = #{cflhysye,jdbcType=REAL},
+      yszk90 = #{yszk90,jdbcType=REAL},
+      yszkzb90 = #{yszkzb90,jdbcType=REAL},
+      yszkdf90 = #{yszkdf90,jdbcType=REAL},
+      yszk180 = #{yszk180,jdbcType=REAL},
+      yszkzb180 = #{yszkzb180,jdbcType=REAL},
+      yszkdf180 = #{yszkdf180,jdbcType=REAL},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

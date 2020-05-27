@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.TerminalSaleShareMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.TerminalSaleShare" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="wsso" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="jhl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="tzxl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="xlzb" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="df" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, wsso, jhl, tzxl, xlzb, df, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from TERMINAL_SALE_SHARE
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from TERMINAL_SALE_SHARE
+    <include refid="dynamicWhere"/>
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="selectTerminalSaleShare" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from TERMINAL_SALE_SHARE
+    where month = #{month}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from TERMINAL_SALE_SHARE
+    <include refid="dynamicWhere"/>
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from TERMINAL_SALE_SHARE
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from TERMINAL_SALE_SHARE 
+    where  <![CDATA[ month <= #{endMonth}]]>
+    order by month desc LIMIT 0,1
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from TERMINAL_SALE_SHARE
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.TerminalSaleShare" >
+    insert into TERMINAL_SALE_SHARE (id, wsso, jhl, tzxl, 
+      xlzb, df, month)
+    values (#{id,jdbcType=INTEGER}, #{wsso,jdbcType=VARCHAR}, #{jhl,jdbcType=VARCHAR}, #{tzxl,jdbcType=VARCHAR}, 
+      #{xlzb,jdbcType=VARCHAR}, #{df,jdbcType=VARCHAR}, #{month,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.TerminalSaleShare" >
+    insert into TERMINAL_SALE_SHARE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="wsso != null" >
+        wsso,
+      </if>
+      <if test="jhl != null" >
+        jhl,
+      </if>
+      <if test="tzxl != null" >
+        tzxl,
+      </if>
+      <if test="xlzb != null" >
+        xlzb,
+      </if>
+      <if test="df != null" >
+        df,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="wsso != null" >
+        #{wsso,jdbcType=VARCHAR},
+      </if>
+      <if test="jhl != null" >
+        #{jhl,jdbcType=VARCHAR},
+      </if>
+      <if test="tzxl != null" >
+        #{tzxl,jdbcType=VARCHAR},
+      </if>
+      <if test="xlzb != null" >
+        #{xlzb,jdbcType=VARCHAR},
+      </if>
+      <if test="df != null" >
+        #{df,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.TerminalSaleShare" >
+    update TERMINAL_SALE_SHARE
+    <set >
+      <if test="wsso != null" >
+        wsso = #{wsso,jdbcType=VARCHAR},
+      </if>
+      <if test="jhl != null" >
+        jhl = #{jhl,jdbcType=VARCHAR},
+      </if>
+      <if test="tzxl != null" >
+        tzxl = #{tzxl,jdbcType=VARCHAR},
+      </if>
+      <if test="xlzb != null" >
+	       <if test="jhl != 0" >
+	           xlzb = ROUND((#{wsso,jdbcType=VARCHAR} - #{tzxl,jdbcType=VARCHAR})/#{jhl,jdbcType=VARCHAR},2),
+	       </if>
+	        <if test="jhl == 0" >
+	         xlzb =  0 ,
+	       </if>
+ 
+      </if>
+      <if test="df != null" >
+        df = #{df,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.TerminalSaleShare" >
+    update TERMINAL_SALE_SHARE
+    set wsso = #{wsso,jdbcType=VARCHAR},
+      jhl = #{jhl,jdbcType=VARCHAR},
+      tzxl = #{tzxl,jdbcType=VARCHAR},
+         <if test="jhl != 0" >
+	           xlzb = ROUND((#{wsso,jdbcType=VARCHAR} - #{tzxl,jdbcType=VARCHAR})/#{jhl,jdbcType=VARCHAR},2),
+	       </if>
+	        <if test="jhl == 0" >
+	         xlzb =  0 ,
+	       </if>
+      df = #{df,jdbcType=VARCHAR},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByTargetVal">
+    update TERMINAL_SALE_SHARE
+    set
+    tzxl = #{tzxl,jdbcType=VARCHAR},
+    xlzb = (wsso - ${tzxl})/jhl
+    where month = #{month,jdbcType=VARCHAR}
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

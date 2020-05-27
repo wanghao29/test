@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.brandmodel.RecordMapper" >
+
+<!--根据用户id查询出所操盘的记录  -->
+<select id="selectAllUser" parameterType="com.asiainfo.cmc.enties.brandmodel.RecordEntry" resultType="com.asiainfo.cmc.enties.brandmodel.RecordEntry">
+
+select userId,brand,spec,brandKind,timeKind,brandCompation,
+specCompation,brandContrast,specContrast,startTime,contrastKind,
+endTime 
+from recor_set_user where  userId=#{userId}  <if test="brand != null" >and brand=#{brand}</if>  
+<if test="spec != null" >and spec=#{spec}</if>
+</select>
+<!-- 增加一个用户操盘的信息 -->
+  <insert id="insertOneUserInformation" parameterType="com.asiainfo.cmc.enties.brandmodel.RecordEntry" >
+    insert into recor_set_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+              <if test="userId != null" >
+        userId,
+      </if>
+      <if test="brand != null" >
+        brand,
+      </if>
+      <if test="spec != null" >
+        spec,
+      </if>
+      <if test="brandKind != null" >
+        brandKind,
+      </if>
+      <if test="timeKind != null" >
+        timeKind,
+      </if>
+      <if test="brandCompation != null" > 
+        brandCompation,
+      </if>
+      <if test="specCompation != null" >
+        specCompation,
+      </if>
+      <if test="brandContrast != null" >
+        brandContrast,
+      </if>
+      <if test="specContrast != null" >
+        specContrast,
+      </if>
+       <if test="startTime != null" >
+        startTime,
+      </if>
+       <if test="contrastKind != null" >
+        contrastKind,
+      </if>
+       <if test="endTime != null" >
+        endTime
+      </if>
+       
+    
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+ 
+   <if test="userId != null" >
+        #{userId},
+      </if>
+      <if test="brand != null" >
+        #{brand},
+      </if>
+      <if test="spec != null" >
+        #{spec},
+      </if>
+      <if test="brandKind != null" >
+        #{brandKind},
+      </if>
+      <if test="timeKind != null" >
+        #{timeKind},
+      </if>
+      <if test="brandCompation != null" > 
+        #{brandCompation},
+      </if>
+      <if test="specCompation != null" >
+        #{specCompation},
+      </if>
+      <if test="brandContrast != null" >
+        #{brandContrast},
+      </if>
+      <if test="specContrast != null" >
+        #{specContrast},
+      </if>
+       <if test="startTime != null" >
+        #{startTime},
+      </if>
+       <if test="contrastKind != null" >
+        #{contrastKind},
+      </if>
+       <if test="endTime != null" >
+        #{endTime}
+      </if>
+
+</trim>
+  </insert>
+
+
+
+
+
+
+
+
+
+<!--更新一个用户的操盘信息  -->
+
+<update id="updateUserInformation" parameterType="com.asiainfo.cmc.enties.brandmodel.RecordEntry" >
+update recor_set_user
+    <set >
+      <if test="userId != null" >
+      userId= #{userId},
+      </if>
+      <if test="brand != null" >
+       brand= #{brand},
+      </if>
+      <if test="spec != null" >
+       spec= #{spec},
+      </if>
+      <if test="brandKind != null" >
+      brandKind= #{brandKind},
+      </if>
+      <if test="timeKind != null" >
+       timeKind= #{timeKind},
+      </if>
+      <if test="brandCompation != null" > 
+       brandCompation= #{brandCompation},
+      </if>
+      <if test="specCompation != null" >
+       specCompation= #{specCompation},
+      </if>
+      <if test="brandContrast != null" >
+        brandContrast= #{brandContrast},
+      </if>
+      <if test="specContrast != null" >
+       specContrast= #{specContrast},
+      </if>
+       <if test="startTime != null" >
+       startTime= #{startTime},
+      </if>
+       <if test="contrastKind != null" >
+       contrastKind= #{contrastKind},
+      </if>
+       <if test="endTime != null" >
+       endTime= #{endTime}
+      </if>
+     
+    </set>
+   where  userId=#{userId} and brand=#{brand} and spec=#{spec}
+ 
+ 
+ </update>
+
+
+
+
+
+
+
+
+
+</mapper>

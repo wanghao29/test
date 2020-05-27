@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.FeeProgressBalanceMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.FeeProgressBalance" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="zzc" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sgtzx" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="hlwzc" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="khqljchdj" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="khqljrglcb" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="bykhfy" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="bhdjhrglcbys" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="byjd" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="ljkhfy" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="fyjd" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="fyjdjhx" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="df" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, zzc, sgtzx, hlwzc, khqljchdj, khqljrglcb, bykhfy, bhdjhrglcbys, byjd, ljkhfy, 
+    fyjd, fyjdjhx,month,df
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from FEE_PROGRESS_BALANCE
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from FEE_PROGRESS_BALANCE
+    <include refid="dynamicWhere"/>
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="selectCustomerTargetValue" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from FEE_PROGRESS_BALANCE
+    where month = #{month}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from FEE_PROGRESS_BALANCE
+    <include refid="dynamicWhere"/>
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from FEE_PROGRESS_BALANCE
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from FEE_PROGRESS_BALANCE
+    where <![CDATA[ month = #{endMonth}]]>
+    order by month desc LIMIT 0,1
+  </select>
+
+  <select id="getKeyData" resultType="Map">
+    select
+    sum(hyyhsl) hyyhsls,sum(wqqkzb) wqqkzbs,sum(df) dfs,sum(sjjd) sjjds
+    from FEE_PROGRESS_BALANCE
+  </select>
+
+  <select id="getLastMonthWcqkzb" resultType="String">
+    select ifnull(wqqkzb,0) from FEE_PROGRESS_BALANCE where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="String">
+    select ifnull(wqqkzb,0) from FEE_PROGRESS_BALANCE where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+
+  <update id="updateByTargetVal" parameterType="map" >
+    update FEE_PROGRESS_BALANCE
+    
+     
+    <set >
+     bykhfy = ROUND( (zzc -  #{sgtzx}  - hlwzc - khqljchdj - khqljrglcb) ,2)
+      <if test="sgtzx != null" >
+        ,sgtzx = #{sgtzx}
+      </if>
+      <if test="bhdjhrglcbys != null" >
+        ,bhdjhrglcbys = #{bhdjhrglcbys}
+      </if>
+
+       <if test="bhdjhrglcbys != null" >
+          ,byjd = ROUND((zzc - #{sgtzx} - hlwzc - khqljchdj - khqljrglcb)/#{bhdjhrglcbys},2)
+        </if>
+  
+    </set>
+    where month = #{endMonth}
+  </update>
+   <update id="updateFyjdAndDf">
+       call  FEE_PROGRESS_BALANCE(#{endMonth})
+    </update>
+  <select id="selectFeeProgressBalance" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from FEE_PROGRESS_BALANCE
+    where month = #{month}
+  </select>
+  
+  
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.FeeProgressBalance" >
+    update FEE_PROGRESS_BALANCE
+    set zzc = #{zzc,jdbcType=VARCHAR},
+      sgtzx = #{sgtzx,jdbcType=VARCHAR},
+      hlwzc = #{hlwzc,jdbcType=VARCHAR},
+      khqljchdj = #{khqljchdj,jdbcType=VARCHAR},
+      khqljrglcb = #{khqljrglcb,jdbcType=VARCHAR},
+      bykhfy = #{bykhfy,jdbcType=VARCHAR},
+      bhdjhrglcbys = #{bhdjhrglcbys,jdbcType=VARCHAR},
+      byjd = #{byjd,jdbcType=VARCHAR},
+      ljkhfy = #{ljkhfy,jdbcType=VARCHAR},
+      yjdlj = #{yjdlj,jdbcType=VARCHAR},
+      ejdlj = #{ejdlj,jdbcType=VARCHAR},
+      sjdlj = #{sjdlj,jdbcType=VARCHAR},
+      lj1210 = #{lj1210,jdbcType=VARCHAR},
+      lj1211 = #{lj1211,jdbcType=VARCHAR},
+      yjddf = #{yjddf,jdbcType=VARCHAR},
+      ejddf = #{ejddf,jdbcType=VARCHAR},
+      sjddf = #{sjddf,jdbcType=VARCHAR},
+      df1210 = #{df1210,jdbcType=VARCHAR},
+      df1211 = #{df1211,jdbcType=VARCHAR},
+      mbjd = #{mbjd,jdbcType=VARCHAR},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

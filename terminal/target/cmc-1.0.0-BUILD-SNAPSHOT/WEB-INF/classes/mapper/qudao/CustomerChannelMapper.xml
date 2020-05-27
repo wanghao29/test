@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.asiainfo.cmc.qudao.mapper.CustomerChannelMapper">
+   <!-- //*************** -->
+    <select id="listAllCustomer" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="com.asiainfo.cmc.qudao.vo.StoreBattleVo">
+        SELECT orgacode cusOrgacode,orgacode id,MAX(custname) custname,MAX(custname) text  FROM zd_result_cust_portrait_new_m 
+        WHERE <if test="tag1!=null and tag1!=''">areaname=#{tag1} and</if>  (over_cell <![CDATA[>]]> 0 OR si_val <![CDATA[>]]> 0)
+        <if test="month!=null and month!=''">and month = #{month}</if>
+        <if test="startMonth!=null and startMonth!=''">and month <![CDATA[>=]]> #{startMonth} and month <![CDATA[<=]]> #{endMonth}</if>
+        GROUP BY orgacode ORDER BY SUM(over_cell) DESC
+    </select>
+    
+    <!-- 查询出所有的厅店 -->
+    <select id="listAllHall" parameterType="ZdHallTshop" resultType="string">
+      
+ SELECT  hallname text FROM zd_result_hall_portrait_new_m WHERE <if test="areaname!=null and areaname!=''"> areaname=#{areaname} AND</if> 
+(all_so_val >0 AND nbrstock >0) and  <if test="startMonth!=null and startMonth!=''"> month <![CDATA[>=]]> #{startMonth} and month <![CDATA[<=]]> #{endMonth}</if>
+GROUP BY hallname 
+     
+
+    </select>
+    
+    
+    
+    
+    <select id="listHallByCustomer" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="com.asiainfo.cmc.qudao.vo.StoreBattleVo">
+		
+		
+		SELECT
+	b.orgacode id,MAX(b.hallname) text, b.orgacode orgacode,MAX(b.hallname) hallname,b.longitudeminus longitude,b.latitudeminus latitude,a.custname custname ,a.month month 
+FROM
+	zd_result_cust_hall_inf_m a LEFT JOIN zd_result_hall_portrait_new_m b
+on a.hallcode = b.orgacode and a.hallarea = b.areaname and a.`month`=b.`month`  
+where
+a.MONTH = #{month} 
+and a.custcode = #{cusOrgacode} <if test="orgacode!=null and orgacode!=''">AND orgacode = #{orgacode}</if>
+GROUP BY b.orgacode 
+		
+ </select> 
+    <select id="vagueQuery" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="com.asiainfo.cmc.qudao.vo.StoreBattleVo">
+		SELECT areaname tag1,month,orgacode cusOrgacode,custname custname FROM zd_result_cust_portrait_new_m 
+		WHERE  <if test="tag1!=null and tag1!=''"> areaname=#{tag1} and</if> month <![CDATA[>=]]> #{startMonth} and month <![CDATA[<=]]> #{endMonth}
+		<if test="cusOrgacode!=null and cusOrgacode!=''">AND orgacode LIKE CONCAT('%',#{cusOrgacode},'%')</if>
+		<if test="custname!=null and custname!=''">AND custname LIKE CONCAT('%',#{custname},'%')</if>	
+		group by orgacode
+    </select>     
+
+    <!-- 渠道客户画像 -->  
+    <select id="getCustomerFieldByMon" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select ${field} from zd_result_cust_portrait_new_m where orgacode=#{cusOrgacode} <if test="tag1!=null and tag1!=''">and areaname=#{tag1}</if>
+	    <choose>
+		    <when test="month!=null">
+		    	AND month=#{month} 	    
+		    </when>
+		    <otherwise>
+		        AND month in
+		        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach> 	                
+		    </otherwise>
+		</choose>                 
+        group by orgacode
+    </select>
+    <!--/////////////*******************  -->
+    <select id="getCustomerFieldByMons" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select * from zd_result_cust_portrait_new_m where  orgacode=#{cusOrgacode}  <if test="tag1!=null and tag1!=''">and areaname=#{tag1}</if>
+        and month in
+        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>  
+	    order by month      
+    </select>     
+    
+    
+    <!-- 以下是门店作战信息 -->
+    <select id="listOtherHalls" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="com.asiainfo.cmc.qudao.vo.StoreBattleVo">
+        select o.other_orgacode orgacode ,o.other_hallname hallname,o.other_longitudeminus longitude,o.other_latitudeminus latitude
+		      from  ZD_RESULT_HALL_OTHER_1K_M o where  o.ORGACODE=#{orgacode}  
+    </select>
+    <!-- 门店作战地图、门店画像 -->   
+    <select id="getHallHallStoreBattleByMon" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo"  resultType="map">
+        select ${field} from zd_result_hall_portrait_new_m where  orgacode=#{orgacode}
+	    <choose>
+		    <when test="month != null">
+		    	AND month=#{month} 	    
+		    </when>
+		    <otherwise>
+		        AND month in
+		        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach> 	                
+		    </otherwise>
+		</choose>               
+        <!--  <if test="@Ognl@isNotEmpty(cusOrgacode)">
+           and custcode=#{cusOrgacode}  
+        </if> -->
+    </select>
+    <select id="getHallHallStoreBattleByMons" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo"  resultType="map">
+        select * from zd_result_hall_portrait_new_m where  orgacode=#{orgacode} and  month in
+	        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+	               #{item}       
+	        </foreach>  
+	        <!-- <if test="@Ognl@isNotEmpty(cusOrgacode)">
+	           and custcode=#{cusOrgacode}  
+	        </if> -->
+	    order by month      
+    </select>  
+    
+    <!-- 门店作战地图、厂商画像 -->  
+    <select id="getCustHallStoreBattleFieldByMon" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select * from zd_result_cust_portrait_new_m where orgacode=#{cusOrgacode}  
+        <if test="tag1!=null and tag1!=''">and areaname=#{tag1}</if>
+        and month=#{month}  
+    </select>
+    <select id="getCustHallStoreBattleFieldByMons" parameterType="com.asiainfo.cmc.qudao.vo.StoreBattleVo" resultType="map">
+        select * from zd_result_cust_portrait_new_m where  orgacode=#{cusOrgacode}  
+        <if test="tag1!=null and tag1!=''">and areaname=#{tag1}</if> 
+        and month in
+        <foreach collection="months" index="index" item="item" open="(" separator="," close=")">
+               #{item}       
+        </foreach>  
+	    order by month      
+    </select>     
+</mapper>

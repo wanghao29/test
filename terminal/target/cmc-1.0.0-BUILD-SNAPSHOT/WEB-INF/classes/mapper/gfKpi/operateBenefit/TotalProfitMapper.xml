@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.gfKpi.operateBenefit.TotalProfitMapper" >
+ 
+	 <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.gfKpi.operateBenefit.TotalProfit" >
+	    <constructor >
+	      <arg column="MONTH" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="zzc" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="hlwzc" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="khzc" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="cwbbyysr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="hlwsr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="sjdbsr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="hlwsjdbsr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="khsr" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="ywcb" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="hlwcb" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="sjdbcb" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="hlwsjdbcb" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="yyml" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="hlwml" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="sjdbml" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="zhml" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="lrze" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="qnwclrze" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="jcmbz" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="qnwcd" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="sjwcd" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="df" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="gfAssessmentProfit" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="gfAssessmentProfit_nd" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	    </constructor>
+	 </resultMap>
+	 
+ 
+	 <sql id="Base_Column_List" >
+	   MONTH  billcyc , zzc zzc, hlwzc hlwzc,khzc khzc, cwbbyysr cwbbyysr,hlwsr hlwsr ,sjdbsr sjdbsr,
+	   hlwsjdbsr hlwsjdbsr,khsr khsr,ywcb ywcb,hlwcb hlwcb,sjdbcb sjdbcb,hlwsjdbcb hlwsjdbcb,yyml yyml,
+	   sjdbml sjdbml,zhml zhml,lrze lrze,qnwclrze qnwclrze,jcmbz jcmbz,qnwcd qnwcd,sjwcd sjwcd,df df ,gfAssessmentProfit gfAssessmentProfit,gfAssessmentProfit_nd gfAssessmentProfitNd
+	 </sql>
+	 <select id="queryData" resultType="com.asiainfo.cmc.enties.gfKpi.operateBenefit.TotalProfit"  parameterType="Map" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from KPI_GROSS_PROFIT   where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]>
+	   
+	</select>
+	<update id="calculatedScore">
+      call total_profit(${startMonth},#{endMonth})
+   </update>
+</mapper>

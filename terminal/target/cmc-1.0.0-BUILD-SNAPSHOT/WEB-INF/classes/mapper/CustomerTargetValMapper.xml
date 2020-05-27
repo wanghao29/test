@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.CustomerTargetValMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.CustomerTargetVal" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+    <!--<arg column="khmc" jdbcType="VARCHAR" javaType="java.lang.String" />
+      	<arg column="scmbm" jdbcType="VARCHAR" javaType="java.lang.String" />
+      	<arg column="khthcs" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      	<arg column="khthje" jdbcType="VARCHAR" javaType="java.lang.String" />
+     	<arg column="hykhmc" jdbcType="VARCHAR" javaType="java.lang.String" />
+      	<arg column="hykhscmbm" jdbcType="VARCHAR" javaType="java.lang.String" />
+      	<arg column="hykhmyxl" jdbcType="REAL" javaType="java.lang.String" />
+     	<arg column="hykhmyxse" jdbcType="REAL" javaType="java.lang.String" />
+     -->
+      <arg column="hyyhsl" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="mbz" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="wqqkzb" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="df" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="sjjd" jdbcType="REAL" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, hyyhsl, 
+    mbz, wqqkzb, df, sjjd, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from CUSTOMER_TARGET_VALUE
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CUSTOMER_TARGET_VALUE
+    <include refid="dynamicWhere"/>
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="selectCustomerTargetValue" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CUSTOMER_TARGET_VALUE
+    where month = #{month}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from CUSTOMER_TARGET_VALUE
+    <include refid="dynamicWhere"/>
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CUSTOMER_TARGET_VALUE
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CUSTOMER_TARGET_VALUE 
+    where <![CDATA[ month <= #{endMonth}]]>  
+    order by month desc LIMIT 0,1
+  </select>
+
+  <select id="getKeyData" resultType="Map">
+    select
+    sum(hyyhsl) hyyhsls,sum(wqqkzb) wqqkzbs,sum(df) dfs,sum(sjjd) sjjds
+    from CUSTOMER_TARGET_VALUE
+  </select>
+
+  <select id="getLastMonthWcqkzb" resultType="String">
+    select ifnull(wqqkzb,0) from CUSTOMER_TARGET_VALUE where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="String">
+    select ifnull(wqqkzb,0) from CUSTOMER_TARGET_VALUE where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from CUSTOMER_TARGET_VALUE
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.CustomerTargetVal" >
+    insert into CUSTOMER_TARGET_VALUE (id, khmc, scmbm, 
+      khthcs, khthje, hykhmc, 
+      hykhscmbm, hykhmyxl, hykhmyxse, 
+      hyyhsl, mbz, wqqkzb, df, 
+      sjjd)
+    values (#{id,jdbcType=INTEGER}, #{khmc,jdbcType=VARCHAR}, #{scmbm,jdbcType=VARCHAR}, 
+      #{khthcs,jdbcType=INTEGER}, #{khthje,jdbcType=VARCHAR}, #{hykhmc,jdbcType=VARCHAR}, 
+      #{hykhscmbm,jdbcType=VARCHAR}, #{hykhmyxl,jdbcType=REAL}, #{hykhmyxse,jdbcType=REAL}, 
+      #{hyyhsl,jdbcType=INTEGER}, #{mbz,jdbcType=REAL}, #{wqqkzb,jdbcType=REAL}, #{df,jdbcType=REAL}, 
+      #{sjjd,jdbcType=REAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.CustomerTargetVal" >
+    insert into CUSTOMER_TARGET_VALUE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="khmc != null" >
+        khmc,
+      </if>
+      <if test="scmbm != null" >
+        scmbm,
+      </if>
+      <if test="khthcs != null" >
+        khthcs,
+      </if>
+      <if test="khthje != null" >
+        khthje,
+      </if>
+      <if test="hykhmc != null" >
+        hykhmc,
+      </if>
+      <if test="hykhscmbm != null" >
+        hykhscmbm,
+      </if>
+      <if test="hykhmyxl != null" >
+        hykhmyxl,
+      </if>
+      <if test="hykhmyxse != null" >
+        hykhmyxse,
+      </if>
+      <if test="hyyhsl != null" >
+        hyyhsl,
+      </if>
+      <if test="mbz != null" >
+        mbz,
+      </if>
+      <if test="wqqkzb != null" >
+        wqqkzb,
+      </if>
+      <if test="df != null" >
+        df,
+      </if>
+      <if test="sjjd != null" >
+        sjjd,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="khmc != null" >
+        #{khmc,jdbcType=VARCHAR},
+      </if>
+      <if test="scmbm != null" >
+        #{scmbm,jdbcType=VARCHAR},
+      </if>
+      <if test="khthcs != null" >
+        #{khthcs,jdbcType=INTEGER},
+      </if>
+      <if test="khthje != null" >
+        #{khthje,jdbcType=VARCHAR},
+      </if>
+      <if test="hykhmc != null" >
+        #{hykhmc,jdbcType=VARCHAR},
+      </if>
+      <if test="hykhscmbm != null" >
+        #{hykhscmbm,jdbcType=VARCHAR},
+      </if>
+      <if test="hykhmyxl != null" >
+        #{hykhmyxl,jdbcType=REAL},
+      </if>
+      <if test="hykhmyxse != null" >
+        #{hykhmyxse,jdbcType=REAL},
+      </if>
+      <if test="hyyhsl != null" >
+        #{hyyhsl,jdbcType=INTEGER},
+      </if>
+      <if test="mbz != null" >
+        #{mbz,jdbcType=REAL},
+      </if>
+      <if test="wqqkzb != null" >
+        #{wqqkzb,jdbcType=REAL},
+      </if>
+      <if test="df != null" >
+        #{df,jdbcType=REAL},
+      </if>
+      <if test="sjjd != null" >
+        #{sjjd,jdbcType=REAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.CustomerTargetVal" >
+    update CUSTOMER_TARGET_VALUE
+    <set >
+      <if test="khmc != null" >
+        khmc = #{khmc,jdbcType=VARCHAR},
+      </if>
+      <if test="scmbm != null" >
+        scmbm = #{scmbm,jdbcType=VARCHAR},
+      </if>
+      <if test="khthcs != null" >
+        khthcs = #{khthcs,jdbcType=INTEGER},
+      </if>
+      <if test="khthje != null" >
+        khthje = #{khthje,jdbcType=VARCHAR},
+      </if>
+      <if test="hykhmc != null" >
+        hykhmc = #{hykhmc,jdbcType=VARCHAR},
+      </if>
+      <if test="hykhscmbm != null" >
+        hykhscmbm = #{hykhscmbm,jdbcType=VARCHAR},
+      </if>
+      <if test="hykhmyxl != null" >
+        hykhmyxl = #{hykhmyxl,jdbcType=REAL},
+      </if>
+      <if test="hykhmyxse != null" >
+        hykhmyxse = #{hykhmyxse,jdbcType=REAL},
+      </if>
+      <if test="hyyhsl != null" >
+        hyyhsl = #{hyyhsl,jdbcType=INTEGER},
+      </if>
+      <if test="mbz != null" >
+        mbz = #{mbz,jdbcType=REAL},
+      </if>
+      <if test="wqqkzb != null" >
+        wqqkzb = #{wqqkzb,jdbcType=REAL},
+      </if>
+      <if test="df != null" >
+        df = #{df,jdbcType=REAL},
+      </if>
+      <if test="sjjd != null" >
+        sjjd = #{sjjd,jdbcType=REAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.CustomerTargetVal" >
+    update CUSTOMER_TARGET_VALUE
+    set khmc = #{khmc,jdbcType=VARCHAR},
+      scmbm = #{scmbm,jdbcType=VARCHAR},
+      khthcs = #{khthcs,jdbcType=INTEGER},
+      khthje = #{khthje,jdbcType=VARCHAR},
+      hykhmc = #{hykhmc,jdbcType=VARCHAR},
+      hykhscmbm = #{hykhscmbm,jdbcType=VARCHAR},
+      hykhmyxl = #{hykhmyxl,jdbcType=REAL},
+      hykhmyxse = #{hykhmyxse,jdbcType=REAL},
+      hyyhsl = #{hyyhsl,jdbcType=INTEGER},
+      mbz = #{mbz,jdbcType=REAL},
+      wqqkzb = #{wqqkzb,jdbcType=REAL},
+      df = #{df,jdbcType=REAL},
+      sjjd = #{sjjd,jdbcType=REAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByTargetVal">
+ <!--  update CUSTOMER_TARGET_VALUE
+    set
+        mbz=${mbz},
+    wqqkzb = hyyhsl/${mbz},
+    sjjd = hyyhsl/${mbz} - datediff(CONCAT(billcyc,'01'),  CONCAT(YEAR(str_to_date(billcyc, '%Y%m')),'0101'))/365,
+    df = (
+    case
+    WHEN (hyyhsl/${mbz}) &gt;= 1 then 4
+    WHEN (hyyhsl/${mbz}) &lt;= 0.8 then 0
+    ELSE 20*(hyyhsl/${mbz})-16
+    END
+    )
+    <include refid="dynamicWhere"/>  -->
+    call CUSTOMER_TARGET_VALUE(${mbz},#{endMonth})
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

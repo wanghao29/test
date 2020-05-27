@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.weekReport.DistributionMapper" >
+<!--根据时间查询出分销表中合约机的量  -->
+<select id="selectMonthDistribution" resultType="Distribution">
+ SELECT  SUM(zdamount) zdamount,SUM(ydamount) ydamount FROM  zd_result_week_report_share_m 
+ WHERE SUBSTR(`month`,1,07)   BETWEEN #{DODATE} AND #{DODATE1}   
+</select>
+
+<!--查询出零售表SALETPYE为合约机，ISZD为1的sum（AMOUT）  -->
+
+<select id="selectMonthRetail" resultType="Distribution">
+SELECT `month`, zdamount,ydamount,ROUND(`share`,4) SHARE FROM  zd_result_week_report_share_m 
+ WHERE SUBSTR(`month`,1,07)   BETWEEN #{DODATE} AND #{DODATE1} GROUP BY `month`
+</select>
+<!--查询出零售表SALETPYE为合约机，ISZD为1的sum（AMOUT）按年来查  -->
+
+<select id="selectMonthRetail1" resultType="Distribution">
+SELECT SUBSTR(`month`,1,04) MONTH, SUM(zdamount) zdamount,SUM(ydamount) ydamount,ROUND(`share`,4) SHARE FROM  zd_result_week_report_share_m 
+ WHERE SUBSTR(`month`,1,07)   BETWEEN #{DODATE} AND #{DODATE1}
+</select>
+
+
+
+
+
+
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asiainfo.cmc.mapper.ZdKpiImptProdtMapper">
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.ZdKpiImptProdt">
+    	<id property="id" column="id" jdbcType="NUMERIC"/>
+		<result property="year" column="year" jdbcType="VARCHAR"/>
+		<result property="quarter" column="quarter" jdbcType="VARCHAR"/>
+		<result property="brand" column="brand" jdbcType="VARCHAR"/>
+		<result property="model" column="model" jdbcType="VARCHAR"/>
+		<result property="goalVal" column="goalVal" jdbcType="NUMERIC"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, year, quarter, brand, model, goalVal
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ZD_KPI_IMPT_PRODT
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from ZD_KPI_IMPT_PRODT
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.ZdKpiImptProdt">
+    insert into ZD_KPI_IMPT_PRODT (year, quarter, 
+      brand, model, goalVal)
+    values (#{year,jdbcType=VARCHAR}, #{quarter,jdbcType=VARCHAR}, 
+      #{brand,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{goalVal,jdbcType=NUMERIC})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.ZdKpiImptProdt">
+    update ZD_KPI_IMPT_PRODT
+    <set>
+      <if test="year != null">
+        year = #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="quarter != null">
+        quarter = #{quarter,jdbcType=VARCHAR},
+      </if>
+      <if test="brand != null">
+        brand = #{brand,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        model = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="goalVal != null">
+        goalVal = #{goalVal,jdbcType=NUMERIC},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findAllByParam" resultMap="BaseResultMap">
+		SELECT <include refid="Base_Column_List" />
+		FROM ZD_KPI_IMPT_PRODT WHERE 1=1
+		<if test="@Ognl@isNotEmpty(year)"> AND year = #{year}  </if>
+		<if test="@Ognl@isNotEmpty(quarter)"> AND quarter = #{quarter}  </if>
+	</select>
+</mapper>

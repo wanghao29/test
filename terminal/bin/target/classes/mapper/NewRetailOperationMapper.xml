@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.NewRetailOperationMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.NewRetailOperation" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="xlsmdhj" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="xlsmdyydf" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, xlsmdhj, xlsmdyydf, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from NEW_RETAIL_OPERATION
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from NEW_RETAIL_OPERATION
+    <include refid="dynamicWhere" />
+    order by month  desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="selectNewRetail" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from NEW_RETAIL_OPERATION
+    where month = #{month}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from NEW_RETAIL_OPERATION
+    <include refid="dynamicWhere" />
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from NEW_RETAIL_OPERATION
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from NEW_RETAIL_OPERATION
+    where <![CDATA[ month <= #{endMonth}]]>
+    order by month desc LIMIT 0,1
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from NEW_RETAIL_OPERATION
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="Map" >
+    insert into NEW_RETAIL_OPERATION (  xlsmdhj, 
+      month)
+    values (  #{params.xlsmdhj} , 
+      #{params.month })
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.NewRetailOperation" >
+    insert into NEW_RETAIL_OPERATION
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="xlsmdhj != null" >
+        xlsmdhj,
+      </if>
+      <if test="xlsmdyydf != null" >
+        xlsmdyydf,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="xlsmdhj != null" >
+        #{xlsmdhj,jdbcType=VARCHAR},
+      </if>
+      <if test="xlsmdyydf != null" >
+        #{xlsmdyydf,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.NewRetailOperation" >
+    update NEW_RETAIL_OPERATION
+    <set >
+      <if test="xlsmdhj != null" >
+        xlsmdhj = #{xlsmdhj,jdbcType=VARCHAR},
+      </if>
+      <if test="xlsmdyydf != null" >
+        xlsmdyydf =   (
+        case
+        when #{xlsmdhj,jdbcType=VARCHAR} &lt;= 4 then #{xlsmdhj,jdbcType=VARCHAR} * 0.5
+        else 2
+        end
+        )  ,
+      </if>
+       
+    </set>
+    where month = #{month,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.NewRetailOperation" >
+    update NEW_RETAIL_OPERATION
+    set xlsmdhj = #{xlsmdhj,jdbcType=VARCHAR},
+      xlsmdyydf = #{xlsmdyydf,jdbcType=VARCHAR},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByMonth" parameterType="Map" >
+    update NEW_RETAIL_OPERATION
+    set xlsmdhj = #{params.xlsmdhj }
+     
+      
+    where  month = #{params.month }
+  </update>
+  <update id="updateByTargetVal">
+    update NEW_RETAIL_OPERATION
+    set
+        xlsmdhj = #{xlsmdhj,jdbcType=VARCHAR},
+        xlsmdyydf = (
+        case
+        when xlsmdhj &lt;= 4 then xlsmdhj * 0.5
+        else 2
+        end
+        )
+    <include refid="dynamicWhere"/>
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

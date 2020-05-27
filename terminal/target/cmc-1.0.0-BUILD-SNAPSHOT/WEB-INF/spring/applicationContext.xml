@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:aop="http://www.springframework.org/schema/aop" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.3.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+    
+    
+    
+	     <!--1 引入属性文件，在配置中占位使用 
+	    <context:property-placeholder location="classpath*:db.properties" /> 
+	    -->
+	    
+	       
+<!-- 	    4 自动扫描对象关系映射
+	    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	        指定会话工厂，如果当前上下文中只定义了一个则该属性可省去
+	        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	        指定要自动扫描接口的基础包，实现接口
+	        <property name="basePackage" value="com.asiainfo.cmc.common.BaseMapper"></property>
+	    </bean> -->
+	
+	
+	    <!-- 连接池-->
+       <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"   destroy-method="close">
+              <property name="driverClassName" value="${jdbc.driverClass}"/>
+              <property name="url" value="${jdbc.url}?useUnicode=true&amp;characterEncoding=UTF8"/>
+              <property name="username" value="${jdbc.user}"/>
+              <property name="password" value="${jdbc.password}"/>
+
+              <property name="initialSize" value="10" />
+              <property name="maxActive" value="20" />
+              <!-- <property name="maxIdle" value="20" /> 使用task 忽略这个-->
+              <property name="minIdle" value="0" />
+              <property name="maxWait" value="60000" />
+
+              <property name="validationQuery" value="${validationQuery}" />
+              <property name="testWhileIdle" value="true"/>
+              <property name="testOnBorrow" value="false"/>
+              <property name="testOnReturn" value="false"/>
+              <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+              <property name="timeBetweenEvictionRunsMillis" value="60000" />
+              <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+              <property name="minEvictableIdleTimeMillis" value="3600000" />
+              <!--超过时间限制，回收没有用(废弃)的连接（默认为 300秒，调整为180）-->
+              <property name="removeAbandoned" value="true" />
+              <property name="removeAbandonedTimeout" value="380" />
+              <!--回收后是否打印日志-->
+              <property name="logAbandoned" value="false" />
+              <!-- 配置监控统计拦截的filters -->
+       <!--        <property name="filters" value="stat"/>
+              不建议开启，开启后性能没有关闭后好-->
+              <property name="poolPreparedStatements" value="false"/>
+              <!--    <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/> -->
+       </bean>
+		    <!-- 连接池-->
+       <bean id="dataSource2" class="org.apache.commons.dbcp.BasicDataSource"  destroy-method="close">
+              <property name="driverClassName" value="${jdbc2.driverClass}"/>
+              <property name="url" value="${jdbc2.url}?useUnicode=true&amp;characterEncoding=UTF8"/>
+              <property name="username" value="${jdbc2.user}"/>
+              <property name="password" value="${jdbc2.password}"/>
+
+              <property name="initialSize" value="10" />
+              <property name="maxActive" value="20" />
+              <!-- <property name="maxIdle" value="20" /> 使用task 忽略这个-->
+              <property name="minIdle" value="0" />
+              <property name="maxWait" value="60000" />
+
+              <property name="validationQuery" value="${validationQuery}" />
+              <property name="testWhileIdle" value="true"/>
+              <property name="testOnBorrow" value="false"/>
+              <property name="testOnReturn" value="false"/>
+              <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+              <property name="timeBetweenEvictionRunsMillis" value="60000" />
+              <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+              <property name="minEvictableIdleTimeMillis" value="3600000" />
+              <!--超过时间限制，回收没有用(废弃)的连接（默认为 300秒，调整为180）-->
+              <property name="removeAbandoned" value="true" />
+              <property name="removeAbandonedTimeout" value="380" />
+              <!--回收后是否打印日志-->
+              <property name="logAbandoned" value="false" />
+              <!-- 配置监控统计拦截的filters -->
+           <!--    <property name="filters" value="stat"/> -->
+              <!-- 不建议开启，开启后性能没有关闭后好-->
+              <property name="poolPreparedStatements" value="false"/>
+<!--               <property name="maxPoolPreparedStatementPerConnectionSize" value="20"/> -->
+       </bean>
+	
+	
+	<bean id ="dynamicDataSource" class= "com.asiainfo.cmc.config.DynamicDataSource">
+			<!-- 默认使用dataSource1的数据源 -->
+			<property name ="defaultTargetDataSource" ref="dataSource"></property>
+			<property name ="targetDataSources">
+				<map key-type ="java.lang.String">
+					<entry key= "dataSource" value-ref="dataSource"></entry>
+					<entry key= "dataSource2" value-ref="dataSource2"></entry>
+				</map>
+			</property>
+ 	</bean>
+
+ 
+	
+	
+	
+	
+	 <!--3 会话工厂bean sqlSessionFactoryBean -->
+	    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	        <!-- 配置文件路径 -->
+	        <property name="configLocation" value="classpath:mybatis-config.xml"></property>
+	        <!-- 数据源 -->
+	        <property name="dataSource" ref="dynamicDataSource"></property>
+	        <!-- sql映射文件路径 -->
+	        <property name="mapperLocations">
+	            <list>
+	                <value>classpath*:mapper/**/*Mapper.xml</value>
+	                <value>classpath*:mapper/qudao/**/*Mapper.xml</value>
+	              
+	            </list>	        
+	        </property>
+	        	<!-- 配置pojo别名 -->
+		    <property name="typeAliasesPackage" value="com.asiainfo.cmc.authority.pojo" />
+	    </bean>
+
+	 <!--4 自动扫描对象关系映射 -->
+	    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	        <!--指定会话工厂，如果当前上下文中只定义了一个则该属性可省去 -->
+	        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	        <!-- 指定要自动扫描接口的基础包，实现接口 -->
+	        <property name="basePackage" value="com.asiainfo.cmc.mapper,com.asiainfo.cmc.qudao.mapper,com.asiainfo.cmc.authority.mapper,com.asiainfo.cmc.aopLog.mapper"></property>
+	    </bean>
+ 
+        <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate"> 
+           <constructor-arg index="0" ref="sqlSessionFactory" /> 
+        </bean>
+
+
+
+
+
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8"/>
+		<!-- 指定所上传文件的总大小不能超过200KB。注意maxUploadSize属性的限制不是针对单个文件，而是所有文件的容量之和 -->
+		<property name="maxUploadSize" value="2000000"/>
+	</bean>
+	
+
+	
+	
+	    <!--5 声明式事务管理 -->
+	    <!--定义事物管理器，由spring管理事务 -->
+	   <bean id="transactionManager"
+	        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	        <property name="dataSource" ref="dynamicDataSource"></property>
+	    </bean>  
+	    <!--支持注解驱动的事务管理，指定事务管理器 -->
+	    <tx:annotation-driven transaction-manager="transactionManager" />
+	
+	    <!--6 容器自动扫描IOC组件 -->
+	    <context:component-scan base-package="com.asiainfo.cmc"></context:component-scan>
+	    <!--7 aspectj支持自动代理实现AOP功能 -->
+	    <aop:aspectj-autoproxy proxy-target-class="true"></aop:aspectj-autoproxy>
+	    
+	    <!-- 配置数据库注解aop -->
+		<bean id="dataSourceAspect" class="com.asiainfo.cmc.config.DynamicDataSourceAspect" />
+ 
+ 
+		<aop:config>
+			<!--
+				切割点：pointcut
+					第一个*:任意返回值
+					第二个*:类名(任意类)
+					第三个*:方法名(任意方法)
+					(..):0-n参数,类型任意
+			 -->
+			<aop:pointcut id="pointCut" expression="execution(* com.asiainfo.cmc.service.*.*(..))" />
+			<!--切割注入事物 ,植入事务：advisor-->
+		<!-- 	<aop:advisor advice-ref="txAdvice" pointcut-ref="pointCut"/> -->
+			<!-- 动态数据源切割
+			<aop:aspect id="dynamicAspect" ref="dataSourceAspect">
+				<aop:after pointcut-ref="pointCut" method="afterSwitchDS"/>
+				<aop:before pointcut-ref="pointCut" method="beforeSwitchDS"/>
+			</aop:aspect>
+			-->
+		</aop:config>
+
+ 
+ 
+ 
+	    	<!--  配置你要定时加载的目标类	-->
+	<!-- <bean id="autoSmsJob" class="com.asiainfo.cmc.crawler.JdongMain" />
+	<bean id="autoSmsB2cJobDetail"	class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="autoSmsJob" />
+		<property name="targetMethod" value="startRun" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="autoSmsB2cJobDetailCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="autoSmsB2cJobDetail" />
+		</property>
+		<property name="cronExpression">
+			<value>0 0 1 * * ?</value>
+		</property>
+	</bean>
+	<bean id="ssschedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" lazy-init="false">
+		<property name="triggers">
+			<list>
+			  	<ref bean="autoSmsB2cJobDetailCronTrigger" />
+			</list>
+		</property>
+	</bean> -->
+	    
+<!--        mybatis文件配置，扫描所有mapper文件
+       <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" p:dataSource-ref="dataSource"
+             p:configLocation="classpath:mybatis-config.xml"
+             p:mapperLocations="classpath:mapper/*Mapper.xml" />
+ 
+       spring与tk-mybatis整合配置，扫描所有dao
+       <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer"
+             p:basePackage=" com.asiainfo.cmc.mapper"
+             p:markerInterface="com.asiainfo.cmc.common.BaseMapper"
+             p:sqlSessionFactoryBeanName="sqlSessionFactory"/>
+ -->
+       <!-- 对dataSource 数据源进行事务管理 -->
+<!--        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+             p:dataSource-ref="dataSource"/> -->
+	<!-- 上传完文件组件设置 -->
+	<!-- <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	
+	<property name="defaultEncoding" value="utf-8"></property>
+	<property name="maxUploadSize" value="5242880"></property>
+	
+	</bean> -->
+	    
+</beans>

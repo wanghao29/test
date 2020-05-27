@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.gfKpi.operateEfficiency.ThreeStockValueProportionMapper" >
+ 
+	 <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.gfKpi.operateEfficiency.ThreeStockValueProportion" >
+	    <constructor >
+	      <arg column="MONTH" jdbcType="VARCHAR" javaType="java.lang.String" />
+	      <arg column="kctcq" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="kcczk" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      
+	      <arg column="kcmkhj" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="kctch" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje90tcq" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje90czk" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje90mkhj" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje90tch" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje180tcq" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje180czk" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje180mkhj" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje180tch" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="je180zb" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="je180df" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje300tcq" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje300czk" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje300tch" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="je300zb" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="je300df" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje360tcq" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje360czk" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="tje360mkhj" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="je360zb" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="je360df" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="df" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	      <arg column="nddf" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+	    </constructor>
+	 </resultMap>
+	 
+ 
+	 <sql id="Base_Column_List" >
+	   MONTH  billcyc , kctcq kctcq,kcczk kcczk, kcmkhj kcmkhj,kctch kctch, tje90tcq tje90tcq,tje90czk tje90czk ,tje90mkhj tje90mkhj,
+	   tje90tch tje90tch,tje180tcq tje180tcq,tje180czk tje180czk,tje180mkhj tje180mkhj,tje180tch tje180tch,je180zb je180zb,
+	   je180zb je180zb,je180df je180df,tje300tcq tje300tcq,tje300czk tje300czk,tje300tch tje300tch,je300zb je300zb,je300df je300df,
+	   tje360tcq tje360tcq,tje360czk tje360czk,tje360mkhj tje360mkhj,je360zb je360zb,je360df je360df,df df,nddf nddf
+	   
+	 </sql>
+	 <select id="queryData" resultType="com.asiainfo.cmc.enties.gfKpi.operateEfficiency.ThreeStockValueProportion"  parameterType="Map" >
+	   select 
+	   <include refid="Base_Column_List" />
+	   from KPI_THREE_MONTH_STOCK_RATIO   where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]>
+	   
+	</select>
+	<update id="calculatedScore">
+      call three_stock_value_proportion(${startMonth},#{endMonth})
+   </update>
+   
+   <select id="overview" resultType="ThreeStockValueProportion">
+	select ROUND(IFNULL(AVG(je180zb),0)*100,2) je180zb , ROUND(IFNULL(AVG(je300zb),0)*100,2) je300zb , ROUND(IFNULL(AVG(je360zb),0)*100,2) je360zb   from KPI_THREE_MONTH_STOCK_RATIO  where <![CDATA[ month >= #{startMonth} and month <=  #{stopMonth}]]>	
+  </select>
+   <select id="getList" resultType="ThreeStockValueProportion">
+   		select 
+	   <include refid="Base_Column_List" />
+	   from KPI_THREE_MONTH_STOCK_RATIO   where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]>
+   </select>
+   <select id="getTotal" resultType="java.lang.Integer">
+    select count(1) from KPI_THREE_MONTH_STOCK_RATIO   where <![CDATA[MONTH >= #{startMonth}   and  MONTH <= #{endMonth}  ]]>
+   </select>
+</mapper>

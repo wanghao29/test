@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.CustomerSaleTargetValMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.CustomerSaleTargetVal" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="kakhxlmbz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kakhdm" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kakhdmdesc" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kakhxs" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="kakhxslj" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="mbz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="wcqkzb" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="df" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sjjd" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, kakhxlmbz, kakhdm,kakhdmdesc, kakhxs, kakhxslj, mbz, wcqkzb, df, sjjd, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from CUSTOMER_SALE_TARGET_VALUE
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CUSTOMER_SALE_TARGET_VALUE
+    <include refid="dynamicWhere"/>
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+
+  <select id="queryKaCustomerCode" resultType="Map">
+    select ORGACODE id , ORGANAME text  from  ZD_CTMS_CUST where CUSTSTAGE='KA' group by ORGACODE 
+  </select>
+
+
+  <select id="selectCustomerSaleVal" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CUSTOMER_SALE_TARGET_VALUE
+    where month = #{month}
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from CUSTOMER_SALE_TARGET_VALUE
+    <include refid="dynamicWhere"/>
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CUSTOMER_SALE_TARGET_VALUE
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CUSTOMER_SALE_TARGET_VALUE 
+    where   <![CDATA[ month <= #{endMonth}]]>
+    order by month desc LIMIT 0,1
+  </select>
+
+  <select id="getKeyData" resultType="Map">
+    select
+    sum(hyyhsl) hyyhsls,sum(wcqkzb) wcqkzbs,sum(df) dfs,sum(sjjd) sjjds
+    from CUSTOMER_SALE_TARGET_VALUE
+  </select>
+
+  <select id="getLastMonthWcqkzb" resultType="java.lang.String">
+    select ifnull(wcqkzb,0) from CUSTOMER_SALE_TARGET_VALUE where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 month),'%Y%m')) order by id
+  </select>
+
+  <select id="getLastYearWcqkzb" resultType="java.lang.String">
+    select ifnull(wcqkzb,0) from CUSTOMER_SALE_TARGET_VALUE where month = (DATE_FORMAT(date_sub(#{teampMonth},interval +1 year),'%Y%m')) order by id
+  </select>
+  <select id="queryCustomerSales" resultType="java.lang.String">
+     select  IFNULL(sum(AMOUNT),0) from  ZD_CTMS_SI_D where DODATE = #{lastDay} and ORGACODE in 
+    	 <foreach collection="customerCodeArray" index="index" item="item" open="(" separator="," close=")">
+	                 #{item}       
+	    </foreach>  
+  </select>
+  <select id="queryCustomerSaleByMonth" resultMap="BaseResultMap">
+	    select
+	    <include refid="Base_Column_List" />
+	    from CUSTOMER_SALE_TARGET_VALUE 
+	    where     month = #{month} 
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from CUSTOMER_SALE_TARGET_VALUE
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.CustomerSaleTargetVal" >
+    insert into CUSTOMER_SALE_TARGET_VALUE (id, kakhxlmbz, kakhdm, 
+      kakhxs, kakhxslj, mbz, wcqkzb, 
+      df, sjjd, month)
+    values (#{id,jdbcType=INTEGER}, #{kakhxlmbz,jdbcType=VARCHAR}, #{kakhdm,jdbcType=VARCHAR}, 
+      #{kakhxs,jdbcType=VARCHAR}, #{kakhxslj,jdbcType=VARCHAR}, #{mbz,jdbcType=VARCHAR}, #{wcqkzb,jdbcType=VARCHAR}, 
+      #{df,jdbcType=VARCHAR}, #{sjjd,jdbcType=VARCHAR}, #{month,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.CustomerSaleTargetVal" >
+    insert into CUSTOMER_SALE_TARGET_VALUE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="kakhxlmbz != null" >
+        kakhxlmbz,
+      </if>
+      <if test="kakhdm != null" >
+        kakhdm,
+      </if>
+      <if test="kakhxs != null" >
+        kakhxs,
+      </if>
+      <if test="kakhxslj != null" >
+        kakhxslj,
+      </if>
+      <if test="mbz != null" >
+        mbz,
+      </if>
+      <if test="wcqkzb != null" >
+        wcqkzb,
+      </if>
+      <if test="df != null" >
+        df,
+      </if>
+      <if test="sjjd != null" >
+        sjjd,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="kakhxlmbz != null" >
+        #{kakhxlmbz,jdbcType=VARCHAR},
+      </if>
+      <if test="kakhdm != null" >
+        #{kakhdm,jdbcType=VARCHAR},
+      </if>
+      <if test="kakhxs != null" >
+        #{kakhxs,jdbcType=VARCHAR},
+      </if>
+      <if test="kakhxslj != null" >
+        #{kakhxslj,jdbcType=VARCHAR},
+      </if>
+      <if test="mbz != null" >
+        #{mbz,jdbcType=VARCHAR},
+      </if>
+      <if test="wcqkzb != null" >
+        #{wcqkzb,jdbcType=VARCHAR},
+      </if>
+      <if test="df != null" >
+        #{df,jdbcType=VARCHAR},
+      </if>
+      <if test="sjjd != null" >
+        #{sjjd,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.CustomerSaleTargetVal" >
+    update CUSTOMER_SALE_TARGET_VALUE
+    <set >
+      <if test="kakhxlmbz != null" >
+        kakhxlmbz = #{kakhxlmbz,jdbcType=VARCHAR},
+      </if>
+      <if test="kakhdm != null" >
+        kakhdm = #{kakhdm,jdbcType=VARCHAR},
+      </if>
+      <if test="kakhdmdesc != null" >
+        kakhdmdesc = #{kakhdmdesc,jdbcType=VARCHAR},
+      </if>
+      <if test="kakhxs != null" >
+        kakhxs = #{kakhxs,jdbcType=VARCHAR},
+      </if>
+      <if test="kakhxslj != null" >
+        kakhxslj = #{kakhxslj,jdbcType=VARCHAR},
+      </if>
+      <if test="mbz != null" >
+        mbz = #{mbz,jdbcType=VARCHAR},
+      </if>
+      <if test="wcqkzb != null" >
+        wcqkzb = #{wcqkzb,jdbcType=VARCHAR},
+      </if>
+      <if test="df != null" >
+        df = #{df,jdbcType=VARCHAR},
+      </if>
+      <if test="sjjd != null" >
+        sjjd = #{sjjd,jdbcType=VARCHAR},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.CustomerSaleTargetVal" >
+    update CUSTOMER_SALE_TARGET_VALUE
+    set kakhxlmbz = #{kakhxlmbz,jdbcType=VARCHAR},
+      kakhdm = #{kakhdm,jdbcType=VARCHAR},
+       kakhxs = #{kakhxs,jdbcType=VARCHAR},
+        kakhdmdesc = #{kakhdmdesc,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByTargetVal">
+   <!--  update CUSTOMER_SALE_TARGET_VALUE
+    set
+    mbz = #{mbz,jdbcType=VARCHAR},
+    wcqkzb = kakhxslj/${mbz},
+    sjjd =  kakhxslj/${mbz} - (select DAYOFMONTH(LAST_DAY(now())) + 0)/365,
+    df = (
+    case
+    WHEN (kakhxslj/${mbz}) &gt;= 1 then 4
+    WHEN (kakhxslj/${mbz}) &lt;= 0.9 then 1
+    ELSE 30*(kakhxslj/${mbz})-26
+    END
+    )
+    <include refid="dynamicWhere"/> -->
+     call CUSTOMER_SALE_TARGET_VALUE(${mbz},#{endMonth} )
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

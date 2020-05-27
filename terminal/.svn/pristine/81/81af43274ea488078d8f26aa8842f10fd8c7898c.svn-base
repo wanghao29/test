@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.ProductSalesRateMapper" >
+  <resultMap id="BaseResultMap" type="com.asiainfo.cmc.enties.ProductSalesRate" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="khxl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="zdcp" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="mbz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="wcl" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="fz" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="month" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, khxl, zdcp, mbz, wcl, fz, month
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from PRODUCT_SALES_RATE
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByParameter" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from PRODUCT_SALES_RATE
+    <include refid="dynamicWhere"/>
+    order by month desc 
+    limit ${(page-1)*pageSize},${pageSize}
+  </select>
+  <select id="selectProductSalesRate" resultMap="BaseResultMap">
+ 	select
+<!--     <include refid="Base_Column_List" /> -->
+ id id, khxl khxl, zdcp zdcp, mbz mbz, wcl wcl, cast(sum(fz)as char) fz, month month
+    from PRODUCT_SALES_RATE
+    WHERE month= #{month} LIMIT 0,1
+  </select>
+
+  <select id="getZdcpsByMonth" resultType="java.lang.String">
+ 	select 
+    MATNRGROUPINSTRU 
+    from SUM_001C_GD  
+    WHERE filetime = #{month} GROUP BY MATNRGROUPINSTRU
+  </select>
+
+  <select id="getTotalByParameter" resultType="java.lang.Integer">
+    select
+    count(*)
+    from PRODUCT_SALES_RATE
+    <include refid="dynamicWhere"/>
+  </select>
+
+  <select id="getEchartData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from PRODUCT_SALES_RATE
+    GROUP BY month having month <![CDATA[>= #{starMonth} AND month <= #{endMonth}]]>
+    order by month
+  </select>
+
+  <select id="getLastData" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from PRODUCT_SALES_RATE 
+    where <![CDATA[ month = #{endMonth}]]> order by month desc LIMIT 0,1
+  </select>
+
+  <select id="getCountByMonth" resultType="java.lang.Integer">
+  select
+   count(1)
+    from PRODUCT_SALES_RATE 
+    where  month = #{month}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from PRODUCT_SALES_RATE
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <update id="updateProductSalesRateByMonth" parameterType="com.asiainfo.cmc.enties.ProductSalesRate" >
+  	update PRODUCT_SALES_RATE
+  	<set >
+      <if test="khxl != null" >
+        khxl = #{khxl,jdbcType=REAL},
+      </if>
+      <if test="zdcp != null" >
+        zdcp = #{zdcp,jdbcType=VARCHAR},
+      </if>
+      <if test="mbz != null" >
+        mbz = #{mbz,jdbcType=REAL},
+      </if>
+      <if test="wcl != null" >
+        wcl = #{wcl,jdbcType=REAL},
+      </if>
+      <if test="fz != null" >
+        fz = #{fz,jdbcType=REAL},
+      </if>
+    </set>
+    where month = #{month,jdbcType=VARCHAR}
+  </update>
+  
+  <insert id="insert" parameterType="com.asiainfo.cmc.enties.ProductSalesRate" >
+    insert into PRODUCT_SALES_RATE (id, khxl, zdcp, 
+      mbz, wcl, fz, month
+      )
+    values (#{id,jdbcType=INTEGER}, #{khxl,jdbcType=REAL}, #{zdcp,jdbcType=VARCHAR}, 
+      #{mbz,jdbcType=REAL}, #{wcl,jdbcType=REAL}, #{fz,jdbcType=REAL}, #{month,jdbcType=VARCHAR}
+      )
+  </insert>
+  <select id="queryKhxlByBand" resultType="java.lang.String">
+			 select  <!-- left(MATNRGROUPINSTRU, locate(',', replace(MATNRGROUPINSTRU, ' ', ','))-1) zdcp, --> COALESCE(sum(DELIVERCOUNT),0) khxl
+			from SUM_001C_GD A
+			where A.filetime = #{filetime} <!-- '20181201'  -->and A.DELIVERDAY between #{strat_deliver_day}<!-- '20181101' --> and #{end_deliver_day} <!-- '20181130' -->
+			      and A.MATNRGROUP between '10000000' and '1999999' and A.ORGCODE='4410'
+			   <if test="materialId !=null " >
+	     	and MATNR in <!-- =#{mobile_type} group by CONFIG_ID limit 1,20 -->
+			<foreach collection="materialId" index="index" item="item" open="(" separator="," close=")">
+		                 #{item}       
+		    </foreach>  
+	     </if>
+			   
+<!-- 			     and left(MATNR, locate(',', replace(MATNR, ' ', ','))-1) in (#{zdcp})   -->                                              
+		<!-- 	group by left(MATNRGROUPINSTRU, locate(',', replace(MATNRGROUPINSTRU, ' ', ','))-1) -->
+  </select>
+  
+  <insert id="insertSelective" parameterType="com.asiainfo.cmc.enties.ProductSalesRate" >
+    insert into PRODUCT_SALES_RATE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="khxl != null" >
+        khxl,
+      </if>
+      <if test="zdcp != null" >
+        zdcp,
+      </if>
+      <if test="mbz != null" >
+        mbz,
+      </if>
+      <if test="wcl != null" >
+        wcl,
+      </if>
+      <if test="fz != null" >
+        fz,
+      </if>
+      <if test="month != null" >
+        month,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="khxl != null" >
+        #{khxl,jdbcType=REAL},
+      </if>
+      <if test="zdcp != null" >
+        #{zdcp,jdbcType=VARCHAR},
+      </if>
+      <if test="mbz != null" >
+        #{mbz,jdbcType=REAL},
+      </if>
+      <if test="wcl != null" >
+        #{wcl,jdbcType=REAL},
+      </if>
+      <if test="fz != null" >
+        #{fz,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        #{month,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.asiainfo.cmc.enties.ProductSalesRate" >
+    update PRODUCT_SALES_RATE
+    <set >
+      <if test="khxl != null" >
+        khxl = #{khxl,jdbcType=REAL},
+      </if>
+      <if test="zdcp != null" >
+        zdcp = #{zdcp,jdbcType=VARCHAR},
+      </if>
+      <if test="mbz != null" >
+        mbz = #{mbz,jdbcType=REAL},
+      </if>
+      <if test="wcl != null" >
+        wcl = #{wcl,jdbcType=REAL},
+      </if>
+      <if test="fz != null" >
+        fz = #{fz,jdbcType=REAL},
+      </if>
+      <if test="month != null" >
+        month = #{month,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.asiainfo.cmc.enties.ProductSalesRate" >
+    update PRODUCT_SALES_RATE
+    set khxl = #{khxl,jdbcType=REAL},
+      zdcp = #{zdcp,jdbcType=VARCHAR},
+      mbz = #{mbz,jdbcType=REAL},
+      wcl = #{wcl,jdbcType=REAL},
+      fz = #{fz,jdbcType=REAL},
+      month = #{month,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByTargetVal">
+    update PRODUCT_SALES_RATE
+    set
+    wcl = khxl/${mbz},
+    mbz = #{mbz,jdbcType=REAL},
+    fz = (
+      case
+      when wcl &gt;= 1 then 0.21
+      when wcl &lt; 0.6 then 0
+      else 0.21*(wcl-0.6)*2.5
+      end
+    )
+    where <![CDATA[    month = #{endMonth} ]]>
+  <!--   <include refid="dynamicWhere"/> -->
+  </update>
+
+  <sql id="dynamicWhere">
+    <where>
+      <![CDATA[AND month >= #{starMonth} AND month <= #{endMonth} ]]>
+    </where>
+  </sql>
+</mapper>

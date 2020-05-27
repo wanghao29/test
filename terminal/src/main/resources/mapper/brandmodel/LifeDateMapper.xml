@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.brandmodel.LifeDateMapper" >
+<!--  <resultMap id="BrandMap" type="com.asiainfo.cmc.enties.brandmodel.LifeDate" >
+    <constructor >
+      <arg column="BRANDNAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SPEC" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="CYCLE" jdbcType="VARCHAR" javaType="java.lang.String" />
+     <arg column="DURATION" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="SALEAMOUNT" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="INCOME" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="MAORI" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="OVERAMOUNT" jdbcType="INTEGER" javaType="java.lang.Integer" />
+       <arg column="SHARE" jdbcType="REAL" javaType="java.lang.Float" />
+         <arg column="TURNOVER_TIME" jdbcType="INTEGER" javaType="java.lang.Integer" />
+    </constructor>
+  </resultMap> -->
+ 
+  <sql id="Brand_Column_List" >
+    BRANDNAME, SPEC, CYCLE, DURATION, SALEAMOUNT, INCOME,MAORI,OVERAMOUNT,SHARE,TURNOVERTIME
+  </sql>
+ 
+ <select id="selectLifeDate" resultType="LifeDate" >
+    select
+    <include refid="Brand_Column_List" />
+    from ZD_RESULT_OPER_PRODUCT_CYCLE_INFO
+    where <if test=" BRANDNAME!=null and '' != BRANDNAME">
+			BRANDNAME =#{BRANDNAME}
+		</if>
+		AND 
+		<if test=" SPEC!=null and '' != SPEC">
+			SPEC =#{SPEC}
+		</if>
+		AND 
+		<if test=" CYCLE!=null and '' != CYCLE">
+			CYCLE =#{CYCLE}
+		</if>
+		AND 
+		<if test=" DURATION!=null and '' != DURATION">
+			DURATION =#{DURATION}
+		</if>
+		AND 
+		<if test=" SALEAMOUNT!=null and '' != SALEAMOUNT">
+			SALEAMOUNT =#{SALEAMOUNT}
+		</if>
+		AND 
+		<if test=" INCOME!=null and '' != INCOME">
+			INCOME =#{INCOME}
+		</if>
+		AND 
+		<if test=" MAORI!=null and '' != MAORI">
+			MAORI =#{MAORI}
+		</if>
+		AND 
+		<if test=" OVERAMOUNT!=null and '' != OVERAMOUNT">
+			OVERAMOUNT =#{OVERAMOUNT}
+		</if>
+		AND 
+		<if test=" SHARE!=null and '' != SHARE">
+			SHARE =#{SHARE}
+		</if>
+		AND 
+		<if test=" TURNOVER_TIME!=null and '' != TURNOVER_TIME">
+			TURNOVERTIME =#{TURNOVERTIME}
+		</if>
+		
+  </select>
+ 
+  <insert id="insertLifeDate" parameterType="com.asiainfo.cmc.enties.brandmodel.LifeDate" >
+    insert into ZD_RESULT_OPER_PRODUCT_CYCLE_INFO
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="BRANDNAME != null" >
+        BRANDNAME,
+      </if>
+      <if test="SPEC != null" >
+        SPEC,
+      </if>
+      <if test="CYCLE != null" > 
+        CYCLE,
+      </if>
+      <if test="DURATION != null" >
+        DURATION,
+      </if>  
+      <if test="SALEAMOUNT != null" >
+        SALEAMOUNT,
+      </if>
+      <if test="INCOME != null" >
+        INCOME,
+      </if>
+      <if test="MAORI != null" >
+        MAORI,
+      </if>
+      <if test="OVERAMOUNT != null" >
+        OVERAMOUNT,
+      </if>
+      <if test="SHARE != null" >
+        SHARE,
+      </if>
+     <if test="TURNOVERTIME != null" >
+        TURNOVER_TIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="BRANDNAME != null" >
+        #{BRANDNAME},
+      </if>
+      <if test="SPEC != null" >
+        #{SPEC},
+      </if>
+      <if test="CYCLE != null" > 
+        #{CYCLE},
+      </if>
+      <if test="DURATION != null" >
+        #{DURATION},
+      </if>
+      <if test="SALEAMOUNT != null" >
+        #{SALEAMOUNT},
+      </if>
+      <if test="INCOME != null" >
+        #{INCOME},
+      </if>
+      <if test="MAORI != null" >
+        #{MAORI},
+      </if>
+      <if test="OVERAMOUNT != null" >
+        #{OVERAMOUNT},
+      </if>
+      <if test="SHARE != null" >
+        #{SHARE},
+      </if>
+ <if test="TURNOVERTIME != null" >
+        #{TURNOVERTIME},
+      </if>
+
+</trim>
+  </insert>
+ 
+ <update id="updateLifeDate" parameterType="com.asiainfo.cmc.enties.brandmodel.LifeDate">
+ 
+ update ZD_RESULT_OPER_PRODUCT_CYCLE_INFO
+
+ <set >
+      <if test="BRANDNAME != null" >
+        BRANDNAME = #{BRANDNAME},
+      </if>
+      <if test="SPEC != null" >
+        SPEC = #{SPEC},
+      </if>
+      <if test="CYCLE != null" >
+        CYCLE = #{CYCLE},
+      </if>
+      <if test="DURATION != null" >
+        DURATION = #{DURATION},
+      </if>
+      <if test="SALEAMOUNT != 0" >
+        SALEAMOUNT = #{SALEAMOUNT},
+      </if>
+       <if test="INCOME != 0" >
+        INCOME = #{INCOME},
+      </if>
+       <if test="MAORI != 0" >
+        MAORI = #{MAORI},
+      </if>
+       <if test="OVERAMOUNT != 0" >
+        OVERAMOUNT = #{OVERAMOUNT},
+      </if>
+       <if test="SHARE != 0" >
+        SHARE = #{SHARE},
+      </if>
+       <if test="TURNOVERTIME != 0" >
+        TURNOVER_TIME = #{TURNOVERTIME},
+      </if>
+    </set>
+ where BRANDNAME = #{BRANDNAME} and  SPEC = #{SPEC} and CYCLE=#{CYCLE}
+
+ </update>
+ <!-- 根据品牌和型号查询出数据 -->
+ <select id="selectBrandAndSpec" resultType="LifeDateS">
+ 
+ select CYCLE,DURATION,SALEAMOUNT,INCOME,MAORI,OVERAMOUNT,
+ SHARE,TURNOVER_TIME as TURNOVERTIME from ZD_RESULT_OPER_PRODUCT_CYCLE_INFO 
+  where BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} ORDER BY CYCLE ASC
+
+ </select>
+ <select id="selectBrandAndSpecS" resultType="LifeDate">
+ 
+ select CYCLE,DURATION,SALEAMOUNT,INCOME,MAORI,OVERAMOUNT,
+ SHARE,TURNOVER_TIME as TURNOVERTIME from ZD_RESULT_OPER_PRODUCT_CYCLE_INFO 
+  where BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} ORDER BY CYCLE ASC
+
+ </select>
+ 
+ <!-- 根据品牌和型号和生命周期查询出数据 -->
+ <select id="selectAddAndUpdate" resultType="LifeDate">
+ 
+ select BRANDNAME,SPEC,CYCLE,DURATION,SALEAMOUNT,INCOME,MAORI,OVERAMOUNT,
+ SHARE,TURNOVER_TIME as TURNOVERTIME from ZD_RESULT_OPER_PRODUCT_CYCLE_INFO 
+  where BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} and CYCLE=#{CYCLE}
+
+
+ </select>
+ 
+ <!-- 对生命周期表中的数据进行汇总然后存在总设置表中 -->
+ <select id="selectTotal" resultType="LifeDate">
+ 
+ SELECT SUM(SALEAMOUNT) SALEAMOUNT,SUM(INCOME) INCOME,
+SUM(MAORI) MAORI,SUM(OVERAMOUNT) SHARE,SUM(SHARE) OVERAMOUNT,SUM(TURNOVER_TIME) TURNOVERTIME
+FROM ZD_RESULT_OPER_PRODUCT_CYCLE_INFO where BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC}
+ 
+ 
+ </select>
+ 
+  <!-- 根据品牌和型号和生命周期查询出数据 -->
+ <select id="selectAllLife" resultType="LifeDate">
+ select BRANDNAME,SPEC,CYCLE,DURATION,SALEAMOUNT,INCOME,MAORI,OVERAMOUNT,
+ SHARE,TURNOVER_TIME as TURNOVERTIME from ZD_RESULT_OPER_PRODUCT_CYCLE_INFO 
+  where BRANDNAME=#{BRANDNAME} and SPEC=#{SPEC} group by CYCLE
+
+ </select>
+ 
+ 
+ <select id="showAllNewDate" resultType="NewDate">
+ 
+ SELECT
+ (SELECT SUM(AMOUNT) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{time} AND #{endTime} AND BRANDNAME=#{brand} and SPEC=#{spec}) AS nowSale,
+ (SELECT SUM(AMOUNT) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{brand} AND SPEC =#{spec}) AS weekSale,
+(SELECT SUM(AMOUNT) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME2} AND SPEC =#{COMPETSPEC2}) AS benchSale,
+(SELECT SUM(AMOUNT) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME1} AND SPEC =#{COMPETSPEC1}) AS competitorSale
+
+ </select>
+ 
+<!--对实时操盘利润进行取值  --> 
+
+ <select id="showProfit" resultType="NewDate">
+ 
+ SELECT
+ (SELECT SUM(SALECOSTPRICE) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{time} AND #{endTime} AND BRANDNAME=#{brand} and SPEC=#{spec}) AS nowSale,
+ (SELECT SUM(SALECOSTPRICE) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{brand} AND SPEC =#{spec}) AS weekSale,
+(SELECT SUM(SALECOSTPRICE) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME2} AND SPEC =#{COMPETSPEC2}) AS benchSale,
+(SELECT SUM(SALECOSTPRICE) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME1} AND SPEC =#{COMPETSPEC1}) AS competitorSale
+
+ </select>
+
+<!--取价钱值  -->
+<select id="showPrice" resultType="NewDate">
+SELECT
+ 
+ (SELECT AVG(SALEPRICE) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{brand} AND SPEC =#{spec}) AS weekSale,
+(SELECT  AVG(OPENPRICE) FROM ZD_RESULT_OPER_OPEN_PRICE_FINAL_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{brand} AND SPEC =#{spec}) AS benchSale,
+(SELECT  AVG(OPENPRICE) FROM ZD_RESULT_OPER_OPEN_PRICE_FINAL_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME1} AND SPEC =#{COMPETSPEC1}) AS competitorSale
+</select>
+
+<!--取收入的值  -->
+
+ <select id="showIncome" resultType="NewDate">
+SELECT
+ (SELECT SUM(AMOUNTPRICE) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{time} AND #{endTime} AND BRANDNAME=#{brand} and SPEC=#{spec}) AS nowSale,
+ (SELECT SUM(AMOUNTPRICE) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{brand} AND SPEC =#{spec}) AS weekSale,
+(SELECT SUM(AMOUNTPRICE) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME2} AND SPEC =#{COMPETSPEC2}) AS benchSale,
+(SELECT SUM(AMOUNTPRICE) FROM ZD_RESULT_OPER_LSLJ_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME1} AND SPEC =#{COMPETSPEC1}) AS competitorSale
+</select>
+ <!-- 取覆的值 -->
+  <select id="showCover" resultType="NewDate">
+SELECT
+ (SELECT SUM(cnt) FROM ZD_RESULT_OPER_OVER_CUST_AREA_D
+WHERE DODATE  BETWEEN #{time} AND #{endTime} AND BRANDNAME=#{brand} and SPEC=#{spec}) AS nowSale,
+ (SELECT SUM(cnt) FROM ZD_RESULT_OPER_OVER_CUST_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{brand} AND SPEC =#{spec}) AS weekSale,
+(SELECT SUM(cnt) FROM ZD_RESULT_OPER_OVER_CUST_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME2} AND SPEC =#{COMPETSPEC2}) AS benchSale,
+(SELECT SUM(cnt) FROM ZD_RESULT_OPER_OVER_CUST_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME1} AND SPEC =#{COMPETSPEC1}) AS competitorSale
+</select>
+ 
+ <!--取库存的值  -->
+ 
+   <select id="showStock" resultType="NewDate">
+SELECT
+ (SELECT SUM(REAL_TIME_AMOUNT) FROM ZD_RESULT_OPER_STOCK_AREA_D
+WHERE DODATE  BETWEEN #{time} AND #{endTime} AND BRANDNAME=#{brand} and SPEC=#{spec}) AS nowSale,
+ (SELECT SUM(REAL_TIME_AMOUNT) FROM ZD_RESULT_OPER_STOCK_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{brand} AND SPEC =#{spec}) AS weekSale,
+(SELECT SUM(REAL_TIME_AMOUNT) FROM ZD_RESULT_OPER_STOCK_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME2} AND SPEC =#{COMPETSPEC2}) AS benchSale,
+(SELECT SUM(REAL_TIME_AMOUNT) FROM ZD_RESULT_OPER_STOCK_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME1} AND SPEC =#{COMPETSPEC1}) AS competitorSale
+</select>
+ 
+ <!--取份的值  -->
+ 
+   <select id="showShare" resultType="NewDate">
+SELECT
+ (SELECT SUM(PRO_SHARE) FROM ZD_RESULT_OPER_SHARE_AREA_D
+WHERE DODATE  BETWEEN #{time} AND #{endTime} AND BRANDNAME=#{brand} and SPEC=#{spec}) AS nowSale,
+ (SELECT SUM(PRO_SHARE) FROM ZD_RESULT_OPER_SHARE_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{brand} AND SPEC =#{spec}) AS weekSale,
+(SELECT SUM(PRO_SHARE) FROM ZD_RESULT_OPER_SHARE_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME2} AND SPEC =#{COMPETSPEC2}) AS benchSale,
+(SELECT SUM(PRO_SHARE) FROM ZD_RESULT_OPER_SHARE_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{COMPETBRANDNAME1} AND SPEC =#{COMPETSPEC1}) AS competitorSale
+</select>
+ 
+ 
+ <!--取秩的值  -->
+   <select id="showOrder" resultType="NewDate">
+SELECT
+ 
+ (SELECT AVG(LOCAL_RATIO) FROM  ZD_RESULT_OPER_ORDER_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{brand} AND SPEC =#{spec}) AS weekSale,
+(SELECT AVG(REMOTE_RATIO) FROM  ZD_RESULT_OPER_ORDER_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{brand} AND SPEC =#{spec}) AS benchSale,
+(SELECT AVG(YK_RATIO) FROM  ZD_RESULT_OPER_ORDER_AREA_D
+WHERE DODATE  BETWEEN #{startTime} AND #{endTime} AND BRANDNAME =#{brand} AND SPEC =#{spec}) AS competitorSale
+</select>
+ 
+ 
+ 
+
+</mapper>

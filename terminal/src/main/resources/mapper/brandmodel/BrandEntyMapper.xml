@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.brandmodel.BrandEntyMapper" >
+ <resultMap id="BrandEnty" type="com.asiainfo.cmc.enties.brandmodel.BrandEnty" >
+    <constructor >
+      <arg column="TAC" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="term_brnd_nam" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="term_mdl_nam" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+ 
+  <sql id="Brand_Column_List" >
+   TAC,term_brnd_nam,term_mdl_nam
+  </sql>
+ 
+ <select id="selectBrand" resultType="string" >
+    select DISTINCT
+    term_brnd_nam
+    from ZD_TERM_BRND_MDL_CTMS 
+    ORDER BY term_brnd_nam
+    
+  </select>
+ 
+  <select id="selectModel" parameterType="com.asiainfo.cmc.enties.brandmodel.BrandEnty" resultType="string">
+   select DISTINCT
+   term_mdl_nam
+    from ZD_TERM_BRND_MDL_CTMS where term_brnd_nam=#{term_brnd_nam}
+   
+  </select>
+ <!-- 另一张表的品牌和型号 -->
+ 
+ 
+  <select id="selectOtherBrand" resultType="string" >
+    select DISTINCT
+    term_brnd_nam
+    from ZD_TERM_BRND_MDL_BI 
+    ORDER BY term_brnd_nam
+    
+  </select>
+ 
+  <select id="selectOtherModel" parameterType="com.asiainfo.cmc.enties.brandmodel.BrandEnty" resultType="string">
+   select DISTINCT
+   term_mdl_nam
+    from ZD_TERM_BRND_MDL_BI where term_brnd_nam=#{term_brnd_nam}
+   
+  </select>
+ 
+ <!--根据品牌和机型查询出改手机的价格  -->
+ 
+ <select id="selectBrandAndModelPrice" parameterType="com.asiainfo.cmc.enties.brandmodel.BrandEnty" resultType="string">
+SELECT avg_price FROM ZD_TERM_BRND_MDL_CTMS 
+WHERE term_brnd_nam=#{term_brnd_nam} and term_mdl_nam=#{term_mdl_nam}
+    
+   
+  </select>
+ <!--根据品牌的价格查询出对应价格的品牌和机型  -->
+ <select id="selectPrice" resultType="string" >
+    SELECT DISTINCT term_brnd_nam FROM ZD_TERM_BRND_MDL_CTMS WHERE 
+    avg_price BETWEEN #{avg_price} AND #{avg_price1} ORDER BY term_brnd_nam
+    
+  </select>
+ <!--根据品牌和价格区间来查询出型号  -->
+ <select id="selectListModel" resultType="string" >
+    SELECT  term_mdl_nam FROM ZD_TERM_BRND_MDL_CTMS WHERE term_brnd_nam=#{term_brnd_nam}
+  AND  avg_price BETWEEN #{avg_price} AND #{avg_price1} ORDER BY term_mdl_nam 
+    
+  </select>
+ 
+ <!--********************************BI  -->
+ 
+ <!--根据品牌和机型查询出改手机的价格  -->
+ 
+ <select id="selectBrandAndModelPriceBI" parameterType="com.asiainfo.cmc.enties.brandmodel.BrandEnty" resultType="string">
+SELECT avg_price FROM ZD_TERM_BRND_MDL_CTMS 
+WHERE term_brnd_nam=#{term_brnd_nam} and term_mdl_nam=#{term_mdl_nam}
+    
+   
+  </select>
+ <!--根据品牌的价格查询出对应价格的品牌和机型  -->
+ <select id="selectPriceBI" resultType="string" >
+    SELECT DISTINCT term_brnd_nam FROM ZD_TERM_BRND_MDL_BI WHERE 
+    avg_price BETWEEN #{avg_price} AND #{avg_price1} ORDER BY term_brnd_nam
+    
+  </select>
+ <!--根据品牌和价格区间来查询出型号  -->
+ <select id="selectListModelBI" resultType="string" >
+    SELECT  term_mdl_nam FROM ZD_TERM_BRND_MDL_BI WHERE term_brnd_nam=#{term_brnd_nam}
+  AND  avg_price BETWEEN #{avg_price} AND #{avg_price1} ORDER BY term_mdl_nam 
+    
+  </select>
+ 
+ 
+</mapper>

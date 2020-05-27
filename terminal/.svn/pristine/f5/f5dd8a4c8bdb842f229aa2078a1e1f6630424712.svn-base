@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--获取画像信息 -->
+<mapper namespace="com.asiainfo.cmc.qudao.mapper.CusChanPortrayMapper">
+    <select id="listPortrayFieldInCusChanl"  resultType="CusChanPortray">
+        SELECT * FROM CUS_CHAN_PORTRAY WHERE BUSINESS='customer_channel' 
+        AND show_type!=0 and show_type!=1 order by type , show_type
+    </select>
+    <select id="listPortrayFieldInHallPortrait"  resultType="CusChanPortray">
+        SELECT * FROM CUS_CHAN_PORTRAY WHERE BUSINESS='hall_channel' 
+        AND show_type!=0 and show_type!=1 order by type , show_type
+    </select>
+    
+    <select id="listPortrayFieldInHallQudao"  resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME ='ZD_RESULT_HALL_QUDAO_M'
+        AND show_type!=0 and show_type!=1 order by type , show_type
+    </select>
+    
+    <select id="listPortrayFieldInHallBrandTttt"  resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME ='ZD_RESULT_HALL_BRND_TTTT'
+    </select>  
+     <select id="listPortrayFieldInHallBrandFfff"  resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME ='ZD_RESULT_HALL_BRND_FFFF'
+    </select> 
+    <select id="listPortrayFieldInCellBrandTttt"  resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME ='ZD_RESULT_CELL_BRND_TTTT'
+    </select>  
+     <select id="listPortrayFieldInCellBrandFfff"  resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME ='ZD_RESULT_CELL_BRND_FFFF'
+    </select>        
+    
+    
+    
+    
+    
+    
+    
+    <!--渠道厂商、不分厅店和基站维度，渠道客户画像菜单 -->
+    <select id="listCustomerByIds" parameterType="java.util.List" resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where BUSINESS='customer_channel'  
+        AND (show_type=1 or id in
+	        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+	               #{item}       
+	        </foreach>
+	    ) order by type, show_type
+    </select>
+    
+     <!--渠道厂商、不分厅店和基站维度，渠道厅店画像菜单 -->
+    <select id="listHallByIds" parameterType="java.util.List" resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where BUSINESS='hall_channel'  
+        AND (show_type=1 or id in
+	        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+	               #{item}       
+	        </foreach>
+	    ) order by type, show_type
+    </select>
+    
+    
+    
+    
+    
+    
+    <!-- 渠道、分厅店和基站维度。开始 -->
+    <select id="listHallQudaoByIds" parameterType="java.util.List" resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME ='ZD_RESULT_HALL_QUDAO_M'
+	    <choose>
+		    <when test="list != null">
+		         AND id in
+		        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach>			    
+		    </when>
+		    <otherwise>
+                AND choice=1 
+		    </otherwise>
+		</choose> 
+		order by show_type 
+    </select>
+    
+    <select id="listCellQudaoByIds" parameterType="java.util.List" resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME ='ZD_RESULT_CELL_QUDAO_M'
+	    <choose>
+		    <when test="list != null and list.size > 0 ">
+		         AND id in
+		        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach>			    
+		    </when>
+		    <otherwise>
+                AND choice=1 
+		    </otherwise>
+		</choose> 
+		order by show_type 
+    </select>
+    <!-- 渠道、分厅店和基站维度。结束 -->
+    
+    <!-- 门店作战。厂商表不分厅店、基站维度 -->
+    <select id="listCusStoreBattleByIds" parameterType="java.util.List" resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where BUSINESS='customer_channel' 
+	    <choose>
+		    <when test="list != null and list.size > 0 ">
+		         AND id in
+		        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach>			    
+		    </when>
+		    <otherwise>
+                AND choice=1 
+		    </otherwise>
+		</choose> 
+		order by type,show_type 
+    </select>
+    <select id="listHallStoreBattleByIds" parameterType="java.util.List" resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where BUSINESS='hall_channel' 
+	    <choose>
+		    <when test="list != null and list.size > 0 ">
+		         AND id in
+		        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach>			    
+		    </when>
+		    <otherwise>
+                AND choice=1 
+		    </otherwise>
+		</choose> 
+		order by show_type 
+    </select>
+    
+     <select id="listHallIdentifyInfoByIds" parameterType="com.asiainfo.cmc.qudao.vo.IdentifyInfoVo" resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME ='ZD_HALL_INFO_STATIC'
+	    <choose>
+		    <when test="ids != null and ids.size > 0 ">
+		         AND id in
+		        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach>			    
+		    </when>
+		    <otherwise>
+                AND choice=1 
+		    </otherwise>
+		</choose> 
+		order by show_type 
+    </select>  
+    <select id="listCustomerIdentifyInfoByIds" parameterType="com.asiainfo.cmc.qudao.vo.IdentifyInfoVo" resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME ='ZD_CUST_INFO_STATIC'
+	    <choose>
+		    <when test="ids != null and ids.size > 0 ">
+		         AND id in
+		        <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach>			    
+		    </when>
+		    <otherwise>
+                AND choice=1 
+		    </otherwise>
+		</choose> 
+		order by show_type 
+    </select> 
+
+    
+    <select id="listXfzzlBigData" parameterType="java.util.List" resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME='ZD_RESULT_CONSUMER_ZL_XFZ' 
+	    <choose>
+		    <when test="list != null and list.size > 0 ">
+		         AND ID in
+		        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach>			    
+		    </when>
+		    <otherwise>
+                
+		    </otherwise>
+		</choose> 
+		order by ID 
+    </select>
+    
+    <select id="listZdtzzlBigData" parameterType="java.util.List" resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME='ZD_RESULT_CONSUMER_ZL_ZDTZ' 
+	    <choose>
+		    <when test="list != null and list.size > 0 ">
+		         AND ID in
+		        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach>			    
+		    </when>
+		    <otherwise>
+                
+		    </otherwise>
+		</choose> 
+		order by ID 
+    </select>  
+    
+    <select id="listJlfxBigData" parameterType="java.util.List" resultType="CusChanPortray">
+        select * from CUS_CHAN_PORTRAY where TABLE_NAME='ZD_RESULT_CONSUMER_ZL_XFZ_JLFX' 
+	    <choose>
+		    <when test="list != null and list.size > 0 ">
+		         AND ID in
+		        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+		               #{item}       
+		        </foreach>			    
+		    </when>
+		    <otherwise>
+                
+		    </otherwise>
+		</choose> 
+		order by ID 
+    </select>  
+          
+</mapper>

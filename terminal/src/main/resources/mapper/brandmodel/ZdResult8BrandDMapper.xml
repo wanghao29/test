@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.asiainfo.cmc.mapper.brandmodel.ZdResult8BrandDMapper" >
+ <resultMap id="ZdResult8BrandDMap" type="com.asiainfo.cmc.enties.brandmodel.ZdResult8BrandD" >
+    <constructor >
+      <arg column="statDay" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="areaName" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="brandName" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="spec" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="priceRange" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="custName" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="custStage" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="type8" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="subType" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="value" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+ 
+  <sql id="Result_Brand_Column_List" >
+   statDay,areaName,brandName,spec,priceRange,custName,custStage,type8,subType,value
+  </sql>
+ 
+ <select id="getValueByMonthAndType" resultType="ZdResult8BrandD" >
+ SELECT 8type type8, ROUND(SUM(`value`),0) value FROM ZD_RESULT_8BRAND_D WHERE DATE_FORMAT(stat_day,'%Y%m')= #{month} GROUP BY  8TYPE;
+  </select>
+  
+<select id="getSqlByDim" resultType="java.lang.String" >
+ 	SELECT  result_table from ZD_8DIM_DICT where DIM=#{dim}
+</select>
+<select id="aRTRatio" resultType="java.lang.Float" >
+ 	SELECT  ndyskzzl from ACCOUNT_RECEIVABLE_TURNOVER_RATIO where month=#{month}
+</select>
+<select id="aRRatio" resultType="java.lang.Float" >
+ 	SELECT  round(IFNULL(AVG(yszkzb90+yszkzb180),0),2) from ACCOUNTS_RECEIVABLE_RATIO where month=#{month}
+</select>
+
+</mapper>

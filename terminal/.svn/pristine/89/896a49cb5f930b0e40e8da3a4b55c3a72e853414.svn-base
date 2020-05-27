@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.asiainfo.cmc.qudao.mapper.ZdTermTac4GplusMapper">
+    <select id="listBrand" resultType="string">
+         SELECT TERM_BRAND_NAME FROM ZD_TERM_TAC_4GPLUS  GROUP BY TERM_BRAND_NAME ORDER BY TERM_BRAND_NAME		    
+    </select>
+    
+    <select id="listSpecByBrand" parameterType="string" resultType="string">
+         <!-- <bind name="brandBind" value="'%'+brand+'%'"/> -->
+         SELECT TERM_SPEC_NAME FROM ZD_TERM_TAC_4GPLUS  WHERE TERM_BRAND_NAME = #{brand} ORDER BY TERM_SPEC_NAME
+    </select>    
+  
+</mapper>

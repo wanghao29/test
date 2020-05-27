@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--命名空间应该是对应接口的包名+接口名 -->
+<mapper namespace="com.asiainfo.cmc.qudao.mapper.BrandMdlMapper">
+    <select id="listBrandBi" resultType="com.asiainfo.cmc.qudao.vo.BrandMdlVo">
+         SELECT term_brnd_nam brand,term_brnd_nam id,term_brnd_nam text FROM ZD_TERM_BRND_MDL_BI  GROUP BY term_brnd_nam    
+    </select>
+    <select id="listBrandCtms" resultType="com.asiainfo.cmc.qudao.vo.BrandMdlVo">
+         SELECT term_brnd_nam brand,term_brnd_nam id,term_brnd_nam text FROM ZD_TERM_BRND_MDL_CTMS  GROUP BY term_brnd_nam  
+    </select>
+        
+    <select id="listMdlByBrandBi" resultType="com.asiainfo.cmc.qudao.vo.BrandMdlVo">
+         SELECT TAC tac,term_brnd_nam brand,term_mdl_nam mdl,term_mdl_nam id,term_mdl_nam text FROM ZD_TERM_BRND_MDL_BI WHERE term_brnd_nam = #{brand}
+    </select>    
+    <select id="listMdlByBrandCtms" resultType="com.asiainfo.cmc.qudao.vo.BrandMdlVo">
+         SELECT TAC tac,term_brnd_nam brand,term_mdl_nam mdl,term_mdl_nam id,term_mdl_nam text FROM ZD_TERM_BRND_MDL_CTMS WHERE term_brnd_nam = #{brand}
+    </select> 
+      
+</mapper>
